@@ -1,9 +1,9 @@
-const Model = require("../models/Course");
+const Model = require("../models/Pupil");
 const Joi = require("joi");
 // This is user model
 module.exports = {
   Get: async function (req, res) {
-    const value = await Model.find().populate("teacher");
+    const value = await Model.find();
     if (value.length <= 0) {
       res.status(204).send("No Content!");
       return;
@@ -12,21 +12,21 @@ module.exports = {
   },
   //User is created
   Post: async function (req, res) {
-    // const schema = Joi.object({
-    //   firstName: Joi.string()
-    //     .min(3)
-    //     .regex(/^[,. a-z]+$/)
-    //     .required(),
-    //   lastName: Joi.string()
-    //     .min(3)
-    //     .regex(/^[,. a-z]+$/)
-    //     .required(),
-    // });
-    // const { error } = schema.validate(req.body);
-    // if (error) {
-    //   res.status(400).send(error.details[0].message);
-    //   return;
-    // }
+    const schema = Joi.object({
+      firstName: Joi.string()
+        .min(3)
+        .regex(/^[,. a-z]+$/)
+        .required(),
+      lastName: Joi.string()
+        .min(3)
+        .regex(/^[,. a-z]+$/)
+        .required(),
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+      res.status(400).send(error.details[0].message);
+      return;
+    }
     await Model.create(req.body);
     res.status(201).send("Muvaffaqiyatli yaratildi.");
   },

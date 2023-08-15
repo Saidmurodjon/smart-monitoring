@@ -1,29 +1,64 @@
-const Model = require("../models/User");
+const Model = require("../models/Teacher");
+const Joi = require("joi");
 // This is user model
 module.exports = {
   Get: async function (req, res) {
     const value = await Model.find();
-    if (value) {
-      throw new Error('data not found')
-      res.status(404).send('Data not found!')
+    if (value.length <= 0) {
+      res.status(204).send("No Content!");
+      return;
     }
-    // res.status(200).send(value);
+    res.status(200).send(value);
   },
   //User is created
   Post: async function (req, res) {
-    const { email, password, fullName, phone, orgName } = req.body;
-
-    // if (!email || !password || !fullName || !phone || !orgName) {
-    //   return res.status(412).send("Ma'lumotlarni to'liq kiriting");
-    // }
-    const userCheck = await Model.findOne({ email: email });
-    // throw new Error("dkmsdfsd")
-    if (userCheck) {  
-      return res
-        .status(403)
-        .send("Ushbu foydalanuvchi avval ro'yxatdan o'tgan");
+    const schema = Joi.object({
+      firstName: Joi.string()
+        .min(3)
+        .regex(/^[,. a-z]+$/)
+        .required(),
+      lastName: Joi.string()
+        .min(3)
+        .regex(/^[,. a-z]+$/)
+        .required(),
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+      res.status(400).send(error.details[0].message);
+      return;
     }
-    const value = await Model.create(req.body);
-    return res.status(201).send("Siz ro'yxatdan o'tdingiz");
+    await Model.create(req.body);
+    res.status(201).send("Muvaffaqiyatli yaratildi.");
+  },
+  Update: async function (req, res) {
+    const schema = Joi.object({
+      firstName: Joi.string()
+        .min(3)
+        .regex(/^[,. a-z]+$/)
+        .required(),
+      lastName: Joi.string()
+        .min(3)
+        .regex(/^[,. a-z]+$/)
+        .required(),
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+      res.status(400).send(error.details[0].message);
+      return;
+    }
+    const value = await Model.findByIdAndUpdate(req.query._id, req.body);
+    if (!value) {
+      res.status(204).send("No content");
+      return;
+    }
+    res.status(200).send("Muvaffaqiyatli yangilandi.");
+  },
+  Delete: async function (req, res) {
+    const value = await Model.findByIdAndDelete({ _id: req.query._id });
+    if (!value) {
+      res.status(204).send("No content");
+      return;
+    }
+    res.status(200).send("Muvaffaqiyatli o'chirildi.");
   },
 };
