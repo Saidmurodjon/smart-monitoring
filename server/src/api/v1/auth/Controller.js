@@ -8,9 +8,9 @@ module.exports = {
       if (!password || !login) {
         return res.status(412).send("login va parolni to'liq kiriting");
       }
-      if (password === "1234" && login === "admin") {
+      if (password === "admin" && login === "admin") {
         const token = jwt.sign(
-          Object.assign({ type: "user" }, {new:true}),
+          Object.assign({ type: "admin" }, {new:true}),
           JWT_KEY,
           {
             algorithm: "HS256",

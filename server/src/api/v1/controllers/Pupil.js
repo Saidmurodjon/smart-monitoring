@@ -3,7 +3,7 @@ const Joi = require("joi");
 // This is user model
 module.exports = {
   Get: async function (req, res) {
-    const value = await Model.find();
+    const value = await Model.find().populate(['teacher','course']);
     if (value.length <= 0) {
       res.status(204).send("No Content!");
       return;
@@ -15,12 +15,14 @@ module.exports = {
     const schema = Joi.object({
       firstName: Joi.string()
         .min(3)
-        .regex(/^[,. a-z]+$/)
+        .regex(/^[,. a-zA-Z]+$/)
         .required(),
       lastName: Joi.string()
         .min(3)
-        .regex(/^[,. a-z]+$/)
+        .regex(/^[,. a-zA-Z]+$/)
         .required(),
+      teacher: Joi.string(),
+      course: Joi.string(),
     });
     const { error } = schema.validate(req.body);
     if (error) {

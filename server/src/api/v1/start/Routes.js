@@ -1,6 +1,6 @@
 const express = require("express");
 const errorMiddleware = require("../middlewares/error");
-const appRouter = require("../routes/Router");
+const appRouter = require("../routes/index");
 module.exports = function (app) {
   app.use("/api", appRouter);
   app.use("/uploads", express.static((__dirname, "uploads")));

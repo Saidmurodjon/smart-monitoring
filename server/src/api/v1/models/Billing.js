@@ -2,14 +2,11 @@ const mongoose = require("mongoose");
 // This is Pupil model
 const Schema = new mongoose.Schema(
   {
-    firstName: { type: String, require: true },
-    lastName: { type: String, require: true },
+    cost: { type: String, require: true },
+    discount: { type: String, require: false },//? to do
     email: { type: String, require: false },
-    teacher: [
-      { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Teacher" },
-    ],
-    course: [
-      { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Course" },
+    pupilID: [
+      { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Pupil" },
     ],
     isAktive: { type: Boolean, default: false },
     isPublished: { type: Boolean, default: false },
