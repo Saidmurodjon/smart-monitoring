@@ -1,125 +1,52 @@
-import React from "react";
-import { ToastContainer } from "react-toastify";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { FiSettings } from "react-icons/fi";
-import { TooltipComponent } from "@syncfusion/ej2-react-popups";
+import React, { lazy, useEffect } from 'react'
+import './App.css';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
+import { themeChange } from 'theme-change'
+import checkAuth from './app/auth';
+import initializeApp from './app/init';
 
-import {
-  Navbar,
-  Footer,
-  Sidebar,
-  ThemeSettings,
-  NewProduct,
-} from "./components";
-import {
-  Ecommerce,
-  Orders,
-  Product,
-  Products,
-  Calendar,
-  Stacked,
-  Pyramid,
-  Customers,
-  Kanban,
-  Area,
-  Bar,
-  Pie,
-  Line,
-  Financial,
-  ColorPicker,
-  ColorMapping,
-  Editor,
-} from "./pages";
+// Importing pages
+const Layout = lazy(() => import('./containers/Layout'))
+const Login = lazy(() => import('./pages/Login'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
+const Register = lazy(() => import('./pages/Register'))
+const Documentation = lazy(() => import('./pages/Documentation'))
 
-import { useStateContext } from "./contexts/ContextProvider";
-import "./App.css";
 
-const App = () => {
-  const {
-    activeMenu,
-    productForm,
-    themeSettings,
-    setThemeSettings,
-    currentColor,
-    currentMode,
-  } = useStateContext();
+// Initializing different libraries
+initializeApp()
+
+
+// Check for login and initialize axios
+const token = checkAuth()
+
+
+function App() {
+
+  useEffect(() => {
+    // 👆 daisy UI themes initialization
+    themeChange(false)
+  }, [])
+
 
   return (
-    <div className={currentMode === "Dark" ? "dark" : ""}>
-      <BrowserRouter>
-        <ToastContainer style={{ fontFamily: "Lato, sans-serif" }} />
-        <div className="flex relative dark:bg-main-dark-bg">
-          <div className="fixed right-4 bottom-4" style={{ zIndex: "1000" }}>
-            <TooltipComponent content="Settings" position="Top">
-              <button
-                type="button"
-                className="text-3xl p-3 hover:drop-shadow-xl hover:bg-light-gray text-white"
-                style={{ background: currentColor, borderRadius: "50%" }}
-                onClick={() => setThemeSettings(true)}
-              >
-                <FiSettings />
-              </button>
-            </TooltipComponent>
-          </div>
+    <>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/documentation" element={<Documentation />} />
+          
+          {/* Place new routes over this */}
+          <Route path="/app/*" element={<Layout />} />
 
-          {activeMenu ? (
-            <div className="w-72 fixed sidebar dark:bg-secondary-dark-bg bg-white">
-              <Sidebar />
-            </div>
-          ) : (
-            <div className="w-0 dark:bg-secondary-dark-bg">
-              <Sidebar />
-            </div>
-          )}
+          <Route path="*" element={<Navigate to={token ? "/app/welcome" : "/login"} replace />}/>
 
-          <div
-            className={`dark:bg-main-dark-bg bg-main-bg min-h-screen w-full ${
-              activeMenu ? "md:ml-72 " : "flex-2"
-            }`}
-          >
-            <div className="fixed md:static bg-main-bg dark:bg-main-dark-bg navbar w-full">
-              <Navbar />
-            </div>
+        </Routes>
+      </Router>
+    </>
+  )
+}
 
-            <div>
-              {themeSettings && <ThemeSettings />}
-              {productForm && <NewProduct />}
-
-              <Routes>
-                {/* Dashboard */}
-                <Route path="/" element={<Ecommerce />} />
-                <Route path="/ecommerce" element={<Ecommerce />} />
-
-                {/* Pages */}
-                <Route path="/products" element={<Products />} />
-                <Route path={`/products/:id`} element={<Product />} />
-                <Route path="/orders" element={<Orders />} />
-                {/* <Route path="/employees" element={<Employees />} /> */}
-                <Route path="/customers" element={<Customers />} />
-
-                {/* Apps */}
-                <Route path="/kanban" element={<Kanban />} />
-                <Route path="/editor" element={<Editor />} />
-                <Route path="/calendar" element={<Calendar />} />
-                <Route path="/color-picker" element={<ColorPicker />} />
-
-                {/* Charts */}
-                <Route path="/line" element={<Line />} />
-                <Route path="/area" element={<Area />} />
-                <Route path="/bar" element={<Bar />} />
-                <Route path="/pie" element={<Pie />} />
-                <Route path="/financial" element={<Financial />} />
-                <Route path="/color-mapping" element={<ColorMapping />} />
-                <Route path="/pyramid" element={<Pyramid />} />
-                <Route path="/stacked" element={<Stacked />} />
-              </Routes>
-            </div>
-            <Footer />
-          </div>
-        </div>
-      </BrowserRouter>
-    </div>
-  );
-};
-
-export default App;
+export default App
