@@ -19,7 +19,7 @@ module.exports = {
         );
         return res.status(200).json({ token });
       }
-      // return res.status(401).send("login yoki parol noto'g'ri");
+      return res.status(401).send("login yoki parol noto'g'ri");
     } catch (error) {
       // throw error
       return res.status(417).send("so'rov amalga oshmadi");
