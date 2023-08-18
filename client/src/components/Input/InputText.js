@@ -1,24 +1,40 @@
-import { useState } from "react"
+import { useState } from "react";
 
+function InputText({
+  labelTitle,
+  labelStyle,
+  type,
+  name,
+  containerStyle,
+  defaultValue,
+  placeholder,
+  updateFormValue,
+  updateType,
+}) {
+  const [value, setValue] = useState(defaultValue);
 
-function InputText({labelTitle, labelStyle, type, containerStyle, defaultValue, placeholder, updateFormValue, updateType}){
+  const changeHandler  = (val) => {
+    setValue(val.target.value);
+    updateFormValue(val);
+  };
 
-    const [value, setValue] = useState(defaultValue)
-
-    const updateInputValue = (val) => {
-        setValue(val)
-        updateFormValue({updateType, value : val})
-    }
-
-    return(
-        <div className={`form-control w-full ${containerStyle}`}>
-            <label className="label">
-                <span className={"label-text text-base-content " + labelStyle}>{labelTitle}</span>
-            </label>
-            <input type={type || "text"} value={value} placeholder={placeholder || ""} onChange={(e) => updateInputValue(e.target.value)}className="input  input-bordered w-full " />
-        </div>
-    )
+  return (
+    <div className={`form-control w-full ${containerStyle}`}>
+      <label className="label">
+        <span className={"label-text text-base-content " + labelStyle}>
+          {labelTitle}
+        </span>
+      </label>
+      <input
+        type={type || "text"}
+        name={name}
+        value={value}
+        placeholder={placeholder || ""}
+        onChange={changeHandler }
+        className="input  input-bordered w-full "
+      />
+    </div>
+  );
 }
 
-
-export default InputText
+export default InputText;

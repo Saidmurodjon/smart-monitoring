@@ -30,6 +30,16 @@ const routes = [
     name: 'Dashboard',
   },
   {
+    path: '/app/teacher', // url
+    icon: <UserIcon className={iconClasses}/>, // icon component
+    name: 'Teacher', // name that appear in Sidebar
+  },
+  {
+    path: '/app/pupil', // url
+    icon: <UserIcon className={iconClasses}/>, // icon component
+    name: 'Pupil', // name that appear in Sidebar
+  },
+  {
     path: '/app/leads', // url
     icon: <InboxArrowDownIcon className={iconClasses}/>, // icon component
     name: 'Leads', // name that appear in Sidebar
@@ -109,6 +119,26 @@ const routes = [
       },
     ]
   },
+  // ! new
+  {
+    path: '', //no url needed as this has submenu
+    icon: <Cog6ToothIcon className={`${iconClasses} inline` }/>, // icon component
+    name: 'Teacher settings', // name that appear in Sidebar
+    submenu : [
+      {
+        path: '/app/teacher', //url
+        icon: <UserIcon className={submenuIconClasses}/>, // icon component
+        name: 'Teacher Profile', // name that appear in Sidebar
+      },
+      {
+        path: '/app/teacher/add',
+        icon: <WalletIcon className={submenuIconClasses}/>,
+        name: 'Teacher Add',
+      },
+    
+    ]
+  },
+  //!new 
   {
     path: '', //no url needed as this has submenu
     icon: <DocumentTextIcon className={`${iconClasses} inline` }/>, // icon component
