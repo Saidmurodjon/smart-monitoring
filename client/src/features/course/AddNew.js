@@ -8,7 +8,6 @@ import TextAreaInput from "../../components/Input/TextAreaInput";
 import ToogleInput from "../../components/Input/ToogleInput";
 import ErrorText from "../../components/Typography/ErrorText";
 import axios from "axios";
-import Button from "../../components/button/Button";
 
 function ProfileSettings() {
   const SERVER_URL = process.env.REACT_APP_SERVER_URL;
