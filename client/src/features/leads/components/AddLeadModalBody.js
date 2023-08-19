@@ -28,7 +28,7 @@ function AddLeadModalBody({ closeModal }) {
         id: 7,
         email: leadObj.email,
         firstName: leadObj.firstName,
-        last_name: leadObj.last_name,
+        lastName: leadObj.lastName,
         password: leadObj.password,
         avatar: "https://reqres.in/img/faces/1-image.jpg",
       };
@@ -38,9 +38,9 @@ function AddLeadModalBody({ closeModal }) {
     }
   };
 
-  const updateFormValue = ({ updateType, value }) => {
+  const updateFormValue = (e) => {
     setErrorMessage("");
-    setLeadObj({ ...leadObj, [updateType]: value });
+    setLeadObj({ ...leadObj, [e.target.name]: e.target.value });
   };
 
   return (
@@ -48,6 +48,7 @@ function AddLeadModalBody({ closeModal }) {
       <InputText
         type="text"
         defaultValue={leadObj.firstName}
+        name={'firstName'}
         updateType="firstName"
         containerStyle="mt-4"
         labelTitle="First Name"
@@ -57,6 +58,7 @@ function AddLeadModalBody({ closeModal }) {
       <InputText
         type="text"
         defaultValue={leadObj.last_name}
+        name={'lastName'}
         updateType="last_name"
         containerStyle="mt-4"
         labelTitle="Last Name"
@@ -66,6 +68,7 @@ function AddLeadModalBody({ closeModal }) {
       <InputText
         type="email"
         defaultValue={leadObj.email}
+        name={'email'}
         updateType="email"
         containerStyle="mt-4"
         labelTitle="Email Id"
@@ -74,6 +77,7 @@ function AddLeadModalBody({ closeModal }) {
       <InputText
         type="text"
         defaultValue={leadObj.email}
+        name={'firstName'}
         updateType="password"
         containerStyle="mt-4"
         labelTitle="Password"

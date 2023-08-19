@@ -40,9 +40,9 @@ function Login() {
     }
   };
 
-  const updateFormValue = ({ updateType, value }) => {
+  const updateFormValue = (e) => {
     setErrorMessage("");
-    setLoginObj({ ...loginObj, [updateType]: value });
+    setLoginObj({ ...loginObj, [e.target.name]: e.target.value });
   };
 
   return (
@@ -58,6 +58,7 @@ function Login() {
               <div className="mb-4">
                 <InputText
                   type="login"
+                  name="login"
                   defaultValue={loginObj.login}
                   updateType="login"
                   containerStyle="mt-4"
@@ -68,6 +69,7 @@ function Login() {
                 <InputText
                   defaultValue={loginObj.password}
                   type="password"
+                  name="password"
                   updateType="password"
                   containerStyle="mt-4"
                   labelTitle="Password"

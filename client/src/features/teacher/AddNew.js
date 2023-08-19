@@ -6,6 +6,8 @@ import { showNotification } from "../common/headerSlice";
 import InputText from "../../components/Input/InputText";
 import TextAreaInput from "../../components/Input/TextAreaInput";
 import ToogleInput from "../../components/Input/ToogleInput";
+import useFetch from "../../hooks/UseFetch";
+import { toast } from "react-toastify";
 
 function ProfileSettings() {
   const [val, setVal] = useState({
@@ -16,10 +18,15 @@ function ProfileSettings() {
   const dispatch = useDispatch();
 
   // Call API to update profile settings changes
-  const updateProfile = () => {
-    console.log(val);
-
-    dispatch(showNotification({ message: "Profile Updated", status: 1 }));
+  const { data: secondData, fetchData: fetchSecondData } = useFetch();
+  const Submit = async (_id) => {
+      fetchSecondData("teachers", {
+        method: "post",
+        data:val,
+      }).then(() => {
+        // Show notifications for POST request
+        toast.success("Teacher ma'lumotlari qo'shldi");
+      });
   };
 
   const updateFormValue = (e) => {
@@ -28,7 +35,7 @@ function ProfileSettings() {
   return (
     <>
       <TitleCard title="Profile Settings" topMargin="mt-2">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <InputText
             labelTitle="Name"
             defaultValue={val.firstName}
@@ -42,7 +49,7 @@ function ProfileSettings() {
             name="lastName"
             updateFormValue={updateFormValue}
           />
-          <InputText
+          {/* <InputText
             labelTitle="Title"
             defaultValue="UI/UX Designer"
             updateFormValue={updateFormValue}
@@ -76,13 +83,13 @@ function ProfileSettings() {
             labelTitle="Sync Data"
             defaultValue={true}
             updateFormValue={updateFormValue}
-          />
+          /> */}
         </div>
 
         <div className="mt-16">
           <button
             className="btn btn-primary float-right"
-            onClick={() => updateProfile()}
+            onClick={Submit}
           >
             Save
           </button>

@@ -23,7 +23,10 @@ const DocComponents = lazy(() => import("../pages/DocComponents"));
 const Teacher = lazy(() => import("../pages/teacher/index"));
 const TeacherAddNew = lazy(() => import("../pages/teacher/AddNew"));
 const TeacherEdit = lazy(() => import("../pages/teacher/Edit"));
-const AddNewTeacher = lazy(() => import("../pages/teacher/AddNew"));
+// course's route
+const Course = lazy(() => import("../pages/course/index"));
+const CourseAddNew = lazy(() => import("../pages/course/AddNew"));
+const CourseEdit = lazy(() => import("../pages/course/Edit"));
 const Pupil = lazy(() => import("../pages/pupil/index"));
 
 const routes = [
@@ -36,13 +39,27 @@ const routes = [
     component: Teacher, // view rendered
   },
   {
-    path: "/teacher/add", // the url
+    path: "/teacher/add-new", // the url
     component: TeacherAddNew, // view rendered
   },
   {
     path: "/teacher/edit/:id", // the url
     component: TeacherEdit, // view rendered
   },
+  // course's route
+  {
+    path: "/course", // the url
+    component: Course, // view rendered
+  },
+  {
+    path: "/course/add", // the url
+    component: CourseAddNew, // view rendered
+  },
+  {
+    path: "/course/edit/:id", // the url
+    component: CourseEdit, // view rendered
+  },
+    // course's route
   {
     path: "/pupil", // the url
     component: Pupil, // view rendered

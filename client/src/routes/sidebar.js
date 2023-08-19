@@ -131,9 +131,27 @@ const routes = [
         name: 'Teacher Profile', // name that appear in Sidebar
       },
       {
-        path: '/app/teacher/add',
+        path: '/app/teacher/add-new',
         icon: <WalletIcon className={submenuIconClasses}/>,
         name: 'Teacher Add',
+      },
+    
+    ]
+  },
+  {
+    path: '', //no url needed as this has submenu
+    icon: <Cog6ToothIcon className={`${iconClasses} inline` }/>, // icon component
+    name: 'Course', // name that appear in Sidebar
+    submenu : [
+      {
+        path: '/app/course', //url
+        icon: <UserIcon className={submenuIconClasses}/>, // icon component
+        name: 'Course', // name that appear in Sidebar
+      },
+      {
+        path: '/app/course/add',
+        icon: <WalletIcon className={submenuIconClasses}/>,
+        name: 'Course Add',
       },
     
     ]
