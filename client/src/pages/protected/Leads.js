@@ -1,19 +1,17 @@
-import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { setPageTitle } from '../../features/common/headerSlice'
-import Leads from '../../features/leads'
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setPageTitle } from "../../features/common/headerSlice";
+import Leads from "../../features/leads";
 
-function InternalPage(){
-    const dispatch = useDispatch()
+function InternalPage() {
+  const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(setPageTitle({ title : "Leads"}))
-      }, [])
+  useEffect(() => {
+    dispatch(setPageTitle({ title: "Leads" }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-
-    return(
-        <Leads />
-    )
+  return <Leads />;
 }
 
-export default InternalPage
+export default InternalPage;

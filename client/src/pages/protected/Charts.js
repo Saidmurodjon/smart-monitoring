@@ -1,19 +1,17 @@
-import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import Charts from '../../features/charts'
-import { setPageTitle } from '../../features/common/headerSlice'
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import Charts from "../../features/charts";
+import { setPageTitle } from "../../features/common/headerSlice";
 
-function InternalPage(){
-    const dispatch = useDispatch()
+function InternalPage() {
+  const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(setPageTitle({ title : "Analytics"}))
-      }, [])
+  useEffect(() => {
+    dispatch(setPageTitle({ title: "Analytics" }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-
-    return(
-        <Charts />
-    )
+  return <Charts />;
 }
 
-export default InternalPage
+export default InternalPage;

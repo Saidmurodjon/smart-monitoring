@@ -4,24 +4,28 @@ import TitleCard from "../../components/Cards/TitleCard";
 import FunnelIcon from "@heroicons/react/24/outline/FunnelIcon";
 import TrashIcon from "@heroicons/react/24/outline/TrashIcon";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 const TopSideButtons = () => {
   const navigate = useNavigate();
 
+  const openAddNewLeadModal = () => {
+    navigate("./addnew");
 
-    const openAddNewLeadModal = () => {
-      navigate('./addnew')
+    console.log("NAV ADD");
+  };
 
-        console.log("NAV ADD");
-    }
-
-    return(
-        <div className="inline-block float-right">
-            <button className="btn px-6 btn-sm normal-case btn-primary" onClick={() => openAddNewLeadModal()}>Add New</button>
-        </div>
-    )
-}
+  return (
+    <div className="inline-block float-right">
+      <button
+        className="btn px-6 btn-sm normal-case btn-primary"
+        onClick={() => openAddNewLeadModal()}
+      >
+        Add New
+      </button>
+    </div>
+  );
+};
 function Transactions() {
   const [teacher, setTeacher] = useState([]);
 
@@ -38,29 +42,14 @@ function Transactions() {
     };
     get();
   }, []);
-  const Update = async () => {
-    try {
-      const response = await axios.put(SERVER_URL + "teachers");
-      if (response.status === 200) {
-        setTeacher(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const Delete = async () => {
-    try {
-      const response = await axios.post(SERVER_URL + "teachers");
-      if (response.status === 200) {
-        setTeacher(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   return (
     <>
-      <TitleCard title="Recent Transactions" topMargin="mt-2" TopSideButtons={<TopSideButtons />}>
+      <TitleCard
+        title="Recent Transactions"
+        topMargin="mt-2"
+        TopSideButtons={<TopSideButtons />}
+      >
         {/* Team Member list in table format loaded constant */}
         <div className="overflow-x-auto w-full">
           <table className="table w-full">

@@ -1,19 +1,17 @@
-import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { setPageTitle } from '../../features/common/headerSlice'
-import Integration from '../../features/integration'
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setPageTitle } from "../../features/common/headerSlice";
+import Integration from "../../features/integration";
 
-function InternalPage(){
+function InternalPage() {
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(setPageTitle({ title: "Integrations" }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    useEffect(() => {
-        dispatch(setPageTitle({ title : "Integrations"}))
-      }, [])
-      
-    return(
-        <Integration />
-    )
+  return <Integration />;
 }
 
-export default InternalPage
+export default InternalPage;

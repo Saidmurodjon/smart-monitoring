@@ -1,6 +1,6 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { useState } from "react";
+
 const useFetch = () => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -14,7 +14,7 @@ const useFetch = () => {
         url: process.env.REACT_APP_SERVER_URL + url,
         data: options?.data || null,
         headers: {
-          'auth': TOKEN,
+          auth: TOKEN,
         },
       });
       setData(response.data);

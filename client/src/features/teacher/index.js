@@ -1,17 +1,15 @@
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import TitleCard from "../../components/Cards/TitleCard";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import useFetch from "../../hooks/UseFetch";
 import IconButton from "../../components/buttons/IconButton";
 import Button from "../../components/buttons/Button";
 
 function Transactions() {
-  const navigate = useNavigate();
   const {
     data: firstData,
-    error: firstError,
+
     fetchData: fetchFirstData,
   } = useFetch();
   const {
@@ -21,6 +19,7 @@ function Transactions() {
   } = useFetch();
   useEffect(() => {
     fetchFirstData("teachers");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const Delete = async (value) => {
@@ -41,6 +40,7 @@ function Transactions() {
         theme: "colored",
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [secondData, secondError]);
 
   return (
@@ -51,7 +51,6 @@ function Transactions() {
         TopSideButtons={
           <Button
             name={"Add new"}
-
             btnStyle={"btn-primary px-6 btn-sm normal-case"}
             navigate={"./add-new"}
           />
@@ -102,7 +101,11 @@ function Transactions() {
                         <td>{l.subject}</td>
                         <td>{l.email}</td>
                         <td>
-                          <IconButton iconType={"pensil"} value={l} navigate={'./add-new'} />
+                          <IconButton
+                            iconType={"pensil"}
+                            value={l}
+                            navigate={"./add-new"}
+                          />
                           <IconButton
                             iconType={"trash"}
                             value={l}

@@ -1,5 +1,4 @@
 import axios from "axios";
-import useFetch from "../hooks/UseFetch";
 
 const checkAuth = () => {
   /*  Getting token value stored in localstorage, if token is not present we will open login page 

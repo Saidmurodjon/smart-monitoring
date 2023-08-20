@@ -1,19 +1,17 @@
-import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { setPageTitle } from '../../features/common/headerSlice'
-import Calendar from '../../features/calendar'
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setPageTitle } from "../../features/common/headerSlice";
+import Calendar from "../../features/calendar";
 
-function InternalPage(){
-    const dispatch = useDispatch()
+function InternalPage() {
+  const dispatch = useDispatch();
 
-    useEffect(() => {
-        dispatch(setPageTitle({ title : "Calendar"}))
-      }, [])
+  useEffect(() => {
+    dispatch(setPageTitle({ title: "Calendar" }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-
-    return(
-        <Calendar />
-    )
+  return <Calendar />;
 }
 
-export default InternalPage
+export default InternalPage;

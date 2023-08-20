@@ -1,23 +1,23 @@
-import React,  { Suspense } from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import store from './app/store'
-import { Provider } from 'react-redux'
-import SuspenseContent from './containers/SuspenseContent';
-import { ToastContainer, toast } from 'react-toastify';
+import React, { Suspense } from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import store from "./app/store";
+import { Provider } from "react-redux";
+import SuspenseContent from "./containers/SuspenseContent";
+import { ToastContainer } from "react-toastify";
 
-  import 'react-toastify/dist/ReactToastify.css';
-const root = ReactDOM.createRoot(document.getElementById('root'));
+import "react-toastify/dist/ReactToastify.css";
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   // <React.StrictMode>
-    <Suspense fallback={<SuspenseContent />}>
-        <Provider store={store}>
-            <App />
-            <ToastContainer />
-        </Provider>
-    </Suspense>
+  <Suspense fallback={<SuspenseContent />}>
+    <Provider store={store}>
+      <App />
+      <ToastContainer />
+    </Provider>
+  </Suspense>
   // </React.StrictMode>
 );
 

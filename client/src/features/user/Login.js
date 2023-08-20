@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import LandingIntro from "./LandingIntro";
 import ErrorText from "../../components/Typography/ErrorText";
@@ -28,15 +28,14 @@ function Login() {
       try {
         const res = await axios.post(`${SERVER_URL}login`, loginObj);
         if (res.status === 200) {
-            localStorage.setItem("token", res.data.token);
-            setLoading(false);
-              window.location.href = "/app/dashboard";
+          localStorage.setItem("token", res.data.token);
+          setLoading(false);
+          window.location.href = "/app/dashboard";
         }
       } catch (error) {
         setLoading(false);
-        setErrorMessage(error.response.data)
+        setErrorMessage(error.response.data);
       }
-      
     }
   };
 

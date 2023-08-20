@@ -69,7 +69,11 @@ const routes = [
   },
   {
     path: "/pupil/add-new", // the url
-    component: Pupil, // view rendered
+    component: PupilAddNew, // view rendered
+  },
+    {
+    path: "/pupil/edit", // the url
+    component: PupilEdit, // view rendered
   },
   {
     path: "/welcome", // the url

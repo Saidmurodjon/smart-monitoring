@@ -1,6 +1,6 @@
 import moment from "moment"
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useState } from "react"
+import { useDispatch } from "react-redux"
 import TitleCard from "../../../components/Cards/TitleCard"
 import { showNotification } from '../../common/headerSlice'
 
@@ -32,7 +32,7 @@ const TEAM_MEMBERS = [
 
 function Team(){
 
-
+// eslint-disable-next-line 
     const [members, setMembers] = useState(TEAM_MEMBERS)
 
     const getRoleComponent = (role) => {
