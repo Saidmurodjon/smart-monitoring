@@ -3,11 +3,20 @@ import axios from 'axios'
 
 
 
-export const getLeadsContent = createAsyncThunk('/leads/content', async () => {
-	const response = await axios.get('/api/users?page=2', {})
-	return response.data;
-})
+// export const getLeadsContent = createAsyncThunk('/leads/content', async () => {
+// 	const response = await axios.get('/api/users?page=2', {})
+// 	return response.data;
+// })
 
+export const getLeadsContent = createAsyncThunk("/leads/content", async () => {
+    try {
+      const response = await axios.get(process.env.REACT_APP_SERVER_URL+"pupils");
+      return response?.data
+    } catch (error) {
+      console.error("Error fetching leads content:", error);
+      throw error;
+    }
+  });
 export const leadsSlice = createSlice({
     name: 'leads',
     initialState: {
@@ -33,7 +42,8 @@ export const leadsSlice = createSlice({
 			state.isLoading = true
 		},
 		[getLeadsContent.fulfilled]: (state, action) => {
-			state.leads = action.payload.data
+            console.log( action.payload);
+			state.leads = action.payload
 			state.isLoading = false
 		},
 		[getLeadsContent.rejected]: state => {

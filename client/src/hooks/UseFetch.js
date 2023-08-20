@@ -4,8 +4,8 @@ import { toast } from "react-toastify";
 const useFetch = () => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false); // Start with loading as false
-
+  const [loading, setLoading] = useState(false);
+  const TOKEN = localStorage.getItem("token");
   const fetchData = async (url, options) => {
     setLoading(true); // Set loading to true before making the request
     try {
@@ -13,14 +13,21 @@ const useFetch = () => {
         method: options?.method || "get",
         url: process.env.REACT_APP_SERVER_URL + url,
         data: options?.data || null,
+        headers: {
+          'auth': TOKEN,
+        },
       });
       setData(response.data);
       setLoading(false); // Set loading to false when the request is done
     } catch (error) {
+      if (error.response.status === 403) {
+        window.location.href = "/login";
+        return;
+      }
       setError(error.response?.data || "An error occurred");
-      toast.error(error.response?.data || "An error occurred", {
-        theme: "colored",
-      });
+      // toast.error(error.response?.data || "An error occurred", {
+      //   theme: "colored",
+      // });
       setLoading(false); // Set loading to false when there's an error
     }
   };

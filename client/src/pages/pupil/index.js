@@ -10,4 +10,4 @@ function ExternalPage(){
     )
 }
 
-export default ExternalPage
+export default ExternalPage 

@@ -1,17 +1,17 @@
 import { useEffect } from 'react'
-import { MODAL_BODY_TYPES } from '../utils/globalConstantUtil'
+import { PUPIL_MODAL_BODY_TYPES } from '../utils/globalConstantUtil'
 import { useSelector, useDispatch } from 'react-redux'
 import { closeModal } from '../features/common/modalSlice'
-import AddLeadModalBody from '../features/leads/components/AddLeadModalBody'
+import AddPupilModalBody from '../features/pupils/components/AddPupilModalBody'
 import ConfirmationModalBody from '../features/common/components/ConfirmationModalBody'
 
 
-function ModalLayout(){
+function PupilModalLayout(){
 
 
     const {isOpen, bodyType, size, extraObject, title} = useSelector(state => state.modal)
     const dispatch = useDispatch()
-    console.log(extraObject);
+console.log(extraObject);
     const close = (e) => {
         dispatch(closeModal(e))
     }
@@ -32,9 +32,9 @@ function ModalLayout(){
                 {/* Loading modal body according to different modal type */}
                 {
                     {
-                             [MODAL_BODY_TYPES.LEAD_ADD_NEW] : <AddLeadModalBody closeModal={close} extraObject={extraObject}/>,
-                             [MODAL_BODY_TYPES.CONFIRMATION] : <ConfirmationModalBody extraObject={extraObject} closeModal={close}/>,
-                             [MODAL_BODY_TYPES.DEFAULT] : <div></div>
+                             [PUPIL_MODAL_BODY_TYPES.PUPIL_ADD_NEW] : <AddPupilModalBody closeModal={close} extraObject={extraObject}/>,
+                             [PUPIL_MODAL_BODY_TYPES.CONFIRMATION] : <ConfirmationModalBody extraObject={extraObject} closeModal={close}/>,
+                             [PUPIL_MODAL_BODY_TYPES.DEFAULT] : <div></div>
                     }[bodyType]
                 }
             </div>
@@ -43,4 +43,4 @@ function ModalLayout(){
     )
 }
 
-export default ModalLayout
+export default PupilModalLayout

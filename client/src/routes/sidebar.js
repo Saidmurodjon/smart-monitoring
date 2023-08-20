@@ -29,16 +29,8 @@ const routes = [
     icon: <Squares2X2Icon className={iconClasses}/>, 
     name: 'Dashboard',
   },
-  {
-    path: '/app/teacher', // url
-    icon: <UserIcon className={iconClasses}/>, // icon component
-    name: 'Teacher', // name that appear in Sidebar
-  },
-  {
-    path: '/app/pupil', // url
-    icon: <UserIcon className={iconClasses}/>, // icon component
-    name: 'Pupil', // name that appear in Sidebar
-  },
+
+
   {
     path: '/app/leads', // url
     icon: <InboxArrowDownIcon className={iconClasses}/>, // icon component
@@ -49,21 +41,6 @@ const routes = [
     icon: <CurrencyDollarIcon className={iconClasses}/>, // icon component
     name: 'Transactions', // name that appear in Sidebar
   },
-  // {
-  //   path: '/app/charts', // url
-  //   icon: <ChartBarIcon className={iconClasses}/>, // icon component
-  //   name: 'Analytics', // name that appear in Sidebar
-  // },
-  // {
-  //   path: '/app/integration', // url
-  //   icon: <BoltIcon className={iconClasses}/>, // icon component
-  //   name: 'Integration', // name that appear in Sidebar
-  // },
-  // {
-  //   path: '/app/calendar', // url
-  //   icon: <CalendarDaysIcon className={iconClasses}/>, // icon component
-  //   name: 'Calendar', // name that appear in Sidebar
-  // },
 
   {
     path: '', //no url needed as this has submenu
@@ -85,11 +62,11 @@ const routes = [
         icon: <KeyIcon className={submenuIconClasses}/>,
         name: 'Forgot Password',
       },
-      // {
-      //   path: '/app/blank',
-      //   icon: <DocumentIcon className={submenuIconClasses}/>,
-      //   name: 'Blank Page',
-      // },
+      {
+        path: '/app/blank',
+        icon: <DocumentIcon className={submenuIconClasses}/>,
+        name: 'Blank Page',
+      },
       {
         path: '/app/404',
         icon: <ExclamationTriangleIcon className={submenuIconClasses}/>,
@@ -123,7 +100,7 @@ const routes = [
   {
     path: '', //no url needed as this has submenu
     icon: <Cog6ToothIcon className={`${iconClasses} inline` }/>, // icon component
-    name: 'Teacher settings', // name that appear in Sidebar
+    name: 'Teachers', // name that appear in Sidebar
     submenu : [
       {
         path: '/app/teacher', //url
@@ -149,9 +126,27 @@ const routes = [
         name: 'Course', // name that appear in Sidebar
       },
       {
-        path: '/app/course/add',
+        path: '/app/course/add-new',
         icon: <WalletIcon className={submenuIconClasses}/>,
         name: 'Course Add',
+      },
+    
+    ]
+  },
+  {
+    path: '', //no url needed as this has submenu
+    icon: <Cog6ToothIcon className={`${iconClasses} inline` }/>, // icon component
+    name: 'Pupils', // name that appear in Sidebar
+    submenu : [
+      {
+        path: '/app/pupil', //url
+        icon: <UserIcon className={submenuIconClasses}/>, // icon component
+        name: 'Courses', // name that appear in Sidebar
+      },
+      {
+        path: '/app/Pupil/add-new',
+        icon: <WalletIcon className={submenuIconClasses}/>,
+        name: 'Pupil Add New',
       },
     
     ]

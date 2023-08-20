@@ -28,12 +28,15 @@ const Course = lazy(() => import("../pages/course/index"));
 const CourseAddNew = lazy(() => import("../pages/course/AddNew"));
 const CourseEdit = lazy(() => import("../pages/course/Edit"));
 const Pupil = lazy(() => import("../pages/pupil/index"));
+const PupilAddNew = lazy(() => import("../pages/pupil/AddNew"))
+const PupilEdit = lazy(() => import("../pages/pupil/Edit"));
 
 const routes = [
   {
     path: "/dashboard", // the url
     component: Dashboard, // view rendered
   },
+
   {
     path: "/teacher", // the url
     component: Teacher, // view rendered
@@ -52,7 +55,7 @@ const routes = [
     component: Course, // view rendered
   },
   {
-    path: "/course/add", // the url
+    path: "/course/add-new", // the url
     component: CourseAddNew, // view rendered
   },
   {
@@ -62,6 +65,10 @@ const routes = [
     // course's route
   {
     path: "/pupil", // the url
+    component: Pupil, // view rendered
+  },
+  {
+    path: "/pupil/add-new", // the url
     component: Pupil, // view rendered
   },
   {

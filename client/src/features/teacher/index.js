@@ -1,54 +1,61 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
 import TitleCard from "../../components/Cards/TitleCard";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useFetch from "../../hooks/UseFetch";
-const TopSideButtons = () => {
-  const navigate = useNavigate();
+import IconButton from "../../components/buttons/IconButton";
+import Button from "../../components/buttons/Button";
 
-  const openAddNewLeadModal = () => {
-    navigate("./add-new");
-  };
-
-  return (
-    <div className="inline-block float-right">
-      <button
-        className="btn px-6 btn-sm normal-case btn-primary"
-        onClick={() => openAddNewLeadModal()}
-      >
-        Add New
-      </button>
-    </div>
-  );
-};
 function Transactions() {
-  const { data: firstData, fetchData: fetchFirstData } = useFetch();
-  const {fetchData: fetchSecondData } = useFetch();
+  const navigate = useNavigate();
+  const {
+    data: firstData,
+    error: firstError,
+    fetchData: fetchFirstData,
+  } = useFetch();
+  const {
+    data: secondData,
+    error: secondError,
+    fetchData: fetchSecondData,
+  } = useFetch();
   useEffect(() => {
     fetchFirstData("teachers");
   }, []);
 
-
-  const Delete = async (_id) => {
+  const Delete = async (value) => {
     if (window.confirm("Delete the item?")) {
-      fetchSecondData("teachers?_id=" + _id, {
+      fetchSecondData("teachers?_id=" + value._id, {
         method: "delete",
-      }).then(() => {
-        // Show notifications for POST request
-        toast.success("O'chirildi");
-        fetchFirstData("teachers");
       });
     }
   };
+  useEffect(() => {
+    if (secondData) {
+      toast.success("Teacher ma'lumotlari o'chirildi!", {
+        theme: "colored",
+      });
+      fetchFirstData("teachers");
+    } else if (firstData) {
+      toast.error(`Error in DELETE request: ${secondError}`, {
+        theme: "colored",
+      });
+    }
+  }, [secondData, secondError]);
 
   return (
     <>
       <TitleCard
         title="Recent Transactions"
         topMargin="mt-2"
-        TopSideButtons={<TopSideButtons />}
+        TopSideButtons={
+          <Button
+            name={"Add new"}
+
+            btnStyle={"btn-primary px-6 btn-sm normal-case"}
+            navigate={"./add-new"}
+          />
+        }
       >
         {/* Team Member list in table format loaded constant */}
         <div className="overflow-x-auto w-full">
@@ -56,10 +63,12 @@ function Transactions() {
             <thead>
               <tr>
                 <th>Full Name</th>
-                <th>Profession</th>
                 <th>Phone</th>
-                <th>Starus</th>
-                <th>Transaction Date</th>
+                <th>Pasport</th>
+                <th>Age</th>
+                <th>Subject</th>
+                <th>Email</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -71,7 +80,12 @@ function Transactions() {
                           <div className="flex items-center space-x-3">
                             <div className="avatar">
                               <div className="mask mask-circle w-12 h-12">
-                                <img src={l.avatar} alt="Avatar" />
+                                <img
+                                  src={
+                                    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
+                                  }
+                                  alt="Avatar"
+                                />
                               </div>
                             </div>
                             <div>
@@ -81,25 +95,19 @@ function Transactions() {
                             </div>
                           </div>
                         </td>
+                        <td>{l.phone}</td>
+                        <td>{l.pasport}</td>
+
+                        <td>{moment(l.age).format("D MMM")}</td>
+                        <td>{l.subject}</td>
                         <td>{l.email}</td>
-                        <td>{l.location}</td>
-                        <td>{moment(l.date).format("D MMM")}</td>
                         <td>
-                          <button
-                            className="btn btn-square btn-ghost"
-                            // onClick={() => console.log(k)}
-                          >
-                            <PencilIcon className="w-5" />
-                          </button>
-                          <button
-                            className="btn btn-square btn-ghost"
-                            // onClick={() => deleteCurrentLead(k)}
-                          >
-                            <TrashIcon
-                              className="w-5"
-                              onClick={() => Delete(l._id)}
-                            />
-                          </button>
+                          <IconButton iconType={"pensil"} value={l} navigate={'./add-new'} />
+                          <IconButton
+                            iconType={"trash"}
+                            value={l}
+                            onPress={Delete}
+                          />
                         </td>
                       </tr>
                     );

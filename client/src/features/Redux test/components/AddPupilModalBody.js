@@ -5,9 +5,10 @@ import ErrorText from "../../../components/Typography/ErrorText";
 import { showNotification } from "../../common/headerSlice";
 import { addNewPupil } from "../pupilSlice";
 
-const INITIAL_PUPIL_OBJ = {
-  first_name: "",
+const INITIAL_LEAD_OBJ = {
+  firstName: "",
   last_name: "",
+  password: "",
   email: "",
 };
 
@@ -15,38 +16,40 @@ function AddPupilModalBody({ closeModal }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [pupilObj, setPupilObj] = useState(INITIAL_PUPIL_OBJ);
+  const [leadObj, setLeadObj] = useState(INITIAL_LEAD_OBJ);
 
-  const saveNewPupil = () => {
-    if (pupilObj.first_name.trim() === "")
+  const saveNewLead = () => {
+    if (leadObj.firstName.trim() === "")
       return setErrorMessage("First Name is required!");
-    else if (pupilObj.email.trim() === "")
+    else if (leadObj.email.trim() === "")
       return setErrorMessage("Email id is required!");
     else {
-      let newPupilObj = {
+      let newLeadObj = {
         id: 7,
-        email: pupilObj.email,
-        first_name: pupilObj.first_name,
-        last_name: pupilObj.last_name,
+        email: leadObj.email,
+        firstName: leadObj.firstName,
+        lastName: leadObj.lastName,
+        password: leadObj.password,
         avatar: "https://reqres.in/img/faces/1-image.jpg",
       };
-      dispatch(addNewPupil({ newPupilObj }));
-      dispatch(showNotification({ message: "New Pupil Added!", status: 1 }));
+      dispatch(addNewPupil({ newLeadObj }));
+      dispatch(showNotification({ message: "New Lead Added!", status: 1 }));
       closeModal();
     }
   };
 
-  const updateFormValue = ({ updateType, value }) => {
+  const updateFormValue = (e) => {
     setErrorMessage("");
-    setPupilObj({ ...pupilObj, [updateType]: value });
+    setLeadObj({ ...leadObj, [e.target.name]: e.target.value });
   };
 
   return (
     <>
       <InputText
         type="text"
-        defaultValue={pupilObj.first_name}
-        updateType="first_name"
+        defaultValue={leadObj.firstName}
+        name={'firstName'}
+        updateType="firstName"
         containerStyle="mt-4"
         labelTitle="First Name"
         updateFormValue={updateFormValue}
@@ -54,7 +57,8 @@ function AddPupilModalBody({ closeModal }) {
 
       <InputText
         type="text"
-        defaultValue={pupilObj.last_name}
+        defaultValue={leadObj.last_name}
+        name={'lastName'}
         updateType="last_name"
         containerStyle="mt-4"
         labelTitle="Last Name"
@@ -63,10 +67,20 @@ function AddPupilModalBody({ closeModal }) {
 
       <InputText
         type="email"
-        defaultValue={pupilObj.email}
+        defaultValue={leadObj.email}
+        name={'email'}
         updateType="email"
         containerStyle="mt-4"
         labelTitle="Email Id"
+        updateFormValue={updateFormValue}
+      />
+      <InputText
+        type="text"
+        defaultValue={leadObj.email}
+        name={'firstName'}
+        updateType="password"
+        containerStyle="mt-4"
+        labelTitle="Password"
         updateFormValue={updateFormValue}
       />
 
@@ -75,7 +89,7 @@ function AddPupilModalBody({ closeModal }) {
         <button className="btn btn-ghost" onClick={() => closeModal()}>
           Cancel
         </button>
-        <button className="btn btn-primary px-6" onClick={() => saveNewPupil()}>
+        <button className="btn btn-primary px-6" onClick={() => saveNewLead()}>
           Save
         </button>
       </div>
