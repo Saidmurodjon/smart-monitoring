@@ -30,6 +30,7 @@ function Header() {
       }
     }
     // 👆 false parameter is required for react project
+      // eslint-disable-next-line
   }, []);
 
   // Opening right sidebar for notification
@@ -131,7 +132,7 @@ function Header() {
               </li>
               <div className="divider mt-0 mb-0"></div>
               <li>
-                <a onClick={logoutUser}>Logout</a>
+                <span onClick={logoutUser}>Logout</span>
               </li>
             </ul>
           </div>

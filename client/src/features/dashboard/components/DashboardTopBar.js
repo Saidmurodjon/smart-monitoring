@@ -6,14 +6,14 @@ import ArrowPathIcon from "@heroicons/react/24/outline/ArrowPathIcon";
 import { useState } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
 
-const periodOptions = [
-  { name: "Today", value: "TODAY" },
-  { name: "Yesterday", value: "YESTERDAY" },
-  { name: "This Week", value: "THIS_WEEK" },
-  { name: "Last Week", value: "LAST_WEEK" },
-  { name: "This Month", value: "THIS_MONTH" },
-  { name: "Last Month", value: "LAST_MONTH" },
-];
+// const periodOptions = [
+//   { name: "Today", value: "TODAY" },
+//   { name: "Yesterday", value: "YESTERDAY" },
+//   { name: "This Week", value: "THIS_WEEK" },
+//   { name: "Last Week", value: "LAST_WEEK" },
+//   { name: "This Month", value: "THIS_MONTH" },
+//   { name: "Last Month", value: "LAST_MONTH" },
+// ];
 
 function DashboardTopBar({ updateDashboardPeriod }) {
   const [dateValue, setDateValue] = useState({
@@ -73,13 +73,13 @@ function DashboardTopBar({ updateDashboardPeriod }) {
             className="dropdown-content menu menu-compact  p-2 shadow bg-base-100 rounded-box w-52"
           >
             <li>
-              <a>
+              <a href="https://github.com">
                 <EnvelopeIcon className="w-4" />
                 Email Digests
               </a>
             </li>
             <li>
-              <a>
+              <a href="https://github.com">
                 <ArrowDownTrayIcon className="w-4" />
                 Download
               </a>

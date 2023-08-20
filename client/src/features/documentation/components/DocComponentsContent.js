@@ -117,7 +117,7 @@ function DocComponentsContent() {
         {/* Cards */}
         <h2 id="component3">Cards</h2>
         <p>
-          <a href="https://daisyui.com/components/card/" target="_blank">
+          <a href="https://daisyui.com/components/card/" target="_blank"  rel="noopener noreferrer">
             Daisy UI
           </a>{" "}
           already have many cards layout, on top of that we have added one card

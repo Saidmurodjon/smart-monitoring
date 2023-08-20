@@ -1,4 +1,5 @@
 import Header from "./Header"
+/* eslint-disable no-unused-vars */
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import routes from '../routes'
 import { Suspense, lazy } from 'react'

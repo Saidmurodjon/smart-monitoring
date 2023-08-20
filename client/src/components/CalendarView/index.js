@@ -22,6 +22,7 @@ function CalendarView({calendarEvents, addNewEvent, openDayDetail}){
 
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(moment().startOf('month'))
     const [events, setEvents] = useState([])
+      // eslint-disable-next-line
     const [currMonth, setCurrMonth] = useState(() => moment(today).format("MMM-yyyy"));
 
     useEffect(() => {
@@ -52,6 +53,7 @@ function CalendarView({calendarEvents, addNewEvent, openDayDetail}){
     }
 
     const openAllEventsDetail = (date, theme) => {
+      // eslint-disable-next-line 
         if(theme != "MORE")return 1
         let filteredEvents = events.filter((e) => {return moment(date).isSame(moment(e.startTime), 'day') } ).map((e) => {return {title : e.title, theme : e.theme}})
         openDayDetail({filteredEvents, title : moment(date).format("D MMM YYYY")})
@@ -62,6 +64,7 @@ function CalendarView({calendarEvents, addNewEvent, openDayDetail}){
     }
 
     const isDifferentMonth = (date) => {
+      // eslint-disable-next-line 
         return moment(date).month() != moment(firstDayOfMonth).month() 
     }
 
