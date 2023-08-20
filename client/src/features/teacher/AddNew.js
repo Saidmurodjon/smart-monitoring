@@ -38,7 +38,6 @@ function Profil({ state }) {
         theme: "colored",
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, error]);
   const updateFormValue = (e) => {
     setVal({ ...val, [e.target.name]: e.target.value });

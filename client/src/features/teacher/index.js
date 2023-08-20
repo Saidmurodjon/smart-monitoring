@@ -19,7 +19,6 @@ function Transactions() {
   } = useFetch();
   useEffect(() => {
     fetchFirstData("teachers");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const Delete = async (value) => {
@@ -40,7 +39,6 @@ function Transactions() {
         theme: "colored",
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [secondData, secondError]);
 
   return (

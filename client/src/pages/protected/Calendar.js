@@ -8,7 +8,6 @@ function InternalPage() {
 
   useEffect(() => {
     dispatch(setPageTitle({ title: "Calendar" }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <Calendar />;

@@ -29,7 +29,6 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch }) => {
     } else {
       applySearch(searchText);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchText]);
 
   return (

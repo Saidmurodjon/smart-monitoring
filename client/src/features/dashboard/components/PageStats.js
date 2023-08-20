@@ -1,7 +1,6 @@
 import HeartIcon  from '@heroicons/react/24/outline/HeartIcon'
 import BoltIcon  from '@heroicons/react/24/outline/BoltIcon'
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
 function PageStats(){
     return(
         <div className="stats bg-base-100 shadow">

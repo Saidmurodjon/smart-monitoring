@@ -9,7 +9,6 @@ function InternalPage() {
 
   useEffect(() => {
     dispatch(setPageTitle({ title: "Page Title" }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

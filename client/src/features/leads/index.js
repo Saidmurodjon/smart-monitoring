@@ -41,7 +41,6 @@ function Leads() {
   console.log(d);
   useEffect(() => {
     dispatch(getLeadsContent());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getDummyStatus = (index) => {

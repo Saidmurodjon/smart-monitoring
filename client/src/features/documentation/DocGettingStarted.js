@@ -9,7 +9,6 @@ function GettingStarted() {
 
   useEffect(() => {
     dispatch(setPageTitle({ title: "Documentation" }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

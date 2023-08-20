@@ -8,7 +8,6 @@ function InternalPage() {
 
   useEffect(() => {
     dispatch(setPageTitle({ title: "Dashboard" }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <Dashboard />;
