@@ -1,22 +1,13 @@
 import moment from "moment";
 import { useEffect } from "react";
 import TitleCard from "../../components/Cards/TitleCard";
-import { toast } from "react-toastify";
 import useFetch from "../../hooks/UseFetch";
 import IconButton from "../../components/buttons/IconButton";
 import Button from "../../components/buttons/Button";
 
 function Transactions() {
-  const {
-    data: firstData,
-
-    fetchData: fetchFirstData,
-  } = useFetch();
-  const {
-    data: secondData,
-    error: secondError,
-    fetchData: fetchSecondData,
-  } = useFetch();
+  const { data: firstData, fetchData: fetchFirstData } = useFetch();
+  const { fetchData: fetchSecondData } = useFetch();
   useEffect(() => {
     fetchFirstData("teachers");
   }, []);
@@ -25,21 +16,12 @@ function Transactions() {
     if (window.confirm("Delete the item?")) {
       fetchSecondData("teachers?_id=" + value._id, {
         method: "delete",
-      });
-    }
-  };
-  useEffect(() => {
-    if (secondData) {
-      toast.success("Teacher ma'lumotlari o'chirildi!", {
-        theme: "colored",
+        status: 200,
+        successMessage: "Item has deleted",
       });
       fetchFirstData("teachers");
-    } else if (firstData) {
-      toast.error(`Error in DELETE request: ${secondError}`, {
-        theme: "colored",
-      });
     }
-  }, [secondData, secondError]);
+  };
 
   return (
     <>

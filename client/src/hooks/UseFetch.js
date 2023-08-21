@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const useFetch = () => {
   const [data, setData] = useState(null);
@@ -19,15 +20,20 @@ const useFetch = () => {
       });
       setData(response.data);
       setLoading(false); // Set loading to false when the request is done
+      if (response.status === options?.status) {
+        toast.success(options.successMessage || "Succeessfly", {
+          theme: "colored",
+        });
+      }
     } catch (error) {
       if (error.response.status === 403) {
         window.location.href = "/login";
         return;
       }
       setError(error.response?.data || "An error occurred");
-      // toast.error(error.response?.data || "An error occurred", {
-      //   theme: "colored",
-      // });
+      toast.error(error.response?.data || "An error occurred", {
+        theme: "colored",
+      });
       setLoading(false); // Set loading to false when there's an error
     }
   };

@@ -1,48 +1,31 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TitleCard from "../../components/Cards/TitleCard";
 import InputText from "../../components/Input/InputText";
 import SelectBox from "../../components/Input/SelectBox";
 import useFetch from "../../hooks/UseFetch";
-import { toast } from "react-toastify";
 import { TEACHER_INITIAL_STATE } from "../../utils/initialStates";
 import Button from "../../components/buttons/Button";
 import { useLocation } from "react-router-dom";
-function Profil({ state }) {
+function Profil() {
   const location = useLocation();
   const [val, setVal] = useState(
     location?.state ? location.state : TEACHER_INITIAL_STATE
   );
-  // console.log(location.state);
-
-  console.log(val);
   // Call API to update profile settings changes
-  const { data, error, fetchData } = useFetch();
-  const Submit = async (_id) => {
+  const { fetchData } = useFetch();
+  const Submit = async () => {
     fetchData("teachers", {
       method: location?.state ? "put" : "post",
       data: val,
+      status: location?.state ? 200 : 201,
+      successMessage: location?.state
+        ? "Ma'lumot yangilandi !"
+        : "Ma'lumot qo'shildi",
     });
   };
-  useEffect(() => {
-    if (data) {
-      toast.success(
-        location?.state
-          ? "Teacher ma'lumotlari yangilandi!"
-          : "Teacher ma'lumotlari qo'shldi!",
-        {
-          theme: "colored",
-        }
-      );
-    } else if (error) {
-      toast.error(`Error in POST request: ${error}`, {
-        theme: "colored",
-      });
-    }
-  }, [data, error]);
   const updateFormValue = (e) => {
     setVal({ ...val, [e.target.name]: e.target.value });
   };
-  console.log(val);
   return (
     <>
       <TitleCard title="Profile Settings" topMargin="mt-2">

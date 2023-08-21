@@ -12,7 +12,6 @@ function InputText({
   updateType,
 }) {
   const [value, setValue] = useState(defaultValue);
-console.log(value);
   const changeHandler  = (val) => {
     setValue(val.target.value);
     updateFormValue(val);
