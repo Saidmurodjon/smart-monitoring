@@ -1,11 +1,11 @@
-import AddNew from '../../features/teacher/AddNew'
+import Settings from '../../features/pupil/Settings'
 
 function ExternalPage(){
 
 
     return(
         <div className="">
-                <AddNew />
+                <Settings />
         </div>
     )
 }

@@ -138,7 +138,7 @@ const routes = [
       {
         path: '/app/pupil', //url
         icon: <UserIcon className={submenuIconClasses}/>, // icon component
-        name: 'Courses', // name that appear in Sidebar
+        name: 'Pupil', // name that appear in Sidebar
       },
       {
         path: '/app/Pupil/add-new',

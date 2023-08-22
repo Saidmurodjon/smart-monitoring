@@ -6,7 +6,7 @@ import useFetch from "../../hooks/UseFetch";
 import { TEACHER_INITIAL_STATE } from "../../utils/initialStates";
 import Button from "../../components/buttons/Button";
 import { useLocation } from "react-router-dom";
-function Profil() {
+function Settings() {
   const location = useLocation();
   const [val, setVal] = useState(
     location?.state ? location.state : TEACHER_INITIAL_STATE
@@ -102,4 +102,4 @@ function Profil() {
   );
 }
 
-export default Profil;
+export default Settings;

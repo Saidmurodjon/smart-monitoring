@@ -1,13 +1,11 @@
-import Edit from '../../features/course/Edit'
+import Settings from "../../features/course/Settings";
 
-function ExternalPage(){
-
-
-    return(
-        <div className="">
-                <Edit />
-        </div>
-    )
+function ExternalPage() {
+  return (
+    <div className="">
+      <Settings />
+    </div>
+  );
 }
 
-export default ExternalPage
+export default ExternalPage;

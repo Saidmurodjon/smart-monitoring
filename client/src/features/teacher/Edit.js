@@ -26,7 +26,7 @@ const TopSideButtons = () => {
     </div>
   );
 };
-function Transactions() {
+function Settings() {
   const [teacher, setTeacher] = useState([]);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ function Transactions() {
   return (
     <>
       <TitleCard
-        title="Recent Transactions"
+        title="Recent Settings"
         topMargin="mt-2"
         TopSideButtons={<TopSideButtons />}
       >
@@ -108,4 +108,4 @@ function Transactions() {
   );
 }
 
-export default Transactions;
+export default Settings;

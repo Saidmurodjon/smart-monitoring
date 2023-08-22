@@ -1,13 +1,11 @@
-import AddNew from '../../features/teacher/AddNew'
+import Settings from "../../features/teacher/Settings";
 
-function ExternalPage(){
-
-
-    return(
-        <div className="">
-                <AddNew />
-        </div>
-    )
+function ExternalPage() {
+  return (
+    <div className="">
+      <Settings />
+    </div>
+  );
 }
 
-export default ExternalPage
+export default ExternalPage;

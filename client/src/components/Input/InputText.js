@@ -9,10 +9,10 @@ function InputText({
   defaultValue,
   placeholder,
   updateFormValue,
-  updateType,
+  isDisabled = false,
 }) {
   const [value, setValue] = useState(defaultValue);
-  const changeHandler  = (val) => {
+  const changeHandler = (val) => {
     setValue(val.target.value);
     updateFormValue(val);
   };
@@ -29,8 +29,9 @@ function InputText({
         name={name}
         value={value}
         placeholder={placeholder || ""}
-        onChange={changeHandler }
+        onChange={changeHandler}
         className="input  input-bordered w-full "
+        disabled={isDisabled}
       />
     </div>
   );
