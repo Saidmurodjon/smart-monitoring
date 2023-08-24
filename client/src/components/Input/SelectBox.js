@@ -9,7 +9,7 @@ function SelectBox(props) {
     containerStyle,
     placeholder,
     labelStyle,
-    options,
+    options = [],
     name,
     updateFormValue,
   } = props;
@@ -40,13 +40,13 @@ function SelectBox(props) {
         name={name}
         onChange={updateValue}
       >
-        <option disabled value="PLACEHOLDER">
-          {placeholder}
+        <option  value="PLACEHOLDER">
+         <input type="text"/>
         </option>
-        {options.map((o, k) => {
+        {options?.map((o, k) => {
           return (
-            <option value={o.value || o.name} key={k}>
-              {o.name}
+            <option value={o.value || o._id} key={k}>
+              {o.name || o.firstName + " " + o.lastName}
             </option>
           );
         })}

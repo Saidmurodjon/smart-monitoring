@@ -1,24 +1,37 @@
-import { useState } from "react"
+import { useState } from "react";
 
+function ToogleInput({
+  labelTitle,
+  labelStyle,
+  name,
+  containerStyle,
+  defaultValue,
+  updateFormValue,
+}) {
+  const [value, setValue] = useState(defaultValue);
 
-function ToogleInput({labelTitle, labelStyle, type, containerStyle, defaultValue, placeholder, updateFormValue, updateType}){
+  const updateToogleValue = (e) => {
+    setValue(e.target.value);
+    updateFormValue(e);
+};
+console.log();
 
-    const [value, setValue] = useState(defaultValue)
-
-    const updateToogleValue = () => {
-        setValue(!value)
-        updateFormValue({updateType, value : !value})
-    }
-
-    return(
-        <div className={`form-control w-full ${containerStyle}`}>
-            <label className="label cursor-pointer">
-                <span className={"label-text text-base-content " + labelStyle}>{labelTitle}</span>
-                <input type="checkbox" className="toggle" checked={value}  onChange={(e) => updateToogleValue()}/>
-            </label>
-        </div>
-    )
+  return (
+    <div className={`form-control w-full ${containerStyle}`}>
+      <label className="label cursor-pointer">
+        <span className={"label-text text-base-content " + labelStyle}>
+          {labelTitle}
+        </span>
+        <input
+          type="checkbox"
+          name={name}
+          className="toggle"
+          value={value}
+          onChange={updateToogleValue}
+        />
+      </label>
+    </div>
+  );
 }
 
-
-export default ToogleInput
+export default ToogleInput;
