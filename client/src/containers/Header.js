@@ -7,7 +7,7 @@ import MoonIcon from "@heroicons/react/24/outline/MoonIcon";
 import SunIcon from "@heroicons/react/24/outline/SunIcon";
 import { openRightDrawer } from "../features/common/rightDrawerSlice";
 import { RIGHT_DRAWER_TYPES } from "../utils/globalConstantUtil";
-
+import FunnelIcon from "@heroicons/react/24/outline/FunnelIcon";
 import { Link } from "react-router-dom";
 
 function Header() {
@@ -42,7 +42,15 @@ function Header() {
       })
     );
   };
-
+  // Opening right sidebar for notification
+  const openFilter = () => {
+    dispatch(
+      openRightDrawer({
+        header: "Filter",
+        bodyType: RIGHT_DRAWER_TYPES.FILTER,
+      })
+    );
+  };
   function logoutUser() {
     localStorage.clear();
     window.location.href = "/";
@@ -107,6 +115,16 @@ function Header() {
                   {noOfNotifications}
                 </span>
               ) : null}
+            </div>
+          </button>
+          {/* Filter icon */}
+          <button
+            className="btn btn-ghost ml-4  btn-circle"
+            onClick={() => openFilter()}
+          >
+            <div className="indicator">
+              <FunnelIcon className="h-6 w-6" />
+          
             </div>
           </button>
 

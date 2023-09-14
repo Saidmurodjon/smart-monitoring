@@ -9,17 +9,17 @@ function Transactions() {
   const { data: firstData, fetchData: fetchFirstData } = useFetch();
   const { fetchData: fetchSecondData } = useFetch();
   useEffect(() => {
-    fetchFirstData("courses");
-  }, []); 
+    fetchFirstData("teachers");
+  }, []);
 
   const Delete = async (value) => {
     if (window.confirm("Delete the item?")) {
-      fetchSecondData("courses?_id=" + value._id, {
+      fetchSecondData("teachers?_id=" + value._id, {
         method: "delete",
         status: 200,
         successMessage: "Item has deleted",
       });
-      fetchFirstData("courses");
+      fetchFirstData("teachers");
     }
   };
 
@@ -69,7 +69,7 @@ function Transactions() {
                             </div>
                             <div>
                               <div className="font-bold">
-                                {l.Name }
+                                {l.firstName + " " + l.lastName}
                               </div>
                             </div>
                           </div>

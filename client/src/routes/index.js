@@ -27,10 +27,14 @@ const TeacherEdit = lazy(() => import("../pages/teacher/Edit"));
 const Course = lazy(() => import("../pages/course/index"));
 const CourseAddNew = lazy(() => import("../pages/course/AddNew"));
 const CourseEdit = lazy(() => import("../pages/course/Edit"));
+// pupil route
 const Pupil = lazy(() => import("../pages/pupil/index"));
-const PupilAddNew = lazy(() => import("../pages/pupil/AddNew"))
+const PupilAddNew = lazy(() => import("../pages/pupil/AddNew"));
 const PupilEdit = lazy(() => import("../pages/pupil/Edit"));
+// calculation route
 
+const Fee = lazy(() => import("../pages/fee/Index"));
+const FeeAddNew = lazy(() => import("../pages/fee/AddNew"));
 const routes = [
   {
     path: "/dashboard", // the url
@@ -62,7 +66,7 @@ const routes = [
     path: "/course/edit/:id", // the url
     component: CourseEdit, // view rendered
   },
-    // course's route
+  // course's route
   {
     path: "/pupil", // the url
     component: Pupil, // view rendered
@@ -71,10 +75,24 @@ const routes = [
     path: "/pupil/add-new", // the url
     component: PupilAddNew, // view rendered
   },
-    {
+  {
     path: "/pupil/edit", // the url
     component: PupilEdit, // view rendered
   },
+  // ! calculation start
+  {
+    path: "/fee", // the url //! contract's payment
+    component: Fee, // view rendered
+  },
+  {
+    path: "/fee/add-new", // the url //!  contract's payment add new
+    component: FeeAddNew, // view rendered
+  },
+  {
+    path: "/fee/edit", // the url //! contract's payment edit
+    component: FeeAddNew, // view rendered
+  },
+  // ! calculation end
   {
     path: "/welcome", // the url
     component: Welcome, // view rendered

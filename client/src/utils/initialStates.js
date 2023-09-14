@@ -25,13 +25,20 @@ module.exports = Object.freeze({
     course: "",
   },
   COURSE_INITIAL_STATE: {
-    teacher: "",
-    pupil: "",
+    teacher: [],
+    pupil: [],
     type: "",
     name: "",
     cost: "",
     time: "",
     pupilQuantity: "11",
     isAktive: true,
+  },
+  FEE_INITIAL_STATE: {
+    firstName: "",
+    lastName: "",
+    startDate: "",
+    endDate: "",
+    pasport: "",
   },
 });

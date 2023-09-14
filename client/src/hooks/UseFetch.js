@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 const useFetch = () => {
+  
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);

@@ -12,6 +12,7 @@ function Settings() {
   const [val, setVal] = useState(
     location?.state ? location.state : COURSE_INITIAL_STATE
   );
+  const [newValue, setnewValue] = useState([]);
   // Call API to update profile settings changes
   const { fetchData } = useFetch();
   const Submit = async () => {
@@ -34,6 +35,15 @@ function Settings() {
     fetchTeacher("teachers");
     fetchPupil("pupils");
   }, []);
+  const updateTeacher = (e) => {
+    let newValue = e?.map((l) => l.value);
+    setVal({ ...val, teacher: newValue });
+  };
+  const updatePupil = (e) => {
+    let newValue = e?.map((l) => l.value);
+    setVal({ ...val, pupil: newValue });
+  };
+  console.log(val);
   return (
     <>
       <TitleCard title="Profile Settings" topMargin="mt-2">
@@ -57,34 +67,25 @@ function Settings() {
             name="cost"
             updateFormValue={updateFormValue}
           />
-
-          <SelectBox
-            labelTitle="Teacher"
-            defaultValue={val.teacher}
-            name="teacher"
-            placeholder={"teacher"}
-            options={teacher}
-            updateFormValue={updateFormValue}
-          />
-
-          <SelectBox
-            labelTitle="Pupil"
-            defaultValue={val.pupil}
-            name="pupil"
-            placeholder={"pupil"}
-            options={pupil}
-            updateFormValue={updateFormValue}
-          />
-          <MultiSelectBox/>
-        </div>
-        <div className="divider"></div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <InputText
             labelTitle="Time"
             defaultValue={val.time}
             name="time"
             updateFormValue={updateFormValue}
+          />
+        </div>
+        <div className="divider"></div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <MultiSelectBox
+            defaultValue={teacher}
+            labelTitle={"Teacher"}
+            updateFormValue={updateTeacher}
+          />
+          <MultiSelectBox
+            defaultValue={pupil}
+            labelTitle={"Pupil"}
+            updateFormValue={updatePupil}
           />
         </div>
 
