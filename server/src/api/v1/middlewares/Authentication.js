@@ -7,7 +7,6 @@ module.exports = async (req, res, next) => {
     let JWT = req.headers["auth"];
 
     jwt.verify(JWT, JWT_KEY, (err, a) => {
-      console.log(err);
       if (err) {
         return res.status(403).send("UnAuthentication");
       }

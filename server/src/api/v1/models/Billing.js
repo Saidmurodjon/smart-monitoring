@@ -15,4 +15,4 @@ const Schema = new mongoose.Schema(
     timestamps: true,
   }
 );
-module.exports = mongoose.model("Pupil", Schema);
+module.exports = mongoose.model("Billing", Schema);
