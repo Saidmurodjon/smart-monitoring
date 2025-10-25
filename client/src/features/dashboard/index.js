@@ -2,10 +2,13 @@ import DashboardStats from './components/DashboardStats'
 import AmountStats from './components/AmountStats'
 import PageStats from './components/PageStats'
 
-import UserGroupIcon  from '@heroicons/react/24/outline/UserGroupIcon'
-import UsersIcon  from '@heroicons/react/24/outline/UsersIcon'
-import CircleStackIcon  from '@heroicons/react/24/outline/CircleStackIcon'
-import CreditCardIcon  from '@heroicons/react/24/outline/CreditCardIcon'
+
+import {
+  BuildingLibraryIcon,
+  BoltIcon,
+  WrenchScrewdriverIcon,
+  BuildingOffice2Icon,
+} from '@heroicons/react/24/outline'
 import UserChannels from './components/UserChannels'
 import LineChart from './components/LineChart'
 import BarChart from './components/BarChart'
@@ -13,13 +16,38 @@ import DashboardTopBar from './components/DashboardTopBar'
 import { useDispatch } from 'react-redux'
 import {showNotification} from '../common/headerSlice'
 import DoughnutChart from './components/DoughnutChart'
+import UzbekistanMap from '../../components/UZMAP'
 
 
 const statsData = [
-    {title : "New Users", value : "34.7k", icon : <UserGroupIcon className='w-8 h-8'/>, description : "↗︎ 2300 (22%)"},
-    {title : "Total Sales", value : "$34,545", icon : <CreditCardIcon className='w-8 h-8'/>, description : "Current month"},
-    {title : "Pending Leads", value : "450", icon : <CircleStackIcon className='w-8 h-8'/>, description : "50 in hot leads"},
-    {title : "Active Users", value : "5.6k", icon : <UsersIcon className='w-8 h-8'/>, description : "↙ 300 (18%)"},
+    // {title : "Mavjud GES lar", value : "57", icon : <UserGroupIcon className='w-8 h-8'/>, description : "↗︎ 2300 (22%)"},
+    // {title : "Ishlayotganlari", value : "50", icon : <CreditCardIcon className='w-8 h-8'/>, description : "Current month"},
+    // {title : "Tamirlanmoqda", value : "7", icon : <CircleStackIcon className='w-8 h-8'/>, description : "50 in hot leads"},
+    // {title : "Yangi qurilmoqda", value : "4", icon : <UsersIcon className='w-8 h-8'/>, description : "↙ 300 (18%)"},
+    {
+    title: "Mavjud GESlar",
+    value: "57",
+    icon: <BuildingLibraryIcon className='w-8 h-8 text-blue-500' />,
+    description: "O‘zbekiston kesimida",
+  },
+  {
+    title: "Ishlayotganlari",
+    value: "50",
+    icon: <BoltIcon className='w-8 h-8 text-green-500' />,
+    description: "Faol holatda",
+  },
+  {
+    title: "Ta’mirlanmoqda",
+    value: "7",
+    icon: <WrenchScrewdriverIcon className='w-8 h-8 text-yellow-500' />,
+    description: "Texnik xizmat jarayonida",
+  },
+  {
+    title: "Yangi qurilmoqda",
+    value: "4",
+    icon: <BuildingOffice2Icon className='w-8 h-8 text-purple-500' />,
+    description: "Qurilish bosqichida",
+  },
 ]
 
 
@@ -50,7 +78,9 @@ function Dashboard(){
                 }
             </div>
 
-
+<dir>
+    <UzbekistanMap/>
+</dir>
 
         {/** ---------------------- Different charts ------------------------- */}
             <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
