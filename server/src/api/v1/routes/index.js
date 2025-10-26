@@ -7,7 +7,7 @@ const users = require("./Teacher");
 const login = require("../auth/Router");
 const teacher = require("./Teacher");
 const course = require("./Course");
-const pupil = require("./Pupil");
+const gesList = require("./GesList");
 const contact = require("./Contact");
 const auth = require("./Auth");
 const Authentication = require("../middlewares/Authentication");
@@ -20,7 +20,7 @@ router.use(Authentication);
 router.use("/users", users);
 router.use("/teachers", teacher);
 router.use("/courses", course);
-router.use("/pupils", pupil);
+router.use("/ges-list", gesList);
 router.use("/contacts", contact);
 
 router.use("/auth", auth);

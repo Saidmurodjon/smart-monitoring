@@ -1,4 +1,4 @@
-import Settings from '../../features/pupil/Settings'
+import Settings from '../../features/ges/Settings'
 
 function ExternalPage(){
 

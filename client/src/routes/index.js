@@ -13,6 +13,8 @@ const Calendar = lazy(() => import("../pages/protected/Calendar"));
 const Team = lazy(() => import("../pages/protected/Team"));
 const Transactions = lazy(() => import("../pages/protected/Transactions"));
 const Bills = lazy(() => import("../pages/protected/Bills"));
+
+
 const ProfileSettings = lazy(() =>
   import("../pages/protected/ProfileSettings")
 );
@@ -27,11 +29,13 @@ const TeacherEdit = lazy(() => import("../pages/teacher/Edit"));
 const Course = lazy(() => import("../pages/course/index"));
 const CourseAddNew = lazy(() => import("../pages/course/AddNew"));
 const CourseEdit = lazy(() => import("../pages/course/Edit"));
-// pupil route
-const Pupil = lazy(() => import("../pages/pupil/index"));
-const PupilAddNew = lazy(() => import("../pages/pupil/AddNew"));
-const PupilEdit = lazy(() => import("../pages/pupil/Edit"));
+// Ges route
+const GesInfo = lazy(() => import("../pages/ges/GesInfo"));
+const GesList = lazy(() => import("../pages/ges/list"));
+const GesAddNew = lazy(() => import("../pages/ges/AddNew"));
+const GesEdit = lazy(() => import("../pages/ges/Edit"));
 // calculation route
+  const GESInfoPage = lazy(() => import('../pages/GESInfoPage'));
 
 const Fee = lazy(() => import("../pages/fee/Index"));
 const FeeAddNew = lazy(() => import("../pages/fee/AddNew"));
@@ -68,16 +72,20 @@ const routes = [
   },
   // course's route
   {
-    path: "/pupil", // the url
-    component: Pupil, // view rendered
+    path: "/ges-info", // the url
+    component: GesInfo, // view rendered
+  },
+    {
+    path: "/ges-list", // the url
+    component: GesList, // view rendered
   },
   {
-    path: "/pupil/add-new", // the url
-    component: PupilAddNew, // view rendered
+    path: "/ges-list/add-new", // the url
+    component: GesAddNew, // view rendered
   },
   {
-    path: "/pupil/edit", // the url
-    component: PupilEdit, // view rendered
+    path: "/Ges/edit", // the url
+    component: GesEdit, // view rendered
   },
   // ! calculation start
   {
@@ -149,6 +157,7 @@ const routes = [
     path: "/blank",
     component: Blank,
   },
+  
 ];
 
 export default routes;

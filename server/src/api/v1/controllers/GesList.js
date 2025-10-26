@@ -1,45 +1,46 @@
-const Model = require("../models/Pupil");
+const Model = require("../models/GesList");
 const Joi = require("joi");
+const { aggregate } = require("../models/Teacher");
 // This is user model
 const schema = Joi.object({
-  firstName: Joi.string()
+  name: Joi.string()
     .min(3)
     .regex(/^[,. a-zA-Z]+$/)
     .required(),
-  lastName: Joi.string()
+  region: Joi.string()
     .min(3)
     .regex(/^[,. a-zA-Z]+$/)
     .required(),
-  pasport: Joi.string(),
-  email: Joi.string().email(),
-  phone: Joi.string()
-    .min(10)
-    .pattern(/^[0-9]+$/)
-    .required(),
-  age: Joi.date(),
-  location: Joi.string(),
-  cupon: Joi.string(),
-  gender: Joi.string(),
-  course: Joi.string(),
-  homePhone: Joi.string(),
+  power: Joi.string(),
+  // aggregate: Joi.string().email(),
+  // phone: Joi.string()
+  //   .min(10)
+  //   .pattern(/^[0-9]+$/)
+  //   .required(),
+  // age: Joi.date(),
+  // location: Joi.string(),
+  // cupon: Joi.string(),
+  // gender: Joi.string(),
+  // course: Joi.string(),
+  // homePhone: Joi.string(),
 }).options({ stripUnknown: true });
 module.exports = {
   Get: async function (req, res) {
-    const { firstName, lastName, startDate, endDate } = req.query;
+    const { name, power, region, repair } = req.query;
     console.log(req.query);
     const query = {};
-    if (firstName) {
-      query.firstName = firstName;
+    if (name) {
+      query.name = name;
     }
-    if (lastName) {
-      query.lastName = lastName;
+    if (region) {
+      query.region = region;
     }
-    if (startDate & endDate) {
-      query.date = {
-        $gt: startDate,
-        $lt: endDate,
-      };
-    }
+    // if (startDate & endDate) {
+    //   query.date = {
+    //     $gt: startDate,
+    //     $lt: endDate,
+    //   };
+    // }
     const value = await Model.find(query);
 
     console.log(value);

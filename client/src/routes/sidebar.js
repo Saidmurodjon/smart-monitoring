@@ -149,17 +149,17 @@ const routes = [
   {
     path: "", //no url needed as this has submenu
     icon: <Cog6ToothIcon className={`${iconClasses} inline`} />, // icon component
-    name: "Pupils", // name that appear in Sidebar
-    submenu: [
+    name: "Ges haqida ma'lumot", // name that appear in Sidebar
+    submenu: [  
       {
-        path: "/app/pupil", //url
+        path: "/app/ges-list", //url
         icon: <UserIcon className={submenuIconClasses} />, // icon component
-        name: "Pupil", // name that appear in Sidebar
+        name: "Ges", // name that appear in Sidebar
       },
       {
-        path: "/app/Pupil/add-new",
+        path: "/app/ges-list/add-new",
         icon: <WalletIcon className={submenuIconClasses} />,
-        name: "Pupil Add New",
+        name: "Yangi GES ni qo‘shish",
       },
     ],
   },

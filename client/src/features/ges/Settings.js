@@ -3,19 +3,19 @@ import TitleCard from "../../components/Cards/TitleCard";
 import InputText from "../../components/Input/InputText";
 import SelectBox from "../../components/Input/SelectBox";
 import useFetch from "../../hooks/UseFetch";
-import { PUPIL_INITIAL_STATE } from "../../utils/initialStates";
+import { GES_INITIAL_STATE } from "../../utils/initialStates";
 import Button from "../../components/buttons/Button";
 import { useLocation } from "react-router-dom";
 import RadioInput from "../../components/Input/RadioInput";
 function Settings() {
   const location = useLocation();
   const [val, setVal] = useState(
-    location?.state ? location.state : PUPIL_INITIAL_STATE
+    location?.state ? location.state : GES_INITIAL_STATE
   );
   // Call API to update profile settings changes
   const { fetchData } = useFetch();
   const Submit = async () => {
-    fetchData("pupils", {
+    fetchData("ges-list", {
       method: location?.state ? "put" : "post",
       data: val,
       status: location?.state ? 200 : 201,
@@ -34,40 +34,40 @@ function Settings() {
       <TitleCard title="Profile Settings" topMargin="mt-2">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <InputText
-            labelTitle="First Name"
-            defaultValue={val.firstName}
-            name="firstName"
+            labelTitle="GES nomi"
+            defaultValue={val.name}
+            name="name"
             updateFormValue={updateFormValue}
           />
 
           <InputText
-            labelTitle="Last Name"
-            defaultValue={val.lastName}
-            name="lastName"
+            labelTitle="Hudud"
+            defaultValue={val.region}
+            name="region"
             updateFormValue={updateFormValue}
           />
           <InputText
-            labelTitle="Pasport"
-            defaultValue={val.pasport}
-            name="pasport"
+            labelTitle="Texnik holati"
+            defaultValue={val.status}
+            name="status"
             updateFormValue={updateFormValue}
           />
           <InputText
-            labelTitle="Age"
+            labelTitle="Tamirlangan vaqti"
             defaultValue={
               val.age ? new Date(val?.age).toISOString().split("T")[0] : val.age
             }
             type="date"
-            name="age"
+            name="repair"
             updateFormValue={updateFormValue}
           />
           <InputText
-            labelTitle="Phone"
-            defaultValue={val.phone}
-            name="phone"
+            labelTitle="Quvvati"
+            defaultValue={val.power}
+            name="power"
             updateFormValue={updateFormValue}
           />
-          <InputText
+          {/* <InputText
             labelTitle="Home Phone"
             defaultValue={val.homePhone}
             name="homePhone"
@@ -111,7 +111,7 @@ function Settings() {
             defaultValue={val.cupon}
             name="cupon"
             updateFormValue={updateFormValue}
-          />
+          /> */}
         </div>
 
         <div className="mt-16">

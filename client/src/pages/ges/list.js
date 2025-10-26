@@ -1,11 +1,11 @@
-import Pupil from '../../features/pupil/index'
+import List from '../../features/ges/list'
 
 function ExternalPage(){
 
 
     return(
         <div className="">
-                <Pupil />
+                <List />
         </div>
     )
 }

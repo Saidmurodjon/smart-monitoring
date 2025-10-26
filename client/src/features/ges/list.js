@@ -4,29 +4,56 @@ import TitleCard from "../../components/Cards/TitleCard";
 import useFetch from "../../hooks/UseFetch";
 import IconButton from "../../components/buttons/IconButton";
 import Button from "../../components/buttons/Button";
-
+import { useLocation} from "react-router-dom";
 function Transactions() {
+  const location = useLocation();
+
+  // xaritadan navigate bilan yuborilgan obyekt
+  const geo = location.state?.geo;
+
+  // custom hook
   const { data: firstData, fetchData: fetchFirstData } = useFetch();
   const { fetchData: fetchSecondData } = useFetch();
-  useEffect(() => {
-    fetchFirstData("pupils");
-  }, []);
+
+  // Qaysi hudud? (nomini olamiz)
+  // !!! bu joyni sizning geo strukturangizga moslashtirasiz
+  const selectedRegionName =
+    geo?.properties?.name ||
+    geo?.properties?.NAME_1 ||
+    geo?.name ||
+    null;
+
+  // 1) sahifa ochilganda fetch
+  // 2) geo o'zgarsa qayta fetch
+useEffect(() => {
+  if (selectedRegionName) {
+    fetchFirstData(`ges-list?region=${encodeURIComponent(selectedRegionName)}`);
+  } else {
+    fetchFirstData("ges-list");
+  }
+  // faqat selectedRegionName o'zgarganda chaqirsin
+
+}, [selectedRegionName]);
+
+  // debug ko'rish uchun
+  console.log("geo from navigate:", geo);
+  console.log("selectedRegionName:", selectedRegionName);
 
   const Delete = async (value) => {
     if (window.confirm("Delete the item?")) {
-      fetchSecondData("pupils?_id=" + value._id, {
+      fetchSecondData("ges-list?_id=" + value._id, {
         method: "delete",
         status: 200,
         successMessage: "Item has deleted",
       });
-      fetchFirstData("pupils");
+      fetchFirstData("ges-list");
     }
   };
 
   return (
     <>
       <TitleCard
-        title="Pupils"
+        title="Ges"
         topMargin="mt-2"
         TopSideButtons={
           <Button
@@ -41,12 +68,12 @@ function Transactions() {
           <table className="table w-full">
             <thead>
               <tr>
-                <th>Full Name</th>
-                <th>Phone</th>
-                <th>Pasport</th>
-                <th>Age</th>
-                <th>Subject</th>
-                <th>Email</th>
+                <th>Nomi</th>
+                <th>Holati</th>
+                <th>Hudud</th>
+                <th>So'ngi tamirlangan vaqti</th>
+                <th>Quvvati</th>
+                <th>Date</th>
                 <th></th>
               </tr>
             </thead>
@@ -58,27 +85,30 @@ function Transactions() {
                         <td>
                           <div className="flex items-center space-x-3">
                             <div className="avatar">
-                              <div className="mask mask-circle w-12 h-12">
+                              {/* <div className="mask mask-circle w-12 h-12">
                                 <img
                                   src={
                                     "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60"
                                   }
                                   alt="Avatar"
                                 />
-                              </div>
+                               
+                              </div> */}
+                                <h3>{k+1}</h3>
                             </div>
+                           
                             <div>
                               <div className="font-bold">
-                                {l.firstName + " " + l.lastName}
+                                {l.name}
                               </div>
                             </div>
                           </div>
                         </td>
-                        <td>{l.phone}</td>
-                        <td>{l.pasport}</td>
+                        <td>{l.status}</td>
+                        <td>{l.region}</td>
+                        <td>{moment(l.repair).format("D MMM")}</td>
 
-                        <td>{moment(l.age).format("D MMM")}</td>
-                        <td>{l.subject}</td>
+                        <td>{l.power}</td>
                         <td>{l.email}</td>
                         <td>
                           <IconButton
