@@ -2,32 +2,64 @@ import { useState } from "react";
 import TitleCard from "../../components/Cards/TitleCard";
 import InputText from "../../components/Input/InputText";
 import SelectBox from "../../components/Input/SelectBox";
-import useFetch from "../../hooks/UseFetch";
+// import useFetch from "../../hooks/UseFetch";
 import { GES_INITIAL_STATE } from "../../utils/initialStates";
 import Button from "../../components/buttons/Button";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import RadioInput from "../../components/Input/RadioInput";
+import { toast } from "react-toastify";
+import http from "../../utils/http";
+import { addGes, updateGes } from "./gesSlice";
+import { useDispatch } from "react-redux";
 function Settings() {
+  // edit holati: location.state ichida doc bor deb faraz
   const location = useLocation();
-  const [val, setVal] = useState(
-    location?.state ? location.state : GES_INITIAL_STATE
-  );
+  const editingDoc = location?.state || null;
+  const [val, setVal] = useState(editingDoc ? editingDoc : GES_INITIAL_STATE);
+  console.log(location?.state);
+  
+  const navigate=useNavigate()
+    const dispatch = useDispatch();
+
   // Call API to update profile settings changes
-  const { fetchData } = useFetch();
-  const Submit = async () => {
-    fetchData("ges-list", {
-      method: location?.state ? "put" : "post",
-      data: val,
-      status: location?.state ? 200 : 201,
-      successMessage: location?.state
-        ? "Ma'lumot yangilandi !"
-        : "Ma'lumot qo'shildi",
-    });
+  // const { fetchData } = useFetch();
+  // const Submit = async () => {
+  //   fetchData("ges-list", {
+  //     method: location?.state ? "put" : "post",
+  //     data: val,
+  //     status: location?.state ? 200 : 201,
+  //     successMessage: location?.state
+  //       ? "Ma'lumot yangilandi !"
+  //       : "Ma'lumot qo'shildi",
+  //   });
+  // };
+  const Submit = async (e) => {
+    // e.preventDefault();
+    try {
+      const isEdit = Boolean(editingDoc?._id);
+      const path   = isEdit ? `/ges-list?_id=${editingDoc._id}` : `/ges-list`;
+      const method = isEdit ? "put" : "post";
+
+      // server JSON doc qaytarishi shart (qarang: #1)
+      const { data: doc } = await http.request({ url: path, method, data: val });
+
+      // 🔹 Optimistik Redux
+      if (isEdit) dispatch(updateGes(doc));
+      else dispatch(addGes(doc));
+
+      toast.success(isEdit ? "Ma'lumot yangilandi!" : "Ma'lumot qo'shildi", { theme: "colored" });
+      navigate(-1)
+      // ixtiyoriy: orqaga qaytish
+      // navigate(-1);
+    } catch (err) {
+      const msg = err?.response?.data || err.message;
+      toast.error(String(msg), { theme: "colored" });
+    }
   };
   const updateFormValue = (e) => {
     setVal({ ...val, [e.target.name]: e.target.value });
   };
-  console.log(val);
+ 
 
   return (
     <>

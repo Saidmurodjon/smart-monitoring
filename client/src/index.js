@@ -9,12 +9,14 @@ import SuspenseContent from "./containers/SuspenseContent";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import AppSockets from "./app/AppSockets";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   // <React.StrictMode>
   <Suspense fallback={<SuspenseContent />}>
     <Provider store={store}>
       <App />
+       <AppSockets />
       <ToastContainer />
     </Provider>
   </Suspense>

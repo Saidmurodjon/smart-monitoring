@@ -5,15 +5,28 @@ import useFetch from "../../hooks/UseFetch";
 import IconButton from "../../components/buttons/IconButton";
 import Button from "../../components/buttons/Button";
 import { useLocation} from "react-router-dom";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
+import { fetchGesList, selectGesItems, selectGesLoading, selectGesError, removeGes } from "./gesSlice";
+import { toast } from "react-toastify";
+import http from "../../utils/http";
+// import {  fetchGesList, applyServerEvents } from "../../store/gesSlice";
 function Transactions() {
   const location = useLocation();
-
+  const { total, running, maintenance, building } = useSelector(s => s.ges?.stats);
   // xaritadan navigate bilan yuborilgan obyekt
   const geo = location.state?.geo;
+  const dispatch = useDispatch();
 
-  // custom hook
-  const { data: firstData, fetchData: fetchFirstData } = useFetch();
-  const { fetchData: fetchSecondData } = useFetch();
+  const { items, loading, error } = useSelector(
+    (s) => ({
+      items: selectGesItems(s),
+      loading: selectGesLoading(s),
+      error: selectGesError(s),
+    }),
+    shallowEqual
+  );
+console.log(total);
+
 
   // Qaysi hudud? (nomini olamiz)
   // !!! bu joyni sizning geo strukturangizga moslashtirasiz
@@ -25,31 +38,38 @@ function Transactions() {
 
   // 1) sahifa ochilganda fetch
   // 2) geo o'zgarsa qayta fetch
+  // useEffect(() => {
+  //   const params = selectedRegionName ? { region: selectedRegionName } : {};
+  //   dispatch(fetchGesList(params));
+  // }, [selectedRegionName, dispatch]);
+
 useEffect(() => {
-  if (selectedRegionName) {
-    fetchFirstData(`ges-list?region=${encodeURIComponent(selectedRegionName)}`);
-  } else {
-    fetchFirstData("ges-list");
-  }
-  // faqat selectedRegionName o'zgarganda chaqirsin
+  const params = selectedRegionName ? { region: selectedRegionName } : {};
+  dispatch(fetchGesList(params));
+}, [selectedRegionName, dispatch]);
 
-}, [selectedRegionName]);
 
-  // debug ko'rish uchun
-  console.log("geo from navigate:", geo);
-  console.log("selectedRegionName:", selectedRegionName);
-
-  const Delete = async (value) => {
-    if (window.confirm("Delete the item?")) {
-      fetchSecondData("ges-list?_id=" + value._id, {
-        method: "delete",
-        status: 200,
-        successMessage: "Item has deleted",
-      });
-      fetchFirstData("ges-list");
+  // const Delete = async (value) => {
+  //   if (window.confirm("Delete the item?")) {
+  //     fetchSecondData("ges-list?_id=" + value._id, {
+  //       method: "delete",
+  //       status: 200,
+  //       successMessage: "Item has deleted",
+  //     });
+  //     fetchFirstData("ges-list");
+  //   }
+  // };
+  const Delete = async (row) => {
+    if (!window.confirm("Delete the item?")) return;
+    try {
+      await http.delete(`/ges-list?_id=${row._id}`);     // DELETE /api/ges-list/:id
+      dispatch(removeGes({ _id: row._id }));         // optimistik UI
+      toast.success("Item has deleted", { theme: "colored" });
+    } catch (e) {
+      const msg = e?.response?.data || e.message;
+      toast.error(String(msg), { theme: "colored" });
     }
   };
-
   return (
     <>
       <TitleCard
@@ -64,6 +84,8 @@ useEffect(() => {
         }
       >
         {/* Team Member list in table format loaded constant */}
+         {loading && <div>Yuklanmoqda...</div>}
+      {error && <div className="text-red-500">Xatolik: {String(error)}</div>}
         <div className="overflow-x-auto w-full">
           <table className="table w-full">
             <thead>
@@ -78,10 +100,9 @@ useEffect(() => {
               </tr>
             </thead>
             <tbody>
-              {firstData
-                ? firstData.map((l, k) => {
+              {items.map((l, k) => {
                     return (
-                      <tr key={k}>
+                      <tr key={l._id||l.id}>
                         <td>
                           <div className="flex items-center space-x-3">
                             <div className="avatar">
@@ -125,7 +146,7 @@ useEffect(() => {
                       </tr>
                     );
                   })
-                : null}
+               }
             </tbody>
           </table>
         </div>

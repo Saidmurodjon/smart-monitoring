@@ -84,7 +84,7 @@ const routes = [
     component: GesAddNew, // view rendered
   },
   {
-    path: "/Ges/edit", // the url
+    path: "/ges/edit", // the url
     component: GesEdit, // view rendered
   },
   // ! calculation start
