@@ -16,7 +16,7 @@ function Settings() {
   const location = useLocation();
   const editingDoc = location?.state || null;
   const [val, setVal] = useState(editingDoc ? editingDoc : GES_INITIAL_STATE);
-  console.log(location?.state);
+
   
   const navigate=useNavigate()
     const dispatch = useDispatch();
@@ -42,9 +42,9 @@ function Settings() {
 
       // server JSON doc qaytarishi shart (qarang: #1)
       const { data: doc } = await http.request({ url: path, method, data: val });
-
-      // 🔹 Optimistik Redux
+        // 🔹 Optimistik Redux
       if (isEdit) dispatch(updateGes(doc));
+      
       else dispatch(addGes(doc));
 
       toast.success(isEdit ? "Ma'lumot yangilandi!" : "Ma'lumot qo'shildi", { theme: "colored" });

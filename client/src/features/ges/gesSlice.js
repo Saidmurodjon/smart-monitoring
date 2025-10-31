@@ -9,6 +9,16 @@ const initial = {
   loading: false,
   error: null,
 };
+// ---- helpers ----
+const norm = (v) => {
+  if (!v) return "";
+  // { $oid: "..." } ko‘rinishlarini ham qo‘llab-quvvatlaymiz
+  if (typeof v === "object" && v.$oid) return String(v.$oid).trim();
+  return String(v).trim();
+};
+const getId = (obj) => norm(obj?._id ?? obj?.id);
+
+
 
 function recomputeStats(items) {
   const s = { total: items.length, running: 0, maintenance: 0, building: 0, stopped: 0 };
@@ -38,7 +48,6 @@ export const fetchGesList = createAsyncThunk(
               return t ? { Authorization: `Bearer ${t}` } : {};
             })(),
         });
-        console.log(data);
       return Array.isArray(data) ? data : data?.data || data?.items || data?.results || [];
     } catch (err) {
       return rejectWithValue(err?.response?.data || err.message);
@@ -54,21 +63,33 @@ const gesSlice = createSlice({
       state.items = payload || [];
       state.stats = recomputeStats(state.items);
     },
-  addGes: (state, { payload }) => {
-  const id = payload._id || payload.id;
-  const i = state.items.findIndex((x) => (x._id || x.id) === id);
-  if (i >= 0) state.items[i] = { ...state.items[i], ...payload };
-  else state.items.unshift(payload);
-  state.stats = recomputeStats(state.items);
+addGes: (state, { payload }) => {
+const id = payload._id || payload.id;
+  const i = state.items.findIndex((x) => x._id === id);
 },
 updateGes: (state, { payload }) => {
   const id = payload._id || payload.id;
-  const i = state.items.findIndex((x) => (x._id || x.id) === id);
+  const i = state.items.findIndex((x) => x._id == id);
+  console.log(payload._id);
+  console.log(typeof payload._id);
   if (i >= 0) state.items[i] = { ...state.items[i], ...payload };
   state.stats = recomputeStats(state.items);
 },
+// updateGes: (state, { payload }) => {
+//   const pid = getId(payload);                              // <- "6904d3063d9a058ec43de39b"
+//   const i = state.items.findIndex((x) => getId(x) === pid); // har ikkala tomonni normalladik
+//   if (i !== -1) {
+//     state.items[i] = { ...state.items[i], ...payload, _id: pid };
+//   } else {
+//     // ehtiyot chorasi: RT oqimda topilmasa qo‘shib qo‘yamiz (upsert)
+//     state.items.unshift({ ...payload, _id: pid });
+//   }
+//   state.stats = recomputeStats(state.items);
+//   console.log(state.items);
+// },
+
 removeGes: (state, { payload }) => {
-  const id = payload._id || payload.id;   // <-- FIX
+  const id = payload._id || payload.id;
   state.items = state.items.filter((x) => (x._id || x.id) !== id);
   state.stats = recomputeStats(state.items);
 },

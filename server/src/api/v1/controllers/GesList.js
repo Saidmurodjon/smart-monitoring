@@ -1,11 +1,13 @@
 const Model = require("../models/GesList");
 const Joi = require("joi");
+
+const { getIO } = require("../../../ws");
 const { aggregate } = require("../models/Teacher");
 // This is user model
 const schema = Joi.object({
   name: Joi.string()
     .min(3)
-    .regex(/^[,. a-zA-Z]+$/)
+    // .regex(/^[,. a-zA-Z]+$/)
     .required(),
   region: Joi.string()
     .min(3)
@@ -25,41 +27,75 @@ const schema = Joi.object({
   // homePhone: Joi.string(),
 }).options({ stripUnknown: true });
 module.exports = {
-  Get: async function (req, res) {
-    const { name, power, region, repair } = req.query;
-    console.log(req.query);
-    const query = {};
-    if (name) {
-      query.name = name;
-    }
-    if (region) {
-      query.region = region;
-    }
-    // if (startDate & endDate) {
-    //   query.date = {
-    //     $gt: startDate,
-    //     $lt: endDate,
-    //   };
-    // }
-    const value = await Model.find(query);
+// Controller: GesList.js
+Get: async function (req, res) {
+  try {
+    const { name, region, power, repair } = req.query;
+    console.log("Query params:", req.query);
 
-    console.log(value);
-    // const value = await Model.find().populate("course");
-    if (value.length <= 0) {
-      res.status(204).send("No Content!");
-      return;
+    const query = {};
+
+    // faqat mavjud bo‘lgan parametrlarga qarab filter qo‘shamiz
+    if (name) {
+      // nom qisman mos bo‘lishi uchun regex bilan
+      query.name = { $regex: name, $options: "i" };
     }
+
+    if (region) {
+      query.region = { $regex: region, $options: "i" };
+    }
+
+    if (power) {
+      // son bo‘lsa, to‘g‘ridan-to‘g‘ri solishtirish
+      query.power = Number(power);
+    }
+
+    if (repair) {
+      query.repair = { $regex: repair, $options: "i" };
+    }
+
+    // Agar hech qanday query berilmagan bo‘lsa — hammasini qaytaramiz
+    const value = Object.keys(query).length
+      ? await Model.find(query)
+      : await Model.find();
+
+    if (!value || value.length === 0) {
+      return res.status(204).send("No Content!");
+    }
+
     res.status(200).send(value);
-  },
+  } catch (error) {
+    console.error("GES GET xato:", error);
+    res.status(500).send("Server error");
+  }
+},
+
   //User is created
-  Post: async function (req, res) {
-    const { error } = schema.validate(req.body);
-    if (error) {
-      res.status(400).send(error.details[0].message);
-      return;
+  // Post: async function (req, res) {
+  //   const { error } = schema.validate(req.body);
+  //   if (error) {
+  //     res.status(400).send(error.details[0].message);
+  //     return;
+  //   }
+  //    // Yangi GES yozuvi
+  //   const newDoc = await Model.create(req.body);
+  //   // 1️⃣ Real-time signal — ro‘yxatni yangilash
+  //   io.emit("ges:list:new", newDoc);
+  //   res.status(201).send("Muvaffaqiyatli yaratildi.");
+  // },
+    Post: async function (req, res, next) {
+    try {
+      const newDoc = await Model.create(req.body);
+
+      // endi io undefined bo‘lmaydi
+      const io = getIO();
+      io.emit("ges:new", newDoc);
+
+      return res.status(201).json(newDoc);
+    } catch (err) {
+      console.error("GES POST xato:", err);
+      return res.status(500).send("Server xatosi");
     }
-    await Model.create(req.body);
-    res.status(201).send("Muvaffaqiyatli yaratildi.");
   },
   Update: async function (req, res) {
     const { error } = schema.validate(req.body);
@@ -72,14 +108,21 @@ module.exports = {
       res.status(204).send("No content");
       return;
     }
-    res.status(200).send("Muvaffaqiyatli yangilandi.");
+    const io = getIO();
+    io.emit("ges:update", value);
+    res.status(200).json(value);
   },
   Delete: async function (req, res) {
-    const value = await Model.findByIdAndDelete({ _id: req.query._id });
+    const value = await Model.findByIdAndDelete({ _id: req.query?._id });
+    console.log(req.query._id);
+    
     if (!value) {
       res.status(204).send("No content");
       return;
     }
     res.status(200).send("Muvaffaqiyatli o'chirildi.");
+
+    getIO().emit("ges:remove", { _id: req.query._id });
   },
+
 };

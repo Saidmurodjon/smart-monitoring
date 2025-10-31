@@ -888,3 +888,121 @@
 {"level":"info","message":"¡Server UP! en http://localhost:5000/api"}
 {"date":"Sat Oct 25 2025 10:12:18 GMT+0500 (O‘zbekiston standart vaqti)","error":{},"exception":true,"level":"error","message":"uncaughtException: region is not defined\nReferenceError: region is not defined\n    at Get (C:\\Users\\Saidmurod\\edu\\server\\src\\api\\v1\\controllers\\GesList.js:35:5)\n    at Layer.handle [as handle_request] (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\route.js:144:13)\n    at Route.dispatch (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\route.js:114:3)\n    at Layer.handle [as handle_request] (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js:284:15\n    at Function.process_params (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js:346:12)\n    at next (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js:280:10)\n    at Function.handle (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js:175:3)\n    at router (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js:47:12)","os":{"loadavg":[0,0,0],"uptime":325303.609},"process":{"argv":["C:\\Program Files\\nodejs\\node.exe","C:\\Users\\Saidmurod\\edu\\server\\src\\index.js","src/index.js"],"cwd":"C:\\Users\\Saidmurod\\edu\\server","execPath":"C:\\Program Files\\nodejs\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":36144216,"external":38676326,"heapTotal":62976000,"heapUsed":41331416,"rss":93790208},"pid":9980,"uid":null,"version":"v22.16.0"},"stack":"ReferenceError: region is not defined\n    at Get (C:\\Users\\Saidmurod\\edu\\server\\src\\api\\v1\\controllers\\GesList.js:35:5)\n    at Layer.handle [as handle_request] (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at next (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\route.js:144:13)\n    at Route.dispatch (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\route.js:114:3)\n    at Layer.handle [as handle_request] (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\layer.js:95:5)\n    at C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js:284:15\n    at Function.process_params (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js:346:12)\n    at next (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js:280:10)\n    at Function.handle (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js:175:3)\n    at router (C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js:47:12)","trace":[{"column":5,"file":"C:\\Users\\Saidmurod\\edu\\server\\src\\api\\v1\\controllers\\GesList.js","function":"Get","line":35,"method":null,"native":false},{"column":5,"file":"C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\layer.js","function":"Layer.handle [as handle_request]","line":95,"method":"handle [as handle_request]","native":false},{"column":13,"file":"C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\route.js","function":"next","line":144,"method":null,"native":false},{"column":3,"file":"C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\route.js","function":"Route.dispatch","line":114,"method":"dispatch","native":false},{"column":5,"file":"C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\layer.js","function":"Layer.handle [as handle_request]","line":95,"method":"handle [as handle_request]","native":false},{"column":15,"file":"C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js","function":null,"line":284,"method":null,"native":false},{"column":12,"file":"C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js","function":"Function.process_params","line":346,"method":"process_params","native":false},{"column":10,"file":"C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js","function":"next","line":280,"method":null,"native":false},{"column":3,"file":"C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js","function":"Function.handle","line":175,"method":"handle","native":false},{"column":12,"file":"C:\\Users\\Saidmurod\\edu\\server\\node_modules\\express\\lib\\router\\index.js","function":"router","line":47,"method":null,"native":false}]}
 {"level":"info","message":"¡Server UP! en http://localhost:5000/api"}
+{"level":"info","message":"¡Server UP! en http://localhost:5000/api"}
+{"level":"info","message":"¡Server UP! en http://localhost:5000/api"}
+{"level":"info","message":"¡Server UP! en http://localhost:5000/api"}
+{"level":"info","message":"¡Server UP! en http://localhost:5000/api"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 Client connected: 6Qkn87Ji7xdwmBVDAAAB"}
+{"level":"info","message":"🔴 Client disconnected: 6Qkn87Ji7xdwmBVDAAAB"}
+{"level":"info","message":"🟢 Client connected: xiFTVjpDq0MGu5CPAAAD"}
+{"level":"info","message":"🔴 Client disconnected: xiFTVjpDq0MGu5CPAAAD"}
+{"level":"info","message":"🟢 Client connected: UnxT8-kaqBOO5kgIAAAF"}
+{"level":"info","message":"🔴 Client disconnected: UnxT8-kaqBOO5kgIAAAF"}
+{"level":"info","message":"🟢 Client connected: 5uKTcPPb1ajnwW65AAAH"}
+{"level":"info","message":"🔴 Client disconnected: 5uKTcPPb1ajnwW65AAAH"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 Client connected: -ecUrh2hvxdTQhBaAAAB"}
+{"level":"info","message":"🔴 Client disconnected: -ecUrh2hvxdTQhBaAAAB"}
+{"level":"info","message":"🟢 Client connected: Fg38pqJePvyjzskKAAAD"}
+{"level":"info","message":"🔴 Client disconnected: Fg38pqJePvyjzskKAAAD"}
+{"level":"info","message":"🟢 Client connected: yoB_SBS-n9qWFeLlAAAF"}
+{"level":"info","message":"🔴 Client disconnected: yoB_SBS-n9qWFeLlAAAF"}
+{"level":"info","message":"🟢 Client connected: nzRM7QebFTbofQ55AAAH"}
+{"level":"info","message":"🟢 Client connected: bQ7-df6QNlGRhs4ZAAAJ"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: oqm7qchz3H4pJc4lAAAB"}
+{"level":"info","message":"🟢 WS connected: JUBYAspa6RfIP-l8AAAD"}
+{"level":"info","message":"🟢 WS connected: 5LZ0b_OBoXOh_zzRAAAF"}
+{"level":"info","message":"🟢 WS connected: bHX61AcY4y7w32lUAAAH"}
+{"level":"info","message":"🟢 WS connected: cw4fFlv-i-Kc4HecAAAJ"}
+{"level":"info","message":"🟢 WS connected: PbUy9cPDrk7_F_VqAAAL"}
+{"level":"info","message":"🟢 WS connected: mmLIGWSVzNpnh2NIAAAN"}
+{"level":"info","message":"🟢 WS connected: Xf3xS1oAIqPpZQT2AAAP"}
+{"level":"info","message":"🟢 WS connected: hyd1DQE5V8fKM6vpAAAR"}
+{"level":"info","message":"🟢 WS connected: DE71LrwluzXGp6h7AAAT"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: nA-ouFgeY0aMT_gEAAAB"}
+{"level":"info","message":"🟢 WS connected: zMq0q_Ehw06U-5GVAAAD"}
+{"level":"info","message":"🟢 WS connected: dRyzkVEF1IDS8QspAAAF"}
+{"level":"info","message":"🟢 WS connected: fpC-6CfRxFF9e-MFAAAH"}
+{"level":"info","message":"🟢 WS connected: Xou6Ne_iqABLZkjNAAAJ"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"date":"Fri Oct 31 2025 11:01:55 GMT+0500 (O‘zbekiston standart vaqti)","error":{"code":"ECONNREFUSED","hostname":"_mongodb._tcp.cluster0.m79kn.mongodb.net","syscall":"querySrv"},"exception":true,"level":"error","message":"uncaughtException: querySrv ECONNREFUSED _mongodb._tcp.cluster0.m79kn.mongodb.net\nError: querySrv ECONNREFUSED _mongodb._tcp.cluster0.m79kn.mongodb.net\n    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/promises:294:17)","os":{"loadavg":[0,0,0],"uptime":219369.89},"process":{"argv":["C:\\Program Files\\nodejs\\node.exe","C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\src\\index.js","src/index.js"],"cwd":"C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server","execPath":"C:\\Program Files\\nodejs\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":36510135,"external":39018531,"heapTotal":64720896,"heapUsed":33007104,"rss":93884416},"pid":9744,"uid":null,"version":"v22.16.0"},"stack":"Error: querySrv ECONNREFUSED _mongodb._tcp.cluster0.m79kn.mongodb.net\n    at QueryReqWrap.onresolve [as oncomplete] (node:internal/dns/promises:294:17)","trace":[{"column":17,"file":"node:internal/dns/promises","function":"QueryReqWrap.onresolve [as oncomplete]","line":294,"method":"onresolve [as oncomplete]","native":false}]}
+{"level":"info","message":"🟢 WS connected: UhQzO5_eJiINjYjUAAAB"}
+{"level":"info","message":"🟢 WS connected: hWoTqQaqvdTym_kjAAAD"}
+{"level":"info","message":"🟢 WS connected: 9OM7PjsbyibzQsqBAAAF"}
+{"level":"info","message":"🟢 WS connected: 5AJz62aiaBui6LI5AAAH"}
+{"level":"info","message":"🟢 WS connected: lV5Jtis7Y_mTcEVzAAAJ"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: jWMh3YauagUS-znlAAAB"}
+{"level":"info","message":"🟢 WS connected: IjcJvHh8Uq59eLkQAAAE"}
+{"level":"info","message":"🟢 WS connected: CAxjhD4dEqFSs_B1AAAF"}
+{"level":"info","message":"🟢 WS connected: juMH2C8T1lxFLFHNAAAH"}
+{"level":"info","message":"🟢 WS connected: KX136rWPHEpG0PsJAAAJ"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: gubWkkIjXl7kwkfTAAAB"}
+{"level":"info","message":"🟢 WS connected: NKjXdUg-AZ-ga9EaAAAD"}
+{"level":"info","message":"🟢 WS connected: 7QTheAs3AOBx0XnNAAAF"}
+{"level":"info","message":"🟢 WS connected: HgSxjNkkLzkgDorRAAAH"}
+{"level":"info","message":"🟢 WS connected: ZolBiQrkPESCdvp1AAAJ"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: pI-Vurs30MVX5xYhAAAB"}
+{"level":"info","message":"🟢 WS connected: mTFe0_02WdbHGHOKAAAD"}
+{"level":"info","message":"🟢 WS connected: IAZtJaSmUP-a-rpCAAAF"}
+{"level":"info","message":"🟢 WS connected: DcHMVwB5WwMVODxRAAAH"}
+{"level":"info","message":"🟢 WS connected: 1AF-sT7CJvREQsN4AAAJ"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: 42UGDQKbU_C1sbBAAAAB"}
+{"level":"info","message":"🟢 WS connected: 22TEO4pOSUGfJykNAAAD"}
+{"level":"info","message":"🟢 WS connected: oRWJyQH5eKbNTX8JAAAF"}
+{"level":"info","message":"🟢 WS connected: -uM6svBbQfOIKnZYAAAH"}
+{"level":"info","message":"🟢 WS connected: 1HJ4SlJvT6tXntzmAAAJ"}
+{"level":"info","message":"🟢 WS connected: 7oNeccYp7vxklDP-AAAL"}
+{"level":"info","message":"🟢 WS connected: im7f8z7BOuJn3Ad_AAAN"}
+{"level":"info","message":"🟢 WS connected: iXsf7Q3lnk17939vAAAP"}
+{"level":"info","message":"🟢 WS connected: 1ldeo4f1JpheuEmKAAAR"}
+{"level":"info","message":"🟢 WS connected: Bibcq0HCycIZAWgwAAAT"}
+{"level":"info","message":"🟢 WS connected: EnnpPv1-aQW-eQgVAAAV"}
+{"level":"info","message":"🟢 WS connected: 9oWXvPF9k8TCEIO4AAAX"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: u4tRvkb0PEnXH3M7AAAB"}
+{"level":"info","message":"🟢 WS connected: epWtVrrmjv9jYJNlAAAD"}
+{"level":"info","message":"🟢 WS connected: BnF9pDmXhqGfPlu5AAAF"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: dCJwla1y54WY3fhBAAAB"}
+{"level":"info","message":"🟢 WS connected: qJl_lDyoUem5LzONAAAD"}
+{"level":"info","message":"🟢 WS connected: PqSvRj5Et0-OKpH1AAAF"}
+{"level":"info","message":"🟢 WS connected: lNEnhsklbcp2eVlOAAAH"}
+{"level":"info","message":"🟢 WS connected: -N_AEQuDLwt-qXEiAAAJ"}
+{"level":"info","message":"🟢 WS connected: pbskvnh8pXgQMMUaAAAM"}
+{"level":"info","message":"🟢 WS connected: fUII4uzHo0lEo9a_AAAN"}
+{"level":"info","message":"🟢 WS connected: zSYmaFKUkQZsg2PoAAAQ"}
+{"level":"info","message":"🟢 WS connected: 5aECzWdSmA3ZSc2FAAAR"}
+{"level":"info","message":"🟢 WS connected: CF0kXt44ciRk9nuVAAAT"}
+{"level":"info","message":"🟢 WS connected: RlDyKbweADJeSQUQAAAV"}
+{"level":"info","message":"🟢 WS connected: Tlr0DPiSs701P6PaAAAX"}
+{"level":"info","message":"🟢 WS connected: 89qN1_tnZnBRFjMXAAAZ"}
+{"level":"info","message":"🟢 WS connected: L8oTrA4YKmTavrNqAAAb"}
+{"level":"info","message":"🟢 WS connected: wJ1LUOgyU8b3SJNiAAAd"}
+{"level":"info","message":"🟢 WS connected: VoYWyagZ3Oj3LB_aAAAf"}
+{"level":"info","message":"🟢 WS connected: DIXzrbOiFG3UOU2FAAAh"}
+{"date":"Fri Oct 31 2025 14:08:23 GMT+0500 (O‘zbekiston standart vaqti)","error":{"name":"MongoError"},"exception":true,"level":"error","message":"uncaughtException: no connection available to server cluster0-shard-00-02.m79kn.mongodb.net:27017\nMongoError: no connection available to server cluster0-shard-00-02.m79kn.mongodb.net:27017\n    at disconnectHandler (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\server.js:274:14)\n    at Server.insert (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\server.js:697:7)\n    at executeWriteOperation (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\replset.js:1241:37)\n    at Object.handler [as cb] (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\replset.js:1219:14)\n    at Connection.flush (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\connection.js:214:18)\n    at connectionFailureHandler (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\pool.js:262:10)\n    at Pool._connectionErrorHandler (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\pool.js:186:5)\n    at Connection.emit (node:events:518:28)\n    at Connection.emit (node:domain:489:12)\n    at TLSSocket.<anonymous> (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\connection.js:410:10)","os":{"loadavg":[0,0,0],"uptime":230557.703},"process":{"argv":["C:\\Program Files\\nodejs\\node.exe","C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\src\\index.js","src/index.js"],"cwd":"C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server","execPath":"C:\\Program Files\\nodejs\\node.exe","gid":null,"memoryUsage":{"arrayBuffers":36615270,"external":39151924,"heapTotal":38662144,"heapUsed":35375968,"rss":81346560},"pid":8724,"uid":null,"version":"v22.16.0"},"stack":"MongoError: no connection available to server cluster0-shard-00-02.m79kn.mongodb.net:27017\n    at disconnectHandler (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\server.js:274:14)\n    at Server.insert (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\server.js:697:7)\n    at executeWriteOperation (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\replset.js:1241:37)\n    at Object.handler [as cb] (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\replset.js:1219:14)\n    at Connection.flush (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\connection.js:214:18)\n    at connectionFailureHandler (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\pool.js:262:10)\n    at Pool._connectionErrorHandler (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\pool.js:186:5)\n    at Connection.emit (node:events:518:28)\n    at Connection.emit (node:domain:489:12)\n    at TLSSocket.<anonymous> (C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\connection.js:410:10)","trace":[{"column":14,"file":"C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\server.js","function":"disconnectHandler","line":274,"method":null,"native":false},{"column":7,"file":"C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\server.js","function":"Server.insert","line":697,"method":"insert","native":false},{"column":37,"file":"C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\replset.js","function":"executeWriteOperation","line":1241,"method":null,"native":false},{"column":14,"file":"C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\topologies\\replset.js","function":"Object.handler [as cb]","line":1219,"method":"handler [as cb]","native":false},{"column":18,"file":"C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\connection.js","function":"Connection.flush","line":214,"method":"flush","native":false},{"column":10,"file":"C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\pool.js","function":"connectionFailureHandler","line":262,"method":null,"native":false},{"column":5,"file":"C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\pool.js","function":"Pool._connectionErrorHandler","line":186,"method":"_connectionErrorHandler","native":false},{"column":28,"file":"node:events","function":"Connection.emit","line":518,"method":"emit","native":false},{"column":12,"file":"node:domain","function":"Connection.emit","line":489,"method":"emit","native":false},{"column":10,"file":"C:\\Users\\Saidmurod\\Desktop\\smart-monitoring\\server\\node_modules\\winston-mongodb\\node_modules\\mongodb\\lib\\core\\connection\\connection.js","function":null,"line":410,"method":null,"native":false}]}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: S2kEW16gkGLK909RAAAB"}
+{"level":"info","message":"🟢 WS connected: avA6fO_F1ETo1AONAAAD"}
+{"level":"info","message":"🟢 WS connected: 2lQ2VfkcoZLNRgphAAAF"}
+{"level":"info","message":"🟢 WS connected: n13fpMqwgsnhxM0PAAAH"}
+{"level":"info","message":"🟢 WS connected: 6KkimRAlnvqzawAaAAAJ"}
+{"level":"info","message":"🟢 WS connected: f8cByzRrsrvtzLdcAAAL"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: rSY-vvPK44x3WfqRAAAB"}
+{"level":"info","message":"🟢 WS connected: G_47ssGEaU2GWds6AAAD"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: WUvzM4EP_Cgwgv-FAAAB"}
+{"level":"info","message":"🟢 WS connected: cLPWKVS5X9mBkhKgAAAD"}
+{"level":"info","message":"🚀 Server UP! on http://localhost:5000/api"}
+{"level":"info","message":"🟢 WS connected: Q4uJwMuWaZa5U_HIAAAB"}
+{"level":"info","message":"🟢 WS connected: Q2Xvri09G38fbHbMAAAD"}
