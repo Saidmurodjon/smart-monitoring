@@ -44,9 +44,7 @@ function Settings() {
       const { data: doc } = await http.request({ url: path, method, data: val });
         // 🔹 Optimistik Redux
       if (isEdit) dispatch(updateGes(doc));
-      
       else dispatch(addGes(doc));
-
       toast.success(isEdit ? "Ma'lumot yangilandi!" : "Ma'lumot qo'shildi", { theme: "colored" });
       navigate(-1)
       // ixtiyoriy: orqaga qaytish

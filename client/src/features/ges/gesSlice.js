@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import http from "../../utils/http";
 const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
@@ -65,8 +64,17 @@ const gesSlice = createSlice({
     },
 addGes: (state, { payload }) => {
 const id = payload._id || payload.id;
-  const i = state.items.findIndex((x) => x._id === id);
+  if (!id) return;
+
+  const index = state.items.findIndex((x) => x._id === id);
+  if (index !== -1) {
+    state.items[index] = { ...state.items[index], ...payload };
+  } else {
+    state.items.unshift(payload);
+    state.stats = recomputeStats(state.items);
+  }
 },
+
 updateGes: (state, { payload }) => {
   const id = payload._id || payload.id;
   const i = state.items.findIndex((x) => x._id == id);

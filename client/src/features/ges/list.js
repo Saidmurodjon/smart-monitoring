@@ -38,15 +38,12 @@ console.log(total);
 
   // 1) sahifa ochilganda fetch
   // 2) geo o'zgarsa qayta fetch
-  // useEffect(() => {
-  //   const params = selectedRegionName ? { region: selectedRegionName } : {};
-  //   dispatch(fetchGesList(params));
-  // }, [selectedRegionName, dispatch]);
+  useEffect(() => {
+    const params = selectedRegionName ? { region: selectedRegionName } : {};
+    dispatch(fetchGesList(params));
+  }, [selectedRegionName, dispatch]);
 
-useEffect(() => {
-  const params = selectedRegionName ? { region: selectedRegionName } : {};
-  dispatch(fetchGesList(params));
-}, [selectedRegionName, dispatch]);
+
 
 
   // const Delete = async (value) => {
