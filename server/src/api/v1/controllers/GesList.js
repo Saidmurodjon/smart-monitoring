@@ -2,7 +2,6 @@ const Model = require("../models/GesList");
 const Joi = require("joi");
 
 const { getIO } = require("../../../ws");
-const { aggregate } = require("../models/Teacher");
 // This is user model
 const schema = Joi.object({
   name: Joi.string()
@@ -69,20 +68,6 @@ Get: async function (req, res) {
     res.status(500).send("Server error");
   }
 },
-
-  //User is created
-  // Post: async function (req, res) {
-  //   const { error } = schema.validate(req.body);
-  //   if (error) {
-  //     res.status(400).send(error.details[0].message);
-  //     return;
-  //   }
-  //    // Yangi GES yozuvi
-  //   const newDoc = await Model.create(req.body);
-  //   // 1️⃣ Real-time signal — ro‘yxatni yangilash
-  //   io.emit("ges:list:new", newDoc);
-  //   res.status(201).send("Muvaffaqiyatli yaratildi.");
-  // },
     Post: async function (req, res, next) {
     try {
       const newDoc = await Model.create(req.body);
