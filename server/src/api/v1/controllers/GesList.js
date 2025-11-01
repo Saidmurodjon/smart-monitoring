@@ -56,7 +56,9 @@ Get: async function (req, res) {
     // Agar hech qanday query berilmagan bo‘lsa — hammasini qaytaramiz
     const value = Object.keys(query).length
       ? await Model.find(query)
-      : await Model.find();
+      .populate("aggregates")
+      : await Model.find()
+      .populate("aggregates");
 
     if (!value || value.length === 0) {
       return res.status(204).send("No Content!");

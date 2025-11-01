@@ -7,11 +7,9 @@ const Schema = new mongoose.Schema(
     region: { type: String, require: false },
     status: { type: String, require: false },
     repair: { type: String, require: false },
-    agregate: { type: String, require: false },
-
-    // course: [
-    //   { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Course" },
-    // ],
+    aggregates: [
+      { type: mongoose.Schema.Types.ObjectId, required: false, ref: "Aggregates" },
+    ],
     isAktive: { type: Boolean, default: false },
     isPublished: { type: Boolean, default: false },
   },
