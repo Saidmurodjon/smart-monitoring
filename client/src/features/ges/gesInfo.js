@@ -190,7 +190,7 @@ console.log(firstData);
           </div>
 
           {/* ==== O'RTA USTUN ==== */}
-          <div className="bg-white rounded-xl shadow border border-gray-200 p-4 flex flex-col text-black">
+          <div className="bg-white rounded-xl shadow border border-gray-200 p-4 flex flex-col text-black lg:col-span-2">
             <div className="flex items-center justify-between mb-3">
               <div className="text-base font-semibold italic text-gray-900">
                 Agregatlar ro'yxati
@@ -208,15 +208,17 @@ console.log(firstData);
                 <thead>
                   <tr className="text-gray-600">
                     <th className="font-semibold">#</th>
-                    <th className="font-semibold">Nomi</th>
-                    <th className="font-semibold">Holat</th>
-                    <th className="font-semibold">Ta'mirlangan</th>
+                     <th className="font-semibold">Agregat nomi</th>
+                    <th className="font-semibold">Gidoturbina</th>
+                    <th className="font-semibold">Gidogenerator</th>
+                    <th className="font-semibold">Transformator</th>
+                      <th className="font-semibold">Transformator</th>
                     <th></th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody> 
                   {firstData && firstData.length > 0 ? (
-                    firstData.map((unit, idx) => (
+                    firstData[0].aggregates.map((unit, idx) => (
                       <tr
                         key={idx}
                         className={`cursor-pointer hover:bg-gray-100 ${idx === activeUnitIndex ? "bg-gray-100" : ""
@@ -228,33 +230,32 @@ console.log(firstData);
                         </td>
 
                         <td className="text-gray-800">
-                          {unit.name || `${idx + 1}-agregat`}
+                          {unit.name  || `${idx + 1}-agregat`}
                         </td>
 
-                        <td>
-                          <span
-                            className={
-                              "px-2 py-[2px] rounded text-[12px] font-semibold " +
-                              getStatusClass(unit.status)
-                            }
-                          >
-                            {unit.status || "—"}
-                          </span>
+                       <td className="text-gray-700 whitespace-nowrap">
+                         yaxshi
                         </td>
 
                         <td className="text-gray-700 whitespace-nowrap">
-                          {unit.repair
-                            ? moment(unit.repair).format("D MMM YYYY")
-                            : "—"}
+                         yaxshi
                         </td>
-
+                        <td className="text-gray-700 whitespace-nowrap">
+                         a'lo
+                        </td>
                         <td className="whitespace-nowrap text-right">
+                          <IconButton
+                            iconType={"pensil"}
+                            value={unit}
+                            onPress={Delete}
+                          /> 
                           <IconButton
                             iconType={"trash"}
                             value={unit}
                             onPress={Delete}
                           />
                         </td>
+                      
                       </tr>
                     ))
                   ) : (
@@ -279,72 +280,7 @@ console.log(firstData);
             </div>
           </div>
 
-          {/* ==== O'NG USTUN ==== */}
-          <div className="bg-white rounded-xl shadow border border-gray-200 p-4 flex flex-col text-black">
-            <div className="text-base font-semibold italic text-gray-900 mb-3">
-              Agregat haqida ma'lumot
-            </div>
-            <div className="border-t border-gray-200 mb-4" />
-
-            {activeUnit ? (
-              <div className="space-y-4 text-[14px] leading-relaxed">
-                {/* agregat nomi va holat */}
-                <div className="flex items-center justify-between">
-                  <div className="font-semibold italic text-gray-800">
-                    {activeUnit.name ||
-                      `${activeUnitIndex + 1}-agregat`}
-                  </div>
-
-                  <div
-                    className={
-                      "px-3 py-[4px] rounded font-semibold text-[13px] " +
-                      getStatusClass(activeUnit.status)
-                    }
-                  >
-                    {activeUnit.status || "—"}
-                  </div>
-                </div>
-
-                {/* detallar */}
-                <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2">
-                  <div className="text-gray-600 font-semibold italic">
-                    So'ngi ta'mir:
-                  </div>
-                  <div className="text-gray-800">
-                    {activeUnit.repair
-                      ? moment(activeUnit.repair).format(
-                        "D MMM YYYY, HH:mm"
-                      )
-                      : "—"}
-                  </div>
-
-                  <div className="text-gray-600 font-semibold italic">
-                    Quvvat:
-                  </div>
-                  <div className="text-gray-800">
-                    {activeUnit.power || "—"}
-                  </div>
-
-                  <div className="text-gray-600 font-semibold italic">
-                    Izoh:
-                  </div>
-                  <div className="text-gray-800">
-                    {activeUnit.desc ||
-                      activeUnit.description ||
-                      "—"}
-                  </div>
-                </div>
-
-                <button className="w-full bg-[#9b92c7] text-black font-semibold italic text-[14px] rounded-md py-2 hover:opacity-90">
-                  Batafsil
-                </button>
-              </div>
-            ) : (
-              <div className="text-gray-500 italic text-center py-10 text-sm">
-                Agregat tanlanmagan
-              </div>
-            )}
-          </div>
+                  
         </div>
       </TitleCard>
     </>
