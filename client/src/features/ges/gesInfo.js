@@ -36,6 +36,7 @@ function Transactions() {
 
   // aktiv tanlangan agregat (o'ng panel uchun)
   const [activeUnitIndex, setActiveUnitIndex] = useState(0);
+console.log(firstData);
 
   // ma'lumot yuklash
   useEffect(() => {
