@@ -4,7 +4,7 @@ import TitleCard from "../../components/Cards/TitleCard";
 import useFetch from "../../hooks/UseFetch";
 import IconButton from "../../components/buttons/IconButton";
 import Button from "../../components/buttons/Button";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import GesAnimation from "./GesAnimation";
 
 // status badge ranglari
@@ -26,17 +26,18 @@ function Transactions() {
   const location = useLocation();
   const navigate = useNavigate();
   const ges = location.state?.ges;
+  const [params] = useSearchParams();
+  const gesId = params.get("gesId");
 
   // backenddan keladigan data (agregatlar ro'yxati)
   const { data: firstData, fetchData: fetchFirstData } = useFetch();
   const { fetchData: fetchSecondData } = useFetch();
-
   // tanlangan GES nomi bo'yicha filter
   const selectedName = ges?.name || null;
 
   // aktiv tanlangan agregat (o'ng panel uchun)
   const [activeUnitIndex, setActiveUnitIndex] = useState(0);
-console.log(firstData);
+// console.log(firstData);
 
   // ma'lumot yuklash
   useEffect(() => {
@@ -53,27 +54,18 @@ console.log(firstData);
 
   // o'ng panelda ko'rsatiladigan agregat
   const activeUnit =
-    firstData && firstData.length > 0
+    firstData && firstData.length >= 0
       ? firstData[activeUnitIndex]
       : null;
 
   // o'chirish
   const Delete = async (value) => {
     if (window.confirm("Delete the item?")) {
-      await fetchSecondData("ges-list?_id=" + value._id, {
+      await fetchSecondData("ges/"+gesId+"/aggregates?_id=" + value._id, {
         method: "delete",
         status: 200,
         successMessage: "Item has deleted",
       });
-
-      // qayta yuklash: shu ges bo'yicha qolsin
-      if (selectedName) {
-        fetchFirstData(
-          `ges-list?name=${encodeURIComponent(selectedName)}`
-        );
-      } else {
-        fetchFirstData("ges-list");
-      }
     }
   };
 
@@ -139,14 +131,14 @@ console.log(firstData);
                   Agregatlar soni
                 </div>
                 <div className="font-semibold text-gray-900">
-                  {unitCount} ta
+                  {ges?.aggregates?.length || 0} ta
                 </div>
 
                 <div className="font-semibold italic text-gray-800">
                   Hudud
                 </div>
                 <div className="text-gray-900">
-                  {ges?.location || "—"}
+                  {ges?.regions || "—"}
                 </div>
 
                 <div className="font-semibold italic text-gray-800">
@@ -244,10 +236,15 @@ console.log(firstData);
                          a'lo
                         </td>
                         <td className="whitespace-nowrap text-right">
+                           <IconButton
+                            iconType={"eye"}
+                            value={unit}
+                            onPress={Delete}
+                          /> 
                           <IconButton
                             iconType={"pensil"}
                             value={unit}
-                            onPress={Delete}
+                            navigate={`./aggregates/add-new?gesId=${firstData && firstData.length>0 ?firstData[0]._id : ""}`}
                           /> 
                           <IconButton
                             iconType={"trash"}
@@ -273,10 +270,12 @@ console.log(firstData);
             </div>
 
             {/* yangi agregat qo'shish tugmasi (ixtiyoriy) */}
-            <div className="pt-4">
-              <button className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg py-2">
-                Yangi agregat qo'shish
-              </button>
+            <div className="pt-4 center">
+                <Button
+                name={"Add new"}
+                btnStyle={"btn-primary px-6 btn-sm normal-case "}
+                navigate={`./aggregates/add-new?gesId=${firstData && firstData.length>0 ?firstData[0]._id : ""}`}
+              />
             </div>
           </div>
 

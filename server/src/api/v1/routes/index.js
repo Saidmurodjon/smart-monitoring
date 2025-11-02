@@ -16,7 +16,7 @@ router.get("/", (req, res) => {
 router.use("/login", login);
 // router.use(Authentication);
 router.use("/users", users);
-router.use("/aggregates", aggregates);
+router.use("/ges/:gesId/aggregates", aggregates);
 router.use("/ges-list", gesList);
 
 // router.use("/auth", auth);

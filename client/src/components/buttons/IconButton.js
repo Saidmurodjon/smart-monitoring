@@ -1,9 +1,12 @@
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+
 import { useNavigate } from "react-router-dom";
 function IconButton({ iconType, onPress, value, navigate }) {
   const navigateTo = useNavigate();
   const renderIcon = () => {
     switch (iconType) {
+      case "eye":
+        return <EyeIcon className="w-5" />;
       case "pensil":
         return <PencilIcon className="w-5" />;
       case "trash":

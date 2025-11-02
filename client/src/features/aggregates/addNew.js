@@ -1,156 +1,147 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TitleCard from "../../components/Cards/TitleCard";
 import InputText from "../../components/Input/InputText";
-import SelectBox from "../../components/Input/SelectBox";
-// import useFetch from "../../hooks/UseFetch";
-import { GES_INITIAL_STATE } from "../../utils/initialStates";
 import Button from "../../components/buttons/Button";
-import { useLocation, useNavigate } from "react-router-dom";
-import RadioInput from "../../components/Input/RadioInput";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import http from "../../utils/http";
-import { addGes, updateGes } from "./gesSlice";
 import { useDispatch } from "react-redux";
-function addNew() {
-  // edit holati: location.state ichida doc bor deb faraz
+import { addGes, updateGes } from "./gesSlice";
+import { AGGREGATES_INITIAL_STATE } from "../../utils/initialStates";
+
+function AggregatesStaticForm() {
+  // edit holati: location.state ichida doc (yoki agregatlar) bo‘lishi mumkin
   const location = useLocation();
   const editingDoc = location?.state || null;
-  const [val, setVal] = useState(editingDoc ? editingDoc : GES_INITIAL_STATE);
+  // Agar serverdan kelgan doc ichida agregatlar bo‘lsa, o‘shani yuklaymiz;
+  // bo‘lmasa toza AGGREGATES_INITIAL_STATE
+  const [val, setVal] = useState(
+    editingDoc? editingDoc : AGGREGATES_INITIAL_STATE
+  );
+const [params] = useSearchParams();
+const gesId = params.get("gesId");
+console.log(gesId);
 
-  
-  const navigate=useNavigate()
-    const dispatch = useDispatch();
 
-  // Call API to update profile addNew changes
-  // const { fetchData } = useFetch();
-  // const Submit = async () => {
-  //   fetchData("ges-list", {
-  //     method: location?.state ? "put" : "post",
-  //     data: val,
-  //     status: location?.state ? 200 : 201,
-  //     successMessage: location?.state
-  //       ? "Ma'lumot yangilandi !"
-  //       : "Ma'lumot qo'shildi",
-  //   });
-  // };
-  const Submit = async (e) => {
-    // e.preventDefault();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+// 1) (ixtiyoriy) editingDoc kelishi kechiksa, state-ni sinxronlab turish
+useEffect(() => {
+  if (editingDoc?.aggregates) {
+    setVal(editingDoc);
+  }
+}, [editingDoc]);
+console.log(val);
+// 2) updateFormValuePath o‘sha-o‘sha (yaxshi ishlayapti)
+const updateFormValuePath = (e) => {
+  const { name, value, type } = e.target;
+  const path = name.split(".");
+  setVal((prev) => {
+    const next = { ...prev };
+    let obj = next;
+    for (let i = 0; i < path.length - 1; i++) {
+      obj[path[i]] = { ...(obj[path[i]] || {}) };
+      obj = obj[path[i]];
+    }
+    const last = path[path.length - 1];
+    obj[last] = type === "number" && value !== "" ? Number(value) : value;
+    return next;
+  });
+};
+
+  const Submit = async () => {
     try {
       const isEdit = Boolean(editingDoc?._id);
-      const path   = isEdit ? `/ges-list?_id=${editingDoc._id}` : `/ges-list`;
-      const method = isEdit ? "put" : "post";
+      const path = isEdit
+        ? `ges/${gesId}/aggregates?_id=${editingDoc._id}`
+        : `ges/${gesId}/aggregates`;
 
-      // server JSON doc qaytarishi shart (qarang: #1)
-      const { data: doc } = await http.request({ url: path, method, data: val });
-        // 🔹 Optimistik Redux
+      const method = isEdit ? "put" : "post";
+  
+
+      const { data: doc } = await http.request({
+        url: path,
+        method,
+        data: val,
+      });
+
       if (isEdit) dispatch(updateGes(doc));
       else dispatch(addGes(doc));
-      toast.success(isEdit ? "Ma'lumot yangilandi!" : "Ma'lumot qo'shildi", { theme: "colored" });
-      navigate(-1)
-      // ixtiyoriy: orqaga qaytish
-      // navigate(-1);
+
+      toast.success(
+        isEdit
+          ? "Agregatlar ma’lumotlari yangilandi!"
+          : "Agregatlar ma’lumotlari saqlandi!",
+        { theme: "colored" }
+      );
+      navigate(-1);
     } catch (err) {
       const msg = err?.response?.data || err.message;
       toast.error(String(msg), { theme: "colored" });
     }
   };
-  const updateFormValue = (e) => {
-    setVal({ ...val, [e.target.name]: e.target.value });
-  };
- 
 
   return (
-    <>
-      <TitleCard title="Profile addNew" topMargin="mt-2">
+    <TitleCard title="Aggregates (Static specs)" topMargin="mt-2">
+      {/* HYDRO TURBINE */}
+      <div className="mb-6">
+        <h3 className="font-semibold text-lg mb-3">Hydro Turbine</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <InputText
-            labelTitle="GES nomi"
-            defaultValue={val.name}
-            name="name"
-            updateFormValue={updateFormValue}
-          />
-
-          <InputText
-            labelTitle="Hudud"
-            defaultValue={val.region}
-            name="region"
-            updateFormValue={updateFormValue}
-          />
-          <InputText
-            labelTitle="Texnik holati"
-            defaultValue={val.status}
-            name="status"
-            updateFormValue={updateFormValue}
-          />
-          <InputText
-            labelTitle="Tamirlangan vaqti"
-            defaultValue={
-              val.age ? new Date(val?.age).toISOString().split("T")[0] : val.age
-            }
-            type="date"
-            name="repair"
-            updateFormValue={updateFormValue}
-          />
-          <InputText
-            labelTitle="Quvvati"
-            defaultValue={val.power}
-            name="power"
-            updateFormValue={updateFormValue}
-          />
-          {/* <InputText
-            labelTitle="Home Phone"
-            defaultValue={val.homePhone}
-            name="homePhone"
-            updateFormValue={updateFormValue}
-          />
-          <SelectBox
-            labelTitle="Course"
-            defaultValue={val.course}
-            name="course"
-            placeholder={"Cource"}
-            options={[
-              { name: "IELTS", value: "64dba6be153a73d50cb809e4" },
-              { name: "GENERAL", value: "64dba6be153a73d50cb809e4" },
-            ]}
-            updateFormValue={updateFormValue}
-          />
-          <RadioInput
-            labelTitle="Gender"
-            defaultValue={val.gender}
-            name="gender"
-            updateFormValue={updateFormValue}
-          />
+          <InputText labelTitle="Model" name="hydroTurbine.model"
+            defaultValue={val.hydroTurbine.model} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Rated Power (kW)" type="number" name="hydroTurbine.power"
+            defaultValue={val.hydroTurbine.power} updateFormValue={updateFormValuePath}/>
+         
         </div>
-        <div className="divider"></div>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InputText
-            labelTitle="Location"
-            defaultValue={val.location}
-            name="location"
-            updateFormValue={updateFormValue}
-          />
-          <InputText
-            labelTitle="Email"
-            defaultValue={val.email}
-            name="email"
-            updateFormValue={updateFormValue}
-          />
-          <InputText
-            labelTitle="Cupon"
-            defaultValue={val.cupon}
-            name="cupon"
-            updateFormValue={updateFormValue}
-          /> */}
+      {/* HYDRO GENERATOR */}
+      <div className="mb-6">
+        <h3 className="font-semibold text-lg mb-3">Hydro Generator</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <InputText labelTitle="Model" name="hydroGenerator.model"
+            defaultValue={val.hydroGenerator.model} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Rated Power (kW)" type="number" name="hydroGenerator.power"
+            defaultValue={val.hydroGenerator.power} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Voltage (V)" type="number" name="hydroGenerator.voltage_V"
+            defaultValue={val.hydroGenerator.voltage_V} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Frequency (Hz)" type="number" name="hydroGenerator.frequency_Hz"
+            defaultValue={val.hydroGenerator.frequency_Hz} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="cos φ" type="number" name="hydroGenerator.cosphi"
+            defaultValue={val.hydroGenerator.cosphi} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Efficiency (%)" type="number" name="hydroGenerator.efficiency"
+            defaultValue={val.hydroGenerator.efficiency} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Serial Number" name="hydroGenerator.serialNumber"
+            defaultValue={val.hydroGenerator.serialNumber} updateFormValue={updateFormValuePath}/>
+        
         </div>
+      </div>
 
-        <div className="mt-16">
-          <Button name={"Save"} btnStyle={"btn-primary"} onPress={Submit} />
-          <Button name={"Cancel"} btnStyle={"secondary"} navigate={-1} />
+      {/* TRANSFORMER */}
+      <div className="mb-6">
+        <h3 className="font-semibold text-lg mb-3">Transformer</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <InputText labelTitle="Rated Power (kVA)" type="number" name="transformer.power"
+            defaultValue={val.transformer.power} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Primary (kV)" type="number" name="transformer.primary_kV"
+            defaultValue={val.transformer.primary_kV} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Secondary (kV)" type="number" name="transformer.secondary_kV"
+            defaultValue={val.transformer.secondary_kV} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Efficiency (%)" type="number" name="transformer.efficiency"
+            defaultValue={val.transformer.efficiency} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Cooling" name="transformer.cooling"
+            defaultValue={val.transformer.cooling} updateFormValue={updateFormValuePath}/>
+          <InputText labelTitle="Serial Number" name="transformer.serialNumber"
+            defaultValue={val.transformer.serialNumber} updateFormValue={updateFormValuePath}/>
         </div>
-      </TitleCard>
-    </>
+      </div>
+
+      <div className="mt-10">
+        <Button name="Save" btnStyle="btn-primary" onPress={Submit} />
+        <Button name="Cancel" btnStyle="secondary" navigate={-1} />
+      </div>
+    </TitleCard>
   );
 }
 
-export default addNew;
+export default AggregatesStaticForm;

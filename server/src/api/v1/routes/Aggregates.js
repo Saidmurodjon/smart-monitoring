@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const controller = require("../controllers/Aggregates");
 
 // Base: /api/v1/aggregates
@@ -11,9 +11,9 @@ router.get("/", controller.Get);
 router.post("/", controller.Post);
 
 // Yangilash
-router.put("/:id", controller.Update);
+router.put("/", controller.Update);
 
 // O'chirish
-router.delete("/:id", controller.Delete);
+router.delete("/", controller.Delete);
 
 module.exports = router;

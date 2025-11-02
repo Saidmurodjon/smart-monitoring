@@ -33,6 +33,7 @@ const CourseEdit = lazy(() => import("../pages/course/Edit"));
 const GesInfo = lazy(() => import("../pages/ges/GesInfo"));
 const GesList = lazy(() => import("../pages/ges/list"));
 const GesAddNew = lazy(() => import("../pages/ges/AddNew"));
+const AggregatesAddNew = lazy(() => import("../pages/aggregates/AddNew"));
 const GesEdit = lazy(() => import("../pages/ges/Edit"));
 // calculation route
   const GESInfoPage = lazy(() => import('../pages/GESInfoPage'));
@@ -72,7 +73,7 @@ const routes = [
   },
   // course's route
   {
-    path: "/ges-info", // the url
+    path: "/ges/", // the url
     component: GesInfo, // view rendered
   },
     {
@@ -87,6 +88,11 @@ const routes = [
     path: "/ges/edit", // the url
     component: GesEdit, // view rendered
   },
+  {
+    path: "ges/aggregates/add-new", // the url
+    component: AggregatesAddNew, // view rendered
+  },
+
   // ! calculation start
   {
     path: "/fee", // the url //! contract's payment

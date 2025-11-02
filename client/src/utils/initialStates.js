@@ -56,4 +56,35 @@ module.exports = Object.freeze({
     teacher: "",
     course: "",
   },
+    AGGREGATES_INITIAL_STATE: {
+    hydroTurbine: {
+    model: "",
+    power: null,
+    efficiency: null,
+    serialNumber: "",
+    year: null,
+  },
+
+  hydroGenerator: {
+    model: "",
+    power: null,
+    voltage_V: null,
+    cosphi: null,
+    efficiency: null,
+    serialNumber: "",
+    year: null,
+  },
+
+  transformer: {
+    type: "",
+    power: null,
+    primary_kV: null,
+    secondary_kV: null,
+    efficiency: null,
+    cooling: "",
+    serialNumber: "",
+    year: null,
+  },
+
+  },
 });
