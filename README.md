@@ -17,6 +17,14 @@ Navigate to the server directory:
 cd server
 npm install
 npm run dev
+```
 
-http://localhost:5000
+## ▶️ Start the UI (client)
 
+Navigate to the client directory:
+
+```bash
+cd client
+npm install
+npm start
+```
