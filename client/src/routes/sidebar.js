@@ -7,15 +7,13 @@ import WalletIcon from "@heroicons/react/24/outline/WalletIcon";
 import CodeBracketSquareIcon from "@heroicons/react/24/outline/CodeBracketSquareIcon";
 import DocumentIcon from "@heroicons/react/24/outline/DocumentIcon";
 import {
-  CurrencyDollarIcon,
-  InboxArrowDownIcon,
+
   UsersIcon,
   KeyIcon,
   DocumentDuplicateIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   ExclamationTriangleIcon,
-  CalculatorIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
 
@@ -29,17 +27,33 @@ const routes = [
     name: "Dashboard",
   },
 
+  // {
+  //   path: "/app/leads", // url
+  //   icon: <InboxArrowDownIcon className={iconClasses} />, // icon component
+  //   name: "Leads", // name that appear in Sidebar
+  // },
+  // {
+  //   path: "/app/transactions", // url
+  //   icon: <CurrencyDollarIcon className={iconClasses} />, // icon component
+  //   name: "Transactions", // name that appear in Sidebar
+  // },
   {
-    path: "/app/leads", // url
-    icon: <InboxArrowDownIcon className={iconClasses} />, // icon component
-    name: "Leads", // name that appear in Sidebar
+    path: "", //no url needed as this has submenu
+    icon: <Cog6ToothIcon className={`${iconClasses} inline`} />, // icon component
+    name: "Ges haqida ma'lumot", // name that appear in Sidebar
+    submenu: [  
+      {
+        path: "/app/ges-list", //url
+        icon: <UserIcon className={submenuIconClasses} />, // icon component
+        name: "Ges", // name that appear in Sidebar
+      },
+      {
+        path: "/app/ges-list/add-new",
+        icon: <WalletIcon className={submenuIconClasses} />,
+        name: "Yangi GES ni qo‘shish",
+      },
+    ],
   },
-  {
-    path: "/app/transactions", // url
-    icon: <CurrencyDollarIcon className={iconClasses} />, // icon component
-    name: "Transactions", // name that appear in Sidebar
-  },
-
   {
     path: "", //no url needed as this has submenu
     icon: <DocumentDuplicateIcon className={`${iconClasses} inline`} />, // icon component
@@ -95,74 +109,7 @@ const routes = [
     ],
   },
   // ! new
-  {
-    path: "", //no url needed as this has submenu
-    icon: <Cog6ToothIcon className={`${iconClasses} inline`} />, // icon component
-    name: "Teachers", // name that appear in Sidebar
-    submenu: [
-      {
-        path: "/app/teacher", //url
-        icon: <UserIcon className={submenuIconClasses} />, // icon component
-        name: "Teacher Profile", // name that appear in Sidebar
-      },
-      {
-        path: "/app/teacher/add-new",
-        icon: <WalletIcon className={submenuIconClasses} />,
-        name: "Teacher Add",
-      },
-    ],
-  },
-  {
-    path: "", //no url needed as this has submenu
-    icon: <CalculatorIcon className={`${iconClasses} inline`} />, // icon component
-    name: "Calculation fee", // name that appear in Sidebar
-    submenu: [
-      {
-        path: "/app/fee", //url
-        icon: <UserIcon className={submenuIconClasses} />, // icon component
-        name: "fee", // name that appear in Sidebar
-      },
-      {
-        path: "/app/fee/add-new",
-        icon: <WalletIcon className={submenuIconClasses} />,
-        name: "Fee Add New",
-      },
-    ],
-  },
-  {
-    path: "", //no url needed as this has submenu
-    icon: <Cog6ToothIcon className={`${iconClasses} inline`} />, // icon component
-    name: "Course", // name that appear in Sidebar
-    submenu: [
-      {
-        path: "/app/course", //url
-        icon: <UserIcon className={submenuIconClasses} />, // icon component
-        name: "Course", // name that appear in Sidebar
-      },
-      {
-        path: "/app/course/add-new",
-        icon: <WalletIcon className={submenuIconClasses} />,
-        name: "Course Add",
-      },
-    ],
-  },
-  {
-    path: "", //no url needed as this has submenu
-    icon: <Cog6ToothIcon className={`${iconClasses} inline`} />, // icon component
-    name: "Ges haqida ma'lumot", // name that appear in Sidebar
-    submenu: [  
-      {
-        path: "/app/ges-list", //url
-        icon: <UserIcon className={submenuIconClasses} />, // icon component
-        name: "Ges", // name that appear in Sidebar
-      },
-      {
-        path: "/app/ges-list/add-new",
-        icon: <WalletIcon className={submenuIconClasses} />,
-        name: "Yangi GES ni qo‘shish",
-      },
-    ],
-  },
+
   //!new
   {
     path: "", //no url needed as this has submenu

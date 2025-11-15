@@ -7,28 +7,15 @@ const Welcome = lazy(() => import("../pages/protected/Welcome"));
 const Page404 = lazy(() => import("../pages/protected/404"));
 const Blank = lazy(() => import("../pages/protected/Blank"));
 const Charts = lazy(() => import("../pages/protected/Charts"));
-const Leads = lazy(() => import("../pages/protected/Leads"));
 const Integration = lazy(() => import("../pages/protected/Integration"));
 const Calendar = lazy(() => import("../pages/protected/Calendar"));
 const Team = lazy(() => import("../pages/protected/Team"));
-const Transactions = lazy(() => import("../pages/protected/Transactions"));
 const Bills = lazy(() => import("../pages/protected/Bills"));
-
-
-const ProfileSettings = lazy(() =>
-  import("../pages/protected/ProfileSettings")
-);
+const ProfileSettings = lazy(() =>import("../pages/protected/ProfileSettings"));
 const GettingStarted = lazy(() => import("../pages/GettingStarted"));
 const DocFeatures = lazy(() => import("../pages/DocFeatures"));
 const DocComponents = lazy(() => import("../pages/DocComponents"));
-//! new routes
-const Teacher = lazy(() => import("../pages/teacher/index"));
-const TeacherAddNew = lazy(() => import("../pages/teacher/AddNew"));
-const TeacherEdit = lazy(() => import("../pages/teacher/Edit"));
-// course's route
-const Course = lazy(() => import("../pages/course/index"));
-const CourseAddNew = lazy(() => import("../pages/course/AddNew"));
-const CourseEdit = lazy(() => import("../pages/course/Edit"));
+
 // Ges route
 const GesInfo = lazy(() => import("../pages/ges/GesInfo"));
 const GesList = lazy(() => import("../pages/ges/list"));
@@ -37,41 +24,15 @@ const Aggregates = lazy(() => import("../pages/aggregates/list"));
 const AggregatesAddNew = lazy(() => import("../pages/aggregates/AddNew"));
 const GesEdit = lazy(() => import("../pages/ges/Edit"));
 // calculation route
-  const GESInfoPage = lazy(() => import('../pages/GESInfoPage'));
 
-const Fee = lazy(() => import("../pages/fee/Index"));
-const FeeAddNew = lazy(() => import("../pages/fee/AddNew"));
 const routes = [
   {
     path: "/dashboard", // the url
     component: Dashboard, // view rendered
   },
 
-  {
-    path: "/teacher", // the url
-    component: Teacher, // view rendered
-  },
-  {
-    path: "/teacher/add-new", // the url
-    component: TeacherAddNew, // view rendered
-  },
-  {
-    path: "/teacher/edit/:id", // the url
-    component: TeacherEdit, // view rendered
-  },
-  // course's route
-  {
-    path: "/course", // the url
-    component: Course, // view rendered
-  },
-  {
-    path: "/course/add-new", // the url
-    component: CourseAddNew, // view rendered
-  },
-  {
-    path: "/course/edit/:id", // the url
-    component: CourseEdit, // view rendered
-  },
+
+
   // course's route
   {
     path: "/ges/", // the url
@@ -98,27 +59,10 @@ const routes = [
     component: AggregatesAddNew, // view rendered
   },
 
-  // ! calculation start
-  {
-    path: "/fee", // the url //! contract's payment
-    component: Fee, // view rendered
-  },
-  {
-    path: "/fee/add-new", // the url //!  contract's payment add new
-    component: FeeAddNew, // view rendered
-  },
-  {
-    path: "/fee/edit", // the url //! contract's payment edit
-    component: FeeAddNew, // view rendered
-  },
-  // ! calculation end
+
   {
     path: "/welcome", // the url
     component: Welcome, // view rendered
-  },
-  {
-    path: "/leads",
-    component: Leads,
   },
   {
     path: "/settings-team",
@@ -128,10 +72,7 @@ const routes = [
     path: "/calendar",
     component: Calendar,
   },
-  {
-    path: "/transactions",
-    component: Transactions,
-  },
+
   {
     path: "/settings-profile",
     component: ProfileSettings,
@@ -151,10 +92,6 @@ const routes = [
   {
     path: "/components",
     component: DocComponents,
-  },
-  {
-    path: "/integration",
-    component: Integration,
   },
   {
     path: "/charts",

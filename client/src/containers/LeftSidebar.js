@@ -29,7 +29,7 @@ function LeftSidebar() {
               src="/logo192.png"
               alt="DashWind Logo"
             />
-            DashWind
+            Smart Monitoring
           </Link>{" "}
         </li>
         {routes.map((route, k) => {

@@ -35,33 +35,7 @@ function Dashboard() {
     dispatch(fetchGesList()); // kerak bo‘lsa { region } bilan chaqiring
   }, [dispatch]);
 
-  // // 2) Soket: reading:new — faqat UI ko‘rsatish uchun
-  // useEffect(() => {
-  //   const onConnect = () => console.log("✅ Socket connected");
-  //   const onReadingNew = (data) => {
-  //     console.log("📡 reading:new", data);
-  //     setReadings((prev) => [data, ...prev]);
-  //   };
-
-  //   socket.on("connect", onConnect);
-  //   socket.on("reading:new", onReadingNew);
-
-  //   return () => {
-  //     socket.off("connect", onConnect);
-  //     socket.off("reading:new", onReadingNew);
-  //   };
-  // }, [socket]);
-
-  // // 3) Soket: ges:new — real vaqt rejimida GES qo‘shilishi
-  // useEffect(() => {
-  //   const onGesNew = (doc) => {
-  //     console.log("🆕 ges:new", doc);
-  //     dispatch(addGes(doc)); // upsert sifatida qo‘shiladi
-  //   };
-
-  //   socket.on("ges:new", onGesNew);
-  //   return () => socket.off("ges:new", onGesNew);
-  // }, [dispatch, socket]);
+ 
 
   // Top bar range o‘zgarsa
   const updateDashboardPeriod = (newRange) => {
@@ -101,7 +75,7 @@ function Dashboard() {
       description: "Qurilish bosqichida",
     },
   ];
-console.log(total);
+// console.log(total);
 
   return (
     <>

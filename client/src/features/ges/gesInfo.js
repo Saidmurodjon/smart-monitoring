@@ -204,7 +204,7 @@ function Transactions() {
                     <th className="font-semibold">Gidoturbina</th>
                     <th className="font-semibold">Gidogenerator</th>
                     <th className="font-semibold">Transformator</th>
-                      <th className="font-semibold">Transformator</th>
+                      {/* <th className="font-semibold"></th> */}
                     <th></th>
                   </tr>
                 </thead>

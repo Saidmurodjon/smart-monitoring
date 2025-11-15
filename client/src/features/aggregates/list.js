@@ -18,6 +18,8 @@ import http from "../../utils/http";
 import GesAnimation from "../ges/GesAnimation";
 import AggregateAnimation from "./AggregateAnimation";
 import TransformerAnimation from "./TransformerAnimation";
+import HydroTurbineAnimation from "./HydroTurbineAnimation";
+import HydroGeneratorAnimation from "./HydroGeneratorAnimation";
 
 function Transactions() {
   const location = useLocation();
@@ -92,30 +94,30 @@ function Transactions() {
             {/* 1 - Gidroturbina */}
             <div className="bg-base-100 shadow-md rounded-2xl p-6 flex flex-col justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-center mb-2">
+                <h2 className="text-2xl font-semibold text-center mb-2">
                   Gidroturbina
                 </h2>
-                 <AggregateAnimation />
-                <div className="space-y-2 text-sm">
+                 <HydroTurbineAnimation />
+                <div className="space-y-2 text-xl">
                   <div className="flex justify-between">
-                    <span className="font-semibold">Umumiy holati</span>
+                    <span className="font-semibold">Texnik holati</span>
                     <span>{hydroTurbine.overall || "Aʼlo"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Aylanash tezligi</span>
-                    <span>{hydroTurbine.speed_rpm || "-"} ayl/daq</span>
+                    <span>{hydroTurbine.speed_rpm || "60"} ayl/daq</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Quvvat</span>
-                    <span>{hydroTurbine.ratedPowerKW || "-"} kVt</span>
+                    <span>{hydroTurbine.ratedPowerKW || "5000"} kVt</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Suv sarfi</span>
-                    <span>{hydroTurbine.ratedFlow_m3s || "-"} m³/s</span>
+                    <span>{hydroTurbine.ratedFlow_m3s || "50"} m³/s</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Tebranish</span>
-                    <span>{hydroTurbine.vibration || "-"} mkm</span>
+                    <span>{hydroTurbine.vibration || "60"} mkm</span>
                   </div>
                 </div>
               </div>
@@ -132,13 +134,13 @@ function Transactions() {
             {/* 2 - Gidrogenerator */}
             <div className="bg-base-100 shadow-md rounded-2xl p-6 flex flex-col justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-center mb-4">
+                <h2 className="text-2xl font-semibold text-center mb-4">
                   Gidrogenerator
                 </h2>
-
-                <div className="space-y-2 text-sm">
+              <HydroGeneratorAnimation/>
+                <div className="space-y-2 text-xl">
                   <div className="flex justify-between">
-                    <span className="font-semibold">Umumiy holati</span>
+                    <span className="font-semibold">Texnik holati</span>
                     <span>{hydroGenerator.overall || "Aʼlo"}</span>
                   </div>
                   <div className="flex justify-between">
@@ -170,11 +172,11 @@ function Transactions() {
             {/* 3 - Transformator */}
             <div className="bg-base-100 shadow-md rounded-2xl p-6 flex flex-col justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-center mb-4">
+                <h2 className="text-2xl font-semibold text-center mb-4">
                   Transformator
                 </h2>
                 <TransformerAnimation/>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-xl">
                   <div className="flex justify-between">
                     <span className="font-semibold">Umumiy holati</span>
                     <span>{transformer.overall || "Aʼlo"}</span>

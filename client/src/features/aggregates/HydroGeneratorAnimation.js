@@ -1,11 +1,11 @@
 
 import React from "react";
 import Lottie from "lottie-react";
-import hydroAnim from "../../data/hydro-turbine.json";
-export default function GesAnimation() {
+import hydroAnim from "../../data/Hydro-energy.json";
+export default function HydroGeneratorAnimation() {
   return (
    <div className="flex flex-col items-center mb-4">
-  <div className="w-[200px] h-[130px] flex items-center justify-center">
+  <div className="w-60 flex items-center justify-center">
     <Lottie
       animationData={hydroAnim}
       loop={true}
