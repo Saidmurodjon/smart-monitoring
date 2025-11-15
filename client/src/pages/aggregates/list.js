@@ -1,4 +1,4 @@
-import List from '../../features/ges/list'
+import List from '../../features/aggregates/list'
 
 function ExternalPage(){
 

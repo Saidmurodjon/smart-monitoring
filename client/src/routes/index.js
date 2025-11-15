@@ -33,6 +33,7 @@ const CourseEdit = lazy(() => import("../pages/course/Edit"));
 const GesInfo = lazy(() => import("../pages/ges/GesInfo"));
 const GesList = lazy(() => import("../pages/ges/list"));
 const GesAddNew = lazy(() => import("../pages/ges/AddNew"));
+const Aggregates = lazy(() => import("../pages/aggregates/list"));
 const AggregatesAddNew = lazy(() => import("../pages/aggregates/AddNew"));
 const GesEdit = lazy(() => import("../pages/ges/Edit"));
 // calculation route
@@ -87,6 +88,10 @@ const routes = [
   {
     path: "/ges/edit", // the url
     component: GesEdit, // view rendered
+  },
+    {
+    path: "ges/aggregates", // the url
+    component: Aggregates, // view rendered
   },
   {
     path: "ges/aggregates/add-new", // the url

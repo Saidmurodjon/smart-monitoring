@@ -7,7 +7,7 @@ export default function UzbekistanMap() {
   const navigate = useNavigate();
 
   const gesLocations = [
-    { name: "Chorvoq GES", coordinates: [69.95, 41.63], status: "A'lo", desc: "To'liq quvvatda ishlayapti." },
+    { _id:"68fc5c2daab7c0634166ed82", name: "Chorvoq GES", coordinates: [69.95, 41.63], status: "A'lo", desc: "To'liq quvvatda ishlayapti." },
     { name: "Tuyamo‘yin GES", coordinates: [62.33, 41.0], status: "Yaxshi", desc: "Profilaktik ta’mir o'tkazilgan." },
     { name: "Andijon GES", coordinates: [72.35, 40.8], status: "Yomon", desc: "Avariya rejimida ishlamoqda." },
     { name: "G‘issar GES", coordinates: [66.25, 38.75], status: "Yaxshi", desc: "Ishlayapti, barqaror holatda." },
@@ -25,7 +25,7 @@ export default function UzbekistanMap() {
           : "fill-blue-500";
 
   const handleClick = (ges) => {
-    navigate(`/app/ges?gesId=${ges? ges?._id : ""}`, { state: { ges } });
+    navigate(`/app/ges?id=${ges? ges?._id : ""}`, { state: { ges } });
   };
 
   return (

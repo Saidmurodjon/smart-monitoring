@@ -1,8 +1,8 @@
 
 import React from "react";
 import Lottie from "lottie-react";
-import hydroAnim from "../../data/Hydro-energy.json";
-export default function GesAnimation() {
+import hydroAnim from "../../data/transformer.json";
+export default function TransformerAnimation() {
   return (
    <div className="flex flex-col items-center">
   <div className="w-90 flex items-center justify-center">
