@@ -42,6 +42,10 @@ const routes = [
     path: "/ges-list", // the url
     component: GesList, // view rendered
   },
+      {
+    path: "/ges-list/ges", // the url
+    component: GesInfo, // view rendered
+  },
   {
     path: "/ges-list/add-new", // the url
     component: GesAddNew, // view rendered

@@ -25,7 +25,7 @@ export default function UzbekistanMap() {
           : "fill-blue-500";
 
   const handleClick = (ges) => {
-    navigate(`/app/ges?id=${ges? ges?._id : ""}`, { state: { ges } });
+    navigate(`/app/ges?id=${ges? ges?._id : ""}`, { state: ges });
   };
 
   return (

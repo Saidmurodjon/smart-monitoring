@@ -25,9 +25,9 @@ function Transactions() {
   // xaritadan navigate bilan yuborilgan obyekt
   const location = useLocation();
   const navigate = useNavigate();
-  const ges = location.state?.ges;
+  const ges = location.state ?? null
   const [params] = useSearchParams();
-  const gesId = params.get("gesId");
+  const id = params.get("id");
 
   // backenddan keladigan data (agregatlar ro'yxati)
   const { data: firstData, fetchData: fetchFirstData } = useFetch();
@@ -61,7 +61,7 @@ function Transactions() {
   // o'chirish
   const Delete = async (value) => {
     if (window.confirm("Delete the item?")) {
-      await fetchSecondData("ges/"+gesId+"/aggregates?_id=" + value._id, {
+      await fetchSecondData("ges/"+id+"/aggregates?id=" + value._id, {
         method: "delete",
         status: 200,
         successMessage: "Item has deleted",

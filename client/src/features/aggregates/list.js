@@ -121,7 +121,7 @@ function Transactions() {
                 <Button
                   name="Batafsil"
                   btnStyle="btn-sm px-8"
-                  // navigate={"./turbine-details"}
+                  navigate={`?info=`}
                 />
               </div>
             </div>

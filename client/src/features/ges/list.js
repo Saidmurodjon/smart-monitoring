@@ -129,6 +129,11 @@ console.log(total);
                         <td>{l.power}</td>
                         <td>{l.email}</td>
                         <td>
+                            <IconButton
+                            iconType={"eye"}
+                            value={l}
+                            navigate={`ges?id=${l._id}`}
+                          /> 
                           <IconButton
                             iconType={"pensil"}
                             value={l}
