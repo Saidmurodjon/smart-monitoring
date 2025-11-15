@@ -1,8 +1,5 @@
-import moment from "moment";
 import { useEffect } from "react";
 import TitleCard from "../../components/Cards/TitleCard";
-import useFetch from "../../hooks/UseFetch";
-import IconButton from "../../components/buttons/IconButton";
 import Button from "../../components/buttons/Button";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
@@ -15,11 +12,9 @@ import {
 } from "./gesSlice";
 import { toast } from "react-toastify";
 import http from "../../utils/http";
-import GesAnimation from "../ges/GesAnimation";
-import AggregateAnimation from "./AggregateAnimation";
-import TransformerAnimation from "./TransformerAnimation";
-import HydroTurbineAnimation from "./HydroTurbineAnimation";
-import HydroGeneratorAnimation from "./HydroGeneratorAnimation";
+import TransformerAnimation from "./animations/TransformerAnimation";
+import HydroTurbineAnimation from "./animations/HydroTurbineAnimation";
+import HydroGeneratorAnimation from "./animations/HydroGeneratorAnimation";
 
 function Transactions() {
   const location = useLocation();
