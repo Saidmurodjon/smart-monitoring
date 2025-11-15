@@ -6,6 +6,7 @@ import IconButton from "../../components/buttons/IconButton";
 import Button from "../../components/buttons/Button";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import GesAnimation from "./GesAnimation";
+import State from "../../components/buttons/State";
 
 // status badge ranglari
 function getStatusClass(status) {
@@ -117,14 +118,7 @@ function Transactions() {
                   Umumiy holati
                 </div>
                 <div>
-                  <span
-                    className={
-                      "px-3 py-[3px] rounded font-semibold text-[14px] " +
-                      getStatusClass(ges?.status || "—")
-                    }
-                  >
-                    {ges?.status || "—"}
-                  </span>
+                <State status={ges?.status || "good"} />
                 </div>
 
                 <div className="font-semibold italic text-gray-800">
@@ -138,22 +132,22 @@ function Transactions() {
                   Hudud
                 </div>
                 <div className="text-gray-900">
-                  {ges?.regions || "—"}
+                  {ges?.region || "—"}
                 </div>
 
                 <div className="font-semibold italic text-gray-800">
                   Quvvati
                 </div>
                 <div className="text-gray-900">
-                  {ges?.power || "—"}
+                  {ges?.power || "5 MW"}
                 </div>
 
                 <div className="font-semibold italic text-gray-800">
                   Oxirgi tekshiruv
                 </div>
                 <div className="text-gray-900">
-                  {ges?.lastCheck
-                    ? moment(ges.lastCheck).format("D MMM YYYY, HH:mm")
+                  {ges?.repair
+                    ? moment(ges.repair).format("D MMM YYYY, HH:mm")
                     : "—"}
                 </div>
 
@@ -161,7 +155,7 @@ function Transactions() {
                   Mas'ul shaxs
                 </div>
                 <div className="text-gray-900">
-                  {ges?.responsible || "—"}
+                  {ges?._id || "—"}
                 </div>
 
                 <div className="font-semibold italic text-gray-800">
@@ -225,16 +219,15 @@ function Transactions() {
                           {unit.name  || `${idx + 1}-agregat`}
                         </td>
 
-                       <td className="text-gray-700 whitespace-nowrap">
-                         yaxshi
+                       <td className="">
+                         <State status={unit.status || "good"} />
                         </td>
-
-                        <td className="text-gray-700 whitespace-nowrap">
-                         yaxshi
+                        <td className="">
+                         <State status={unit.status || "normal"} />
+                        </td>                        <td className="">
+                         <State status={unit.status || "bad"} />
                         </td>
-                        <td className="text-gray-700 whitespace-nowrap">
-                         a'lo
-                        </td>
+                      
                         <td className="whitespace-nowrap text-right">
                            <IconButton
                             iconType={"eye"}
