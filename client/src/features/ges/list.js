@@ -25,7 +25,7 @@ function Transactions() {
     }),
     shallowEqual
   );
-console.log(total);
+console.log(items);
 
 
   // Qaysi hudud? (nomini olamiz)
@@ -132,7 +132,7 @@ console.log(total);
                             <IconButton
                             iconType={"eye"}
                             value={l}
-                            navigate={`ges?id=${l._id}`}
+                            navigate={`/ges?id=${l._id}`}
                           /> 
                           <IconButton
                             iconType={"pensil"}

@@ -15,6 +15,7 @@ import http from "../../utils/http";
 import TransformerAnimation from "./animations/TransformerAnimation";
 import HydroTurbineAnimation from "./animations/HydroTurbineAnimation";
 import HydroGeneratorAnimation from "./animations/HydroGeneratorAnimation";
+import State from "../../components/buttons/State";
 
 function Transactions() {
   const location = useLocation();
@@ -96,7 +97,7 @@ function Transactions() {
                 <div className="space-y-2 text-xl">
                   <div className="flex justify-between">
                     <span className="font-semibold">Texnik holati</span>
-                    <span>{hydroTurbine.overall || "Aʼlo"}</span>
+                    <State status={hydroTurbine?.status || "excellent"} />
                   </div>
                   <div className="flex justify-between">
                     <span>Aylanash tezligi</span>
@@ -136,7 +137,7 @@ function Transactions() {
                 <div className="space-y-2 text-xl">
                   <div className="flex justify-between">
                     <span className="font-semibold">Texnik holati</span>
-                    <span>{hydroGenerator.overall || "Aʼlo"}</span>
+                    <State status={hydroGenerator?.status || "excellent"} />
                   </div>
                   <div className="flex justify-between">
                     <span>Kabs</span>
@@ -173,8 +174,8 @@ function Transactions() {
                 <TransformerAnimation/>
                 <div className="space-y-2 text-xl">
                   <div className="flex justify-between">
-                    <span className="font-semibold">Umumiy holati</span>
-                    <span>{transformer.overall || "Aʼlo"}</span>
+                    <span className="font-semibold">Texnik holati</span>
+                    <State status={transformer?.status || "normal"} />
                   </div>
                   <div className="flex justify-between">
                     <span>Chulgʻam texnik holati</span>
