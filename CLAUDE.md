@@ -31,3 +31,20 @@ Bu O'zbekiston GESlari (gidroelektrostansiyalari) uchun **noaniq mantiq (Fuzzy L
 2. **Xavfsizlik:** Barcha API'lar JWT bilan himoyalangan. Rol: admin, engineer, viewer.
 3. **Xatolikka chidamlilik:** FIS hisoblashda xatolik yuz bersa, oldingi baholash natijasi (cache) qaytarilsin.
 4. **Tillar:** Kod va sharhlar **Ingliz tilida**, foydalanuvchi interfeysi va xatolik xabarlari **O'zbek tilida**.
+
+## 6. Progress Log (majburiy — har doim yangilab boriladi)
+Loyiha ildizidagi **`PROGRESS.md`** — sessiyalar orasidagi context uzilib qolmasligi
+uchun (masalan, `/compact` yoki context limit tufayli) muhim o'zgarishlar, qarorlar
+va ularning sabablari yozib boriladigan jurnal.
+
+- **Har qanday muhim ish tugagach** (yangi feature, arxitekturaviy qaror, muhim
+  bugfix, migratsiya, ko'p bosqichli UI o'zgarish va h.k.) `PROGRESS.md` fayliga
+  yangi yozuv **qo'shilishi shart** — mavjud yozuvlarni o'chirmasdan, eng yuqoriga
+  (eng yangi sana birinchi bo'lib turadigan tartibda).
+- Har bir yozuvda: **sana**, **nima qilindi**, **nega qilindi (sabab/kontekst)**,
+  **qaysi fayllar o'zgardi** qisqa va aniq ko'rsatilsin — kelgusi sessiya buni
+  o'qib, kodni qayta o'rganmasdan tezda kontekstga kirishi kerak.
+- Mayda-chuyda ishlar (typo, formatlash, bitta qatorlik fix) uchun yozuv shart emas
+  — faqat kelgusi sessiya uchun bilish muhim bo'lgan narsalar yoziladi.
+- Kontekst compact/reset bo'lishidan oldin (yoki uzoq/murakkab ish yakunida)
+  `PROGRESS.md` yangilanganiga ishonch hosil qilinsin.
