@@ -9,6 +9,53 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-14 (7) — GES-darajasidagi FIS + to'liq zanjir tekshiruvi + MUHIM cheklov topildi
+
+- **Sabab:** todo ro'yxatidagi 4-qatlamning oxirgi qismi — Fgt/F_gg/F_tr'ni
+  yagona GES bahosiga birlashtiruvchi FIS. Bu bilan FUZZY.md'dagi butun
+  4 qatlamli arxitektura birinchi marta uchidan-uchigacha (turbina →
+  generator → transformator → GES) real ishlab ko'rildi.
+- **`server/prisma/schema.prisma`:** `EquipmentType` enumiga `GES` qiymati
+  qo'shildi (migratsiya `20260714174456_add_ges_equipment_type`) — chunki
+  GES-darajasidagi yozuv `TURBINE`/`GENERATOR`/`TRANSFORMER`ning birontasiga
+  ham to'g'ri kelmaydi.
+- **`fuzzyEngine/ges.ts`** (yangi): `assessGesLevel(fgt, fgg, ftr)` —
+  uchala kirish ham 0-100 domenida bo'lgani uchun bir xil
+  `scoreMembershipSet()` ishlatiladi.
+- **`repositories/FuzzyAssessmentRepository.ts`** (yangi, birinchi marta
+  haqiqiy Repository qatlami): `findLatestScore()` — DB'dan eng so'nggi
+  Fgt/F_gg/F_tr qiymatlarini o'qiydi. Turbina/generator/transformator
+  servislaridagi yozish tomoni hali to'g'ridan-to'g'ri Prisma bilan ishlaydi
+  (`$transaction` bilan ko'p qatorli atomik yozuv uchun repository
+  abstraksiyasi hozircha ortiqcha murakkablik bo'lardi — .claude/rules/
+  architecture.mdga to'liq mos kelmaydi, lekin ataylab shunday qoldirilgan).
+- **`GesAssessmentService.ts`/`GesAssessmentController.ts`:** yangi
+  endpoint `POST /api/assessment/ges/:aggregateId` — xom parametr qabul
+  qilmaydi, DB'dan so'nggi Fgt/F_gg/F_tr'ni o'qiydi; agar birortasi hali
+  hisoblanmagan bo'lsa, aniq xabar bilan `422` qaytaradi.
+- **⚠️ MUHIM TOPILGAN CHEKLOV:** "kanonik" 5-qoidali FIS (har bir sinf
+  uchun BARCHA kirishlar bir xil sinfga mos kelishi kerak) GES darajasida
+  sinovdan o'tkazilganda — turbina "Juda yomon" (10), lekin generator va
+  transformator "A'lo" (90) bo'lgan real stsenariyda — **hech qaysi qoida
+  ishga tushmadi va aniq xato qaytardi** (avvalgi tuzatishga ko'ra, noto'g'ri
+  0 emas). Bu texnik jihatdan to'g'ri ishlayapti (xato sukut o'rniga aniq
+  signal beryapti), LEKIN **bu eng ko'p uchraydigan real holat** — bitta
+  jihoz yomon, qolgan ikkitasi yaxshi. Hozirgi 5 qoidalik baza buni umuman
+  baholay olmaydi. **Bu keyingi ishning eng muhim ustuvor yo'nalishi**:
+  yoki (a) to'liq dissertatsiya matnidan aralash-sinf qoidalarni olish,
+  yoki (b) "eng yaqin sinf" asosidagi muqobil defuzzifikatsiya strategiyasi
+  (masalan har bir kirishni eng mos sinfga alohida moslashtirib, keyin
+  minimal/og'irlikli birlashtirish) qo'shish kerak — hozirgi arxitektura
+  (`.claude/rules/fuzzy-logic.md`dagi "DB'dan qoidalar" talabi bilan bir
+  qatorda) buni readily qo'llab-quvvatlaydi, faqat ko'proq qoida kerak.
+- **Tekshirildi:** to'liq zanjir (turbina→generator→transformator→GES)
+  barcha "a'lo" holatda `90/A'lo` berdi. GES-darajasi hisoblanishidan oldin
+  chaqirilganda to'g'ri `422` va aniq xabar qaytardi. Aralash holat (bitta
+  jihoz yomon) yuqoridagi cheklovni ochib berdi. `npx tsc --noEmit` — 0
+  xato. Test aggregate tozalandi.
+
+---
+
 ## 2026-07-14 (6) — Transformator FIS (f3, f4, f5, f6, F_tr) — shu jumladan haqiqiy ikkinchi darajali FIS (f5)
 
 - **Sabab:** todo ro'yxatidagi navbatdagi qadam. Bu blok muhim, chunki

@@ -55,11 +55,13 @@ model Aggregate {
   @@map("aggregates")
 }
 
-// GES asosiy jihozi turi — FUZZY.md §1 (Gidroturbina, Gidrogenerator, Transformator)
+// GES asosiy jihozi turi — FUZZY.md §1 (Gidroturbina, Gidrogenerator, Transformator).
+// GES — uchala jihozni birlashtiruvchi yakuniy FIS bosqichi uchun (FUZZY.md §3.D).
 enum EquipmentType {
   TURBINE
   GENERATOR
   TRANSFORMER
+  GES
 }
 
 // Har bir FIS bosqichi (Fgt, f1..f6, Fgg, Ftr, GES) natijasi shu yerda saqlanadi.
