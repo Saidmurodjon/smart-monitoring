@@ -9,6 +9,47 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-14 (6) — Transformator FIS (f3, f4, f5, f6, F_tr) — shu jumladan haqiqiy ikkinchi darajali FIS (f5)
+
+- **Sabab:** todo ro'yxatidagi navbatdagi qadam. Bu blok muhim, chunki
+  faqat shu yerda FUZZY.md'ning eng katta tuzatishi — **f5 haqiqiy alohida
+  FIS ekanligi** (oddiy o'rtacha emas) — birinchi marta amalda sinaldi.
+- **`variableSets.ts`:** yangi `scoreMembershipSet()` — 0-100 ball
+  domenidagi kirish uchun standart 5-sinf a'zolik to'plami (markazlar
+  `OUTPUT_CLASS_CENTERS` bilan bir xil: 10/30/50/70/90). Bu boshqa bir
+  FIS'ning chiqishi (f3, f4) navbatdagi FIS'ga (f5) kirish sifatida
+  berilganda ishlatiladi — FUZZY.md "Qatlam 1.5".
+- **`fuzzyEngine/transformer.ts`** (yangi):
+  - `assessWinding` — f3, 6 kirish (barchasi og'ish-asosli, ±2/5/8/15%).
+  - `assessInsulation` — f4, 6 kirish (barchasi "katta qiymat yaxshi").
+  - `assessElectricalPart` — **f5 = FIS(f3.score, f4.score)**,
+    `scoreMembershipSet()` orqali — f3/f4'ning ANIQ natijalarini qayta
+    fuzzifikatsiya qiladi, dissertatsiyaning
+    `W(tr.el.qism)i=min(mu(f3(i)),mu(f4(i)),1)` formulasiga aynan mos.
+  - `assessTransformerNonElectrical` — f6, 2 kirish (harorat, tebranish).
+  - `assessTransformer` — `F_tr = sqrt(f5 * f6)` (deterministik).
+  - **TS xatosi va tuzatilishi:** `WindingResistance`/`InsulationResistance`
+    interfeyslarini to'g'ridan-to'g'ri `Record<string, number>` kutgan
+    `evaluateCanonicalFis`ga uzatish `TS2345` xatosi berdi (interfeys index
+    signature'ga ega emas). Chaqiruv joyida `{ ...actual }` bilan yangi
+    obyekt literal yaratib tuzatildi (obyekt literallar index signature
+    talabidan ozod).
+- **Service/Controller/Route:** `TransformerAssessmentService.ts` (f3,f4,f5,
+  f6,F_tr — beshtasi ham `$transaction` ichida saqlanadi) →
+  `TransformerAssessmentController.ts` → `POST
+  /api/assessment/transformer/:aggregateId`. Servisda dastlab yozilgan
+  ishlatilmagan o'zgaruvchi (`fTrStatus` placeholder) va
+  `classifyForStorage` degan takrorlangan (allaqachon `variableSets.ts`da
+  bor) klassifikatsiya funksiyasi darhol tozalandi — `OUTPUT_CLASS_LABELS`/
+  `classifyScore` qayta ishlatildi.
+- **Tekshirildi:** `npx tsc --noEmit` — 0 xato. `curl` bilan 2 stsenariy:
+  barcha qarshiliklar nominalga mos + izolyatsiya a'lo + past harorat/
+  tebranish → f3=f4=f5=f6=F_tr=90/A'lo; qarshiliklar 2x og'gan + izolyatsiya
+  past + harorat/tebranish yuqori → barchasi 10/Juda yomon. Test aggregate
+  tozalandi.
+
+---
+
 ## 2026-07-14 (5) — Gidrogenerator FIS (f1, f2, F_gg)
 
 - **Sabab:** Fuzzy engine yadrosi turbina bilan tasdiqlangandan keyin,

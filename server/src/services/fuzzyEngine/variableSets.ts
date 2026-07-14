@@ -77,3 +77,23 @@ export function directValueMembershipSet(
   });
   return set;
 }
+
+/**
+ * 0-100 ball domenidagi "score" o'zgaruvchisi uchun standart 5-sinf a'zolik
+ * to'plami — markazlar aynan `OUTPUT_CLASS_CENTERS` (10/30/50/70/90) bilan
+ * bir xil, chunki bu "boshqa bir FIS'ning chiqishi" (masalan f3, f4) endi
+ * navbatdagi FIS'ning kirishi sifatida ishlatilmoqda (FUZZY.md "Qatlam 1.5":
+ * f5 = FIS(f3, f4)). Katta ball — yaxshi.
+ */
+export function scoreMembershipSet(): ClassMembershipSet {
+  return directValueMembershipSet(
+    [
+      OUTPUT_CLASS_CENTERS.juda_yomon,
+      OUTPUT_CLASS_CENTERS.yomon,
+      OUTPUT_CLASS_CENTERS.ortacha,
+      OUTPUT_CLASS_CENTERS.yaxshi,
+      OUTPUT_CLASS_CENTERS.alo,
+    ],
+    ["juda_yomon", "yomon", "ortacha", "yaxshi", "alo"],
+  );
+}
