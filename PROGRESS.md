@@ -9,6 +9,41 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-14 (3) — FUZZY.md ilmiy manba (Artikbaev N.A. PhD dissertatsiyasi) asosida qayta yozildi
+
+- **Sabab:** `FUZZY.md` (loyihaning Fuzzy Logic arxitektura rejasi) dastlab
+  taxminiy/noaniq joylari bor edi. Foydalanuvchi Артикбаев Н.А.нинг
+  "...гидроэнергетика объектлари фаолиятининг ишончлилигини баҳолаш услуби"
+  (PhD, 2024, Chorvoq GESda amaliyotda sinovdan o'tgan) diссертация
+  avtoreferatini taqdim etdi — shu manba asosida FUZZY.md to'liq tahrirlandi.
+- **Asosiy tuzatishlar:**
+  - Baholash aslida **4 qatlamli**: preprocessing (xom sensor → P/Q/K_abs,
+    formula) → sub-FIS (Fgt, f1-f6) → jihoz darajasi (Fgg/Ftr — deterministik
+    `sqrt`, LEKIN `f5 = FIS(f3,f4)` — alohida to'liq Mamdani FIS bosqichi,
+    oddiy o'rtacha emas) → **GES darajasi — yana bitta FIS** (`GES =
+    FIS(Fgt,Fgg,Ftr)`, 3-rasm Simulink modeliga ko'ra; avval bu bosqich
+    umuman ko'rsatilmagan edi).
+  - Parametr sonlari to'g'irlandi: `f1` (generator elektr qism) FIS kirishi
+    9 emas — 3 ta (`K_abs, P, Q`; xom IA/IB/IC/UA/UB/UC/cosφ/sinφ endi
+    preprocessing bosqichi). `f2` va `f6` — 5-7 emas, 2 tadan (harorat +
+    tebranish).
+  - Aniq **ball chegaralari** qo'shildi: `≤20` Juda yomon, `20-40` Yomon,
+    `40-60` O'rtacha, `60-80` Yaxshi, `>80` A'lo (dissertatsiya 2-rasm
+    algoritmidan) — bularsiz kod qaysi songa qaysi holatni berishni bilmas edi.
+  - Yangi **§6 Ishonchlilik (reliability)** bo'limi qo'shildi — bu FIS
+    texnik-holat ballaridan mustaqil, alohida statistik model
+    (`λ = 1/MTBF`, `P(t) = e^(-λt)`, ketma-ket tizim uchun ko'paytma), nosozlik
+    tarixi jadvali (`equipment_failures`) talab qiladi. Hozircha loyiha
+    doirasidan tashqarida qoldirilgan (implementatsiya qilinmagan), lekin
+    hujjatlashtirildi — kelajakda kerak bo'lishi mumkin.
+- **Hali qilinmagan:** FUZZY.md hali faqat hujjat — hech qanday FIS kodi,
+  Prisma schema (`equipment_metadata`/`sensor_data`/`fuzzy_assessments`/
+  `equipment_failures`), yoki backend servis yozilmagan. Jihoz identifikatsiya
+  modeli (Aggregate JSON blob vs alohida equipment jadvallari) hali hal
+  qilinmagan ochiq savol bo'lib qolmoqda.
+
+---
+
 ## 2026-07-14 (2) — GES qo'shish: xaritadan joylashuv tanlash + dashboard ko'rinish toggle
 
 - **Sabab:** xaritadagi GES markerlari hozirgacha hardcoded/mock massiv edi;
