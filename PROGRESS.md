@@ -9,6 +9,78 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-14 (4) — Fuzzy Logic yadrosi: gidroturbina (Fgt) FIS, TypeScript'da to'liq vertikal namuna
+
+- **Sabab:** `FUZZY.md` (dissertatsiya asosida tuzatilgan) endi aniq arxitektura
+  berdi — shu asosida haqiqiy kod qurishni boshladik. CLAUDE.md "Baholash
+  yadrosi: TypeScript" talabini birinchi marta bajaramiz (loyihaning qolgan
+  qismi hozircha JS).
+- **DB (`server/prisma/schema.prisma`):** `EquipmentType` enum (TURBINE/
+  GENERATOR/TRANSFORMER) va `FuzzyAssessment` modeli (`fuzzy_assessments`)
+  qo'shildi, `Aggregate`ga bog'landi (`onDelete: Cascade`). Migratsiya:
+  `20260714171258_add_fuzzy_assessments`. `equipment_metadata`/`sensor_data`/
+  `equipment_failures` hali qo'shilmagan — hozircha kirish qiymatlari
+  to'g'ridan-to'g'ri so'rov body'sida beriladi (ingestion pipeline keyingi bosqich).
+- **TypeScript tooling** (`server/`): `typescript`, `tsx`, `@types/node`,
+  `@types/express` devDependency sifatida qo'shildi; `tsconfig.json`
+  (`strict:true`, `allowJs:true`, `module:commonjs`, `moduleResolution:bundler`
+  — TS 7'da `node`/`node10` olib tashlangani uchun). `dev`/`start`
+  skriptlari `tsx` orqali ishlaydigan qilindi; nodemon `.ts` fayllarni ham
+  kuzatadigan bo'ldi (`-e js,mjs,cjs,json,ts`) — buni unutib, birinchi test
+  paytida eski koddan natija olib chalg'ib qolgan edim, server qayta
+  ishga tushirilgach tuzaldi.
+- **Fuzzy engine** (`server/src/services/fuzzyEngine/`, barchasi `.ts`):
+  - `membership.ts` — triangular/shoulder a'zolik funksiyalari va
+    `fiveClassPartition` (5 ta markazdan standart "shoulder+triangle+shoulder"
+    bo'linish).
+  - `variableSets.ts` — 5 ta chiqish sinfi (`juda_yomon`..`alo`), FUZZY.md §4
+    chegaralari (20/40/60/80) va ularning defuzzifikatsiya markazlari
+    (10/30/50/70/90); `deviationMembershipSet` (nominaldan og'ish, masalan
+    Aylanish tezligi) va `directValueMembershipSet` (xom qiymat, masalan
+    Tebranish) helperlar.
+  - `engine.ts` — generic Mamdani baholovchi (`evaluateCanonicalFis`):
+    dissertatsiyaning `W_i=min(...,1) → μ*_i=max(W_i·vazn,0) → centroid`
+    formulasini aynan takrorlaydi, barcha FIS bloklari (Fgt, f1-f6, keyinroq
+    GES darajasi) uchun qayta ishlatiladi.
+  - `turbine.ts` — Fgt uchun konkret 4 ta kirish (Aylanish_tezligi, Quvvat,
+    Suv_sarfi, Tebranish) va chegaralar (hozircha test/default qiymatlar,
+    keyin DB'ga ko'chiriladi — `.claude/rules/fuzzy-logic.md` #2).
+  - **Muhim tuzatilgan xato:** agar kirish qiymatlari BIRONTA sinfga (5
+    tadan) bir vaqtda to'liq mos kelmasa (masalan bitta parametr a'lo,
+    boshqasi juda yomon — aralash holat), barcha 5 qoida kuchi 0 bo'lib,
+    dastlab kod sukut bo'yicha `score=0`ga (ya'ni "Juda yomon"ga) qaytib
+    ketayotgan edi — bu tasodifan to'g'ri chiqishi ham, chalg'ituvchi
+    noto'g'ri natija berishi ham mumkin edi. Tuzatildi: bunday holatda aniq
+    xato tashlanadi (`throw`), sukut bo'yicha noto'g'ri songa qaytilmaydi.
+    Bu — "kanonik" 5-qoidali FIS shaklining o'zidagi cheklov (faqat avtoreferatda
+    ko'rsatilgan formula, to'liq 120 betlik qoidalar jadvali emas); to'liq
+    dissertatsiya matni yoki qo'shimcha "aralash" qoidalar olinganda
+    kengaytiriladi.
+- **Backend service/controller/route** (Controller→Service→Repository
+  qatlamlariga mos, `.claude/rules/architecture.md`):
+  `services/assessment/TurbineAssessmentService.ts` (FIS chaqiradi +
+  `fuzzyAssessment.create` orqali saqlaydi) → `controllers/
+  TurbineAssessmentController.ts` (validatsiya + xatoni ushlash) →
+  `routes/Assessment.ts` (`export = router` — chunki JS fayl uni to'g'ridan-
+  to'g'ri `require()` qiladi, `export default` bilan CJS interop buzilardi).
+  Yangi endpoint: `POST /api/assessment/turbine/:aggregateId`.
+- **Tekshirildi:** `npx tsc --noEmit` — 0 xato. `curl` bilan 3 stsenariy: (1)
+  nominal qiymatlar → 90 ball/A'lo, (2) barcha 4 parametr bir xilda yomon →
+  10 ball/Juda yomon, (3) aralash (bitta parametr yaxshi, boshqasi yomon) →
+  yuqoridagi tuzatishdan keyin aniq xato (avval xato ravishda 0/Juda yomon
+  qaytarardi). Test aggregate va uning fuzzy_assessments yozuvlari
+  tozalandi (haqiqiy ma'lumot emas edi).
+- **Hali qilinmagan (keyingi qadamlar):** f1-f6, Fgg/Ftr, GES-darajasidagi
+  FIS; `equipment_metadata`/`sensor_data` jadvallari va MQTT/sensor ingestion
+  pipeline; qoidalarni DB'ga ko'chirish (`.claude/rules/fuzzy-logic.md`);
+  ishonchlilik (reliability) moduli (FUZZY.md §6). Jihoz identifikatsiya
+  modeli (hozircha `aggregateId` + `equipmentType` juftligi ishlatildi —
+  alohida `Equipment` jadvali emas) hali "yakuniy" qaror emas, kelajakda
+  ko'p sonli sensor/statik parametr saqlash zarurati tug'ilganda qayta
+  ko'rib chiqilishi mumkin.
+
+---
+
 ## 2026-07-14 (3) — FUZZY.md ilmiy manba (Artikbaev N.A. PhD dissertatsiyasi) asosida qayta yozildi
 
 - **Sabab:** `FUZZY.md` (loyihaning Fuzzy Logic arxitektura rejasi) dastlab

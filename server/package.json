@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "start": "tsx src/index.js",
+    "dev": "nodemon -e js,mjs,cjs,json,ts --exec tsx src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
@@ -14,11 +14,15 @@
   "author": "saidmurodjon",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.1.1",
     "dotenv": "^16.3.1",
     "nodemon": "^3.0.1",
     "prettier": "2.8.2",
     "prisma": "^6.19.3",
-    "tslib": "^2.6.1"
+    "tslib": "^2.6.1",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

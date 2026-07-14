@@ -40,18 +40,44 @@ model Ges {
 }
 
 model Aggregate {
-  id             Int      @id @default(autoincrement())
-  hydroTurbine   Json?
-  hydroGenerator Json?
-  transformer    Json?
-  gesId          Int
-  ges            Ges      @relation(fields: [gesId], references: [id], onDelete: Cascade)
-  state          String   @default("running")
-  isPublished    Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               Int               @id @default(autoincrement())
+  hydroTurbine     Json?
+  hydroGenerator   Json?
+  transformer      Json?
+  gesId            Int
+  ges              Ges               @relation(fields: [gesId], references: [id], onDelete: Cascade)
+  state            String            @default("running")
+  isPublished      Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  fuzzyAssessments FuzzyAssessment[]
 
   @@map("aggregates")
+}
+
+// GES asosiy jihozi turi — FUZZY.md §1 (Gidroturbina, Gidrogenerator, Transformator)
+enum EquipmentType {
+  TURBINE
+  GENERATOR
+  TRANSFORMER
+}
+
+// Har bir FIS bosqichi (Fgt, f1..f6, Fgg, Ftr, GES) natijasi shu yerda saqlanadi.
+// FUZZY.md §7 "fuzzy_assessments" jadvaliga mos.
+model FuzzyAssessment {
+  id              Int           @id @default(autoincrement())
+  aggregateId     Int
+  aggregate       Aggregate     @relation(fields: [aggregateId], references: [id], onDelete: Cascade)
+  equipmentType   EquipmentType
+  assessmentType  String // masalan: "Fgt", "f1", "f2", "F_gg", "GES"
+  healthScore     Float // 0-100
+  healthStatus    String // "Juda yomon" | "Yomon" | "O'rtacha" | "Yaxshi" | "A'lo"
+  inputParameters Json?
+  firedRules      Json?
+  assessedAt      DateTime      @default(now())
+
+  @@index([aggregateId, equipmentType, assessmentType])
+  @@map("fuzzy_assessments")
 }
 
 model HydroGenerator {

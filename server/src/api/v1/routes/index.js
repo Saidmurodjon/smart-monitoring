@@ -8,6 +8,7 @@ const login = require("../auth/Router");
 const gesList = require("./GesList");
 const aggregates = require("./Aggregates");
 const auth = require("./Auth");
+const assessment = require("./Assessment");
 const Authentication = require("../middlewares/Authentication");
 // router
 router.get("/", (req, res) => {
@@ -18,6 +19,7 @@ router.use("/login", login);
 router.use("/users", users);
 router.use("/ges/:gesId/aggregates", aggregates);
 router.use("/ges-list", gesList);
+router.use("/assessment", assessment);
 
 // router.use("/auth", auth);
 module.exports = router;
