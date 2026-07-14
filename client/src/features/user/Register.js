@@ -34,9 +34,9 @@ function Register() {
     }
   };
 
-  const updateFormValue = ({ updateType, value }) => {
+  const updateFormValue = (e) => {
     setErrorMessage("");
-    setRegisterObj({ ...registerObj, [updateType]: value });
+    setRegisterObj({ ...registerObj, [e.target.name]: e.target.value });
   };
 
   return (
@@ -54,7 +54,7 @@ function Register() {
               <div className="mb-4">
                 <InputText
                   defaultValue={registerObj.name}
-                  updateType="name"
+                  name="name"
                   containerStyle="mt-4"
                   labelTitle="Name"
                   updateFormValue={updateFormValue}
@@ -62,7 +62,7 @@ function Register() {
 
                 <InputText
                   defaultValue={registerObj.emailId}
-                  updateType="emailId"
+                  name="emailId"
                   containerStyle="mt-4"
                   labelTitle="Email Id"
                   updateFormValue={updateFormValue}
@@ -71,7 +71,7 @@ function Register() {
                 <InputText
                   defaultValue={registerObj.password}
                   type="password"
-                  updateType="password"
+                  name="password"
                   containerStyle="mt-4"
                   labelTitle="Password"
                   updateFormValue={updateFormValue}

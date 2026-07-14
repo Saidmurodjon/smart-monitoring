@@ -5,10 +5,15 @@ import BellIcon from "@heroicons/react/24/outline/BellIcon";
 import Bars3Icon from "@heroicons/react/24/outline/Bars3Icon";
 import MoonIcon from "@heroicons/react/24/outline/MoonIcon";
 import SunIcon from "@heroicons/react/24/outline/SunIcon";
+import ArrowPathIcon from "@heroicons/react/24/outline/ArrowPathIcon";
+import MagnifyingGlassIcon from "@heroicons/react/24/outline/MagnifyingGlassIcon";
+import ShareIcon from "@heroicons/react/24/outline/ShareIcon";
 import { openRightDrawer } from "../features/common/rightDrawerSlice";
 import { RIGHT_DRAWER_TYPES } from "../utils/globalConstantUtil";
 import FunnelIcon from "@heroicons/react/24/outline/FunnelIcon";
 import { Link } from "react-router-dom";
+import { fetchGesList } from "../features/ges/gesSlice";
+import { showNotification } from "../features/common/headerSlice";
 
 function Header() {
   const dispatch = useDispatch();
@@ -51,6 +56,10 @@ function Header() {
       })
     );
   };
+  const refreshData = () => {
+    dispatch(fetchGesList());
+    dispatch(showNotification({ message: "Ma'lumotlar yangilandi", status: 1 }));
+  };
   function logoutUser() {
     localStorage.clear();
     window.location.href = "/";
@@ -63,7 +72,7 @@ function Header() {
         <div className="">
           <label
             htmlFor="left-sidebar-drawer"
-            className="btn btn-primary drawer-button lg:hidden"
+            className="btn btn-primary drawer-button"
           >
             <Bars3Icon className="h-5 inline-block w-5" />
           </label>
@@ -82,8 +91,42 @@ function Header() {
                     <option value="retro">Retro</option>
                 </select> */}
 
+          {/* Refresh data */}
+          <button
+            className="btn btn-ghost btn-circle"
+            onClick={() => refreshData()}
+            aria-label="Yangilash"
+          >
+            <ArrowPathIcon className="h-6 w-6" />
+          </button>
+
+          {/* Notification icon */}
+          <button
+            className="btn btn-ghost ml-4  btn-circle"
+            onClick={() => openNotification()}
+          >
+            <div className="indicator">
+              <BellIcon className="h-6 w-6" />
+              {noOfNotifications > 0 ? (
+                <span className="indicator-item badge badge-secondary badge-sm">
+                  {noOfNotifications}
+                </span>
+              ) : null}
+            </div>
+          </button>
+          {/* Filter icon (sana oralig'ini tanlash shu yerda ochiladi) */}
+          <button
+            className="btn btn-ghost ml-4  btn-circle"
+            onClick={() => openFilter()}
+          >
+            <div className="indicator">
+              <FunnelIcon className="h-6 w-6" />
+
+            </div>
+          </button>
+
           {/* Light and dark theme selection toogle **/}
-          <label className="swap ">
+          <label className="swap ml-4">
             <input type="checkbox" />
             <SunIcon
               data-set-theme="light"
@@ -103,29 +146,14 @@ function Header() {
             />
           </label>
 
-          {/* Notification icon */}
-          <button
-            className="btn btn-ghost ml-4  btn-circle"
-            onClick={() => openNotification()}
-          >
-            <div className="indicator">
-              <BellIcon className="h-6 w-6" />
-              {noOfNotifications > 0 ? (
-                <span className="indicator-item badge badge-secondary badge-sm">
-                  {noOfNotifications}
-                </span>
-              ) : null}
-            </div>
+          {/* Search */}
+          <button className="btn btn-ghost ml-4 btn-circle" aria-label="Qidiruv">
+            <MagnifyingGlassIcon className="h-6 w-6" />
           </button>
-          {/* Filter icon */}
-          <button
-            className="btn btn-ghost ml-4  btn-circle"
-            onClick={() => openFilter()}
-          >
-            <div className="indicator">
-              <FunnelIcon className="h-6 w-6" />
-          
-            </div>
+
+          {/* Share */}
+          <button className="btn btn-ghost ml-4 btn-circle" aria-label="Ulashish">
+            <ShareIcon className="h-6 w-6" />
           </button>
 
           {/* Profile icon, opening menu on click */}

@@ -29,9 +29,9 @@ function ForgotPassword() {
     }
   };
 
-  const updateFormValue = ({ updateType, value }) => {
+  const updateFormValue = (e) => {
     setErrorMessage("");
-    setUserObj({ ...userObj, [updateType]: value });
+    setUserObj({ ...userObj, [e.target.name]: e.target.value });
   };
 
   return (
@@ -73,9 +73,8 @@ function ForgotPassword() {
                 <form onSubmit={(e) => submitForm(e)}>
                   <div className="mb-4">
                     <InputText
-                      type="emailId"
                       defaultValue={userObj.emailId}
-                      updateType="emailId"
+                      name="emailId"
                       containerStyle="mt-4"
                       labelTitle="Email Id"
                       updateFormValue={updateFormValue}

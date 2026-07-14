@@ -24,9 +24,9 @@ function Layout(){
 
     return(
       <>
-        { /* Left drawer - containing page content and side bar (always open) */ }
-        <div className="drawer drawer-mobile">
-            <input id="left-sidebar-drawer" type="checkbox" className="drawer-toggle" />
+        { /* Left drawer - containing page content and side bar (toggleable) */ }
+        <div className="drawer">
+            <input id="left-sidebar-drawer" type="checkbox" className="drawer-toggle" defaultChecked />
             <PageContent/>
             <LeftSidebar />
         </div>

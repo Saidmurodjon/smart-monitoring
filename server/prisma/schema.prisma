@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  fullName  String?
+  orgName   String?
+  phone     String?  @default("+998")
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]  @relation("OrderAuthors")
+
+  @@map("users")
+}
+
+model Ges {
+  id          Int         @id @default(autoincrement())
+  name        String
+  power       String?
+  region      String?
+  status      String?
+  repair      String?
+  isAktive    Boolean     @default(false)
+  isPublished Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  aggregates  Aggregate[]
+
+  @@map("ges_list")
+}
+
+model Aggregate {
+  id             Int      @id @default(autoincrement())
+  hydroTurbine   Json?
+  hydroGenerator Json?
+  transformer    Json?
+  gesId          Int
+  ges            Ges      @relation(fields: [gesId], references: [id], onDelete: Cascade)
+  state          String   @default("running")
+  isPublished    Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("aggregates")
+}
+
+model HydroGenerator {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  power     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("hydro_generators")
+}
+
+model HydroTurbine {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  power     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("hydro_turbines")
+}
+
+model Transformer {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  power     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transformers")
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  message     String?
+  type        String?
+  isOrdered   String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  authors     User[]   @relation("OrderAuthors")
+
+  @@map("orders")
+}

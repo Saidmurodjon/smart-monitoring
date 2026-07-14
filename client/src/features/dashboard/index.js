@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import DashboardTopBar from "./components/DashboardTopBar";
 import DashboardStats from "./components/DashboardStats";
 import AmountStats from "./components/AmountStats";
 import PageStats from "./components/PageStats";
@@ -12,11 +11,15 @@ import DoughnutChart from "./components/DoughnutChart";
 import UserChannels from "./components/UserChannels";
 import UzbekistanMap from "../../components/UZMAP";
 
-import { BuildingLibraryIcon, BoltIcon, WrenchScrewdriverIcon, BuildingOffice2Icon } from "@heroicons/react/24/outline";
+import {
+  BuildingLibraryIcon,
+  BoltIcon,
+  WrenchScrewdriverIcon,
+  BuildingOffice2Icon,
+} from "@heroicons/react/24/outline";
 
 import { getSocket } from "../../utils/socket";
 import { fetchGesList, addGes } from "../ges/gesSlice";
-import { showNotification } from "../common/headerSlice";
 
 function Dashboard() {
   const dispatch = useDispatch();
@@ -35,43 +38,31 @@ function Dashboard() {
     dispatch(fetchGesList()); // kerak bo‘lsa { region } bilan chaqiring
   }, [dispatch]);
 
- 
 
-  // Top bar range o‘zgarsa
-  const updateDashboardPeriod = (newRange) => {
-    dispatch(
-      showNotification({
-        message: `Period updated to ${newRange.startDate} to ${newRange.endDate}`,
-        status: 1,
-      })
-    );
-    // kerak bo‘lsa shu yerda qayta fetch qilishingiz mumkin
-    // dispatch(fetchGesList({ start: newRange.startDate, end: newRange.endDate }))
-  };
 
   const statsData = [
     {
       title: "Mavjud GESlar",
       value: String(total ?? 0),
-      icon: <BuildingLibraryIcon className="w-8 h-8" />,
+      icon: <BuildingLibraryIcon className="w-6 h-6" />,
       description: "O‘zbekiston kesimida",
     },
     {
       title: "Ishlayotganlari",
       value: String(running ?? 0),
-      icon: <BoltIcon className="w-8 h-8" />,
+      icon: <BoltIcon className="w-6 h-6" />,
       description: "Faol holatda",
     },
     {
       title: "Ta’mirlanmoqda",
       value: String(maintenance ?? 0),
-      icon: <WrenchScrewdriverIcon className="w-8 h-8" />,
+      icon: <WrenchScrewdriverIcon className="w-6 h-6" />,
       description: "Texnik xizmat jarayonida",
     },
     {
       title: "Yangi qurilmoqda",
       value: String(building ?? 0),
-      icon: <BuildingOffice2Icon className="w-8 h-8" />,
+      icon: <BuildingOffice2Icon className="w-6 h-6" />,
       description: "Qurilish bosqichida",
     },
   ];
@@ -79,19 +70,16 @@ function Dashboard() {
 
   return (
     <>
-      {/* Select period */}
-      <DashboardTopBar updateDashboardPeriod={updateDashboardPeriod} />
-
-      {/* Stats row */}
-      <div className="grid lg:grid-cols-4 mt-2 md:grid-cols-2 grid-cols-1 gap-6">
-        {statsData.map((d, k) => (
-          <DashboardStats key={k} {...d} colorIndex={k} />
-        ))}
-      </div>
-
-      {/* Map */}
-      <div className="mt-4">
+      {/* Hero: full-bleed map filling the whole screen, with stats floating over it */}
+      <div className="relative h-[calc(100%+1rem)] -mx-6 -mt-4">
         <UzbekistanMap />
+
+        {/* Stat cards floating over the map, bottom-left corner, compact 2x2 grid */}
+        <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-8 z-20 grid grid-cols-2 gap-2 sm:gap-3 w-56 sm:w-72">
+          {statsData.map((d, k) => (
+            <DashboardStats key={k} {...d} colorIndex={k} overlay />
+          ))}
+        </div>
       </div>
 
       {/* Charts */}

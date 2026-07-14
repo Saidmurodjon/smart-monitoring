@@ -1,12 +1,13 @@
-const mongoose = require("mongoose");
-const { DB } = require("./config");
 const winston = require("winston");
-module.exports=function(){
-    mongoose.connect(DB, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(()=>{
-        winston.debug("Mongodbga ulanish hosil qilindi")
+const prisma = require("../prisma");
+
+module.exports = function () {
+  prisma
+    .$connect()
+    .then(() => {
+      winston.info("🟢 Neon (Postgres) bazasiga ulanish hosil qilindi");
     })
-}
-
-
-
+    .catch((err) => {
+      winston.error("🔴 Neon (Postgres) connection error: " + err.message);
+    });
+};

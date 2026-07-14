@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --map-land-fill: #eef2f6;
+  --map-land-stroke: #94a3b8;
+  --map-land-hover-fill: #22c55e;
+  --map-land-hover-stroke: #15803d;
+}
+[data-theme="dark"] {
+  --map-land-fill: #1e293b;
+  --map-land-stroke: #475569;
+  --map-land-hover-fill: #16a34a;
+  --map-land-hover-stroke: #4ade80;
+}
+
 .loading-indicator:before {
     content: '';
     background: #00000080;

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(npm start)",
+      "Bash(npm test)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git branch*)",
+      "Bash(npx prisma generate)",
+      "Bash(npx prisma migrate status)",
+      "Bash(npx prisma studio)"
+    ]
+  }
+}
