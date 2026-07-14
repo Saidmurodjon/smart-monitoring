@@ -20,7 +20,7 @@ function toId(raw) {
   return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-const GES_FIELDS = ["name", "power", "region", "status", "repair", "isAktive", "isPublished"];
+const GES_FIELDS = ["name", "power", "region", "status", "repair", "isAktive", "isPublished", "latitude", "longitude"];
 function pickGesFields(body) {
   const data = {};
   for (const key of GES_FIELDS) {

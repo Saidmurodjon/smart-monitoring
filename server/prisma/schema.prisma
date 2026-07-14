@@ -28,6 +28,8 @@ model Ges {
   region      String?
   status      String?
   repair      String?
+  latitude    Float?
+  longitude   Float?
   isAktive    Boolean     @default(false)
   isPublished Boolean     @default(false)
   createdAt   DateTime    @default(now())

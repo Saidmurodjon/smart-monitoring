@@ -55,6 +55,9 @@ module.exports = Object.freeze({
     gender: "male",
     teacher: "",
     course: "",
+    latitude: null,
+    longitude: null,
+    isPublished: true,
   },
     AGGREGATES_INITIAL_STATE: {
     hydroTurbine: {

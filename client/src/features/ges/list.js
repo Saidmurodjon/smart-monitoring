@@ -6,7 +6,7 @@ import IconButton from "../../components/buttons/IconButton";
 import Button from "../../components/buttons/Button";
 import { useLocation} from "react-router-dom";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import { fetchGesList, selectGesItems, selectGesLoading, selectGesError, removeGes } from "./gesSlice";
+import { fetchGesList, selectGesItems, selectGesLoading, selectGesError, removeGes, updateGes } from "./gesSlice";
 import { toast } from "react-toastify";
 import http from "../../utils/http";
 // import {  fetchGesList, applyServerEvents } from "../../store/gesSlice";
@@ -67,6 +67,19 @@ console.log(items);
       toast.error(String(msg), { theme: "colored" });
     }
   };
+
+  const toggleDashboardVisibility = async (row) => {
+    try {
+      const { data: doc } = await http.put(`/ges-list?_id=${row._id}`, {
+        ...row,
+        isPublished: !row.isPublished,
+      });
+      dispatch(updateGes(doc));
+    } catch (e) {
+      const msg = e?.response?.data || e.message;
+      toast.error(String(msg), { theme: "colored" });
+    }
+  };
   return (
     <>
       <TitleCard
@@ -93,6 +106,7 @@ console.log(items);
                 <th>So'ngi tamirlangan vaqti</th>
                 <th>Quvvati</th>
                 <th>Date</th>
+                <th>Dashboardda</th>
                 <th></th>
               </tr>
             </thead>
@@ -128,6 +142,14 @@ console.log(items);
 
                         <td>{l.power}</td>
                         <td>{l.email}</td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            className="toggle toggle-primary toggle-sm"
+                            checked={!!l.isPublished}
+                            onChange={() => toggleDashboardVisibility(l)}
+                          />
+                        </td>
                         <td>
                             <IconButton
                             iconType={"eye"}

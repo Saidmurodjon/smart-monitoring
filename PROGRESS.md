@@ -9,6 +9,58 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-14 (2) — GES qo'shish: xaritadan joylashuv tanlash + dashboard ko'rinish toggle
+
+- **Sabab:** xaritadagi GES markerlari hozirgacha hardcoded/mock massiv edi;
+  endi haqiqiy DB ma'lumotlaridan chizilishi, va har bir GES uchun
+  joylashuv (lat/lng) hamda "dashboardda ko'rinsinmi" degan boshqaruv kerak edi.
+- **Backend** (`server/prisma/schema.prisma`): `Ges` modeliga `latitude Float?`,
+  `longitude Float?` qo'shildi (migratsiya: `20260714150559_add_ges_location`).
+  `isPublished` maydoni allaqachon bor edi — endi "dashboardda ko'rinish" flagi
+  sifatida ishlatiladi (yangi maydon qo'shilmadi). `GesList.js` controller
+  whitelist (`GES_FIELDS`)ga `latitude`/`longitude` qo'shildi.
+- **Frontend:**
+  - `client/src/components/UZMAP/useUzbekistanProjection.js` — xarita
+    proyeksiya hisoblash logikasi umumiy hook'ga chiqarildi (avval faqat
+    `UZMAP/index.jsx` ichida edi), endi ikkita joyda (xarita + location picker)
+    bir xil geometriya ishlatiladi.
+  - `client/src/components/UZMAP/LocationPicker.jsx` (yangi) — xaritani bosish
+    orqali koordinata tanlash komponenti. `getScreenCTM()`/`matrixTransform`
+    orqali klik nuqtasi SVG user-space'ga o'tkaziladi, keyin
+    `projection.invert()` bilan `[longitude, latitude]`ga aylantiriladi —
+    CSS scaling/letterboxdan qat'i nazar to'g'ri ishlaydi.
+  - `client/src/features/ges/Settings.js` (Add/Edit GES formasi, bitta
+    komponent ikkala route uchun ham ishlatiladi) — "Texnik holati" endi
+    erkin matn emas, balki 5 ta fuzzy holat (`A'lo/Yaxshi/O'rtacha/Yomon/Juda
+    yomon`) bilan `SelectBox`; "Dashboardda ko'rinsin" toggle qo'shildi
+    (`isPublished`); `GesLocationPicker` joylashtirildi — tanlangan
+    lat/lng formaning `val` state'iga yoziladi va submit paytida avtomatik
+    yuboriladi (alohida submit-kod o'zgarishi kerak bo'lmadi).
+  - `client/src/features/ges/list.js` — GES ro'yxatida har bir qator uchun
+    "Dashboardda" ustunida toggle qo'shildi, bosilganda darhol PUT so'rov
+    yuboradi va Redux'ni yangilaydi (optimistik emas, server javobidan keyin).
+  - `client/src/components/UZMAP/index.jsx` — hardcoded `gesLocations` massivi
+    olib tashlandi; endi Redux (`selectGesItems`) dan o'qiydi, faqat
+    `isPublished === true` VA lat/lng mavjud bo'lgan GESlarni marker sifatida
+    chizadi. Komponent mount bo'lganda `items` bo'sh bo'lsa `fetchGesList()`
+    dispatch qiladi (dashboard sahifasi allaqachon fetch qilsa ham, xarita
+    boshqa joyda ishlatilsa ham ishlashi uchun). Status legend va rang
+    funksiyasi 5 ta fuzzy holatga mos kengaytirildi (avval faqat 3 tasi bor edi).
+  - `client/src/utils/initialStates.js` — `GES_INITIAL_STATE`ga
+    `latitude: null, longitude: null, isPublished: true` qo'shildi (yangi
+    GES sukut bo'yicha dashboardda ko'rinadi, agar admin o'chirmasa).
+- **Tekshirildi:** backend qayta ishga tushirilib (`prisma generate` uchun
+  fayl qulfini yechish kerak bo'ldi — Windows'da ishlab turgan `nodemon`
+  jarayoni Prisma query-engine DLL'ini band qilib turgan edi), `curl` bilan
+  yangi maydonlar bilan GES yaratildi/o'qildi/o'chirildi (test yozuv
+  tozalandi). Client `webpack compiled successfully` — barcha yangi/o'zgargan
+  fayllar xatosiz kompilyatsiya qilindi.
+- **Hali qilinmagan:** brauzerda haqiqiy click-to-pick UX va marker
+  ko'rinishi foydalanuvchi tomonidan hali vizual tasdiqlanmagan (bu muhitda
+  screenshot/brauzer tool yo'q).
+
+---
+
 ## 2026-07-14 — MongoDB → Prisma/Neon migratsiyasi, auth bug fix, dashboard/xarita/navbar qayta dizayni
 
 ### 1. Backend: MongoDB/Mongoose → Prisma + Neon Postgres

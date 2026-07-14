@@ -11,6 +11,16 @@ import { toast } from "react-toastify";
 import http from "../../utils/http";
 import { addGes, updateGes } from "./gesSlice";
 import { useDispatch } from "react-redux";
+import GesLocationPicker from "../../components/UZMAP/LocationPicker";
+
+const STATUS_OPTIONS = [
+  { name: "A'lo", value: "A'lo" },
+  { name: "Yaxshi", value: "Yaxshi" },
+  { name: "O'rtacha", value: "O'rtacha" },
+  { name: "Yomon", value: "Yomon" },
+  { name: "Juda yomon", value: "Juda yomon" },
+];
+
 function Settings() {
   // edit holati: location.state ichida doc bor deb faraz
   const location = useLocation();
@@ -57,7 +67,15 @@ function Settings() {
   const updateFormValue = (e) => {
     setVal({ ...val, [e.target.name]: e.target.value });
   };
- 
+
+  const togglePublished = (e) => {
+    setVal({ ...val, isPublished: e.target.checked });
+  };
+
+  const pickLocation = ({ latitude, longitude }) => {
+    setVal((v) => ({ ...v, latitude, longitude }));
+  };
+
 
   return (
     <>
@@ -76,10 +94,11 @@ function Settings() {
             name="region"
             updateFormValue={updateFormValue}
           />
-          <InputText
+          <SelectBox
             labelTitle="Texnik holati"
             defaultValue={val.status}
             name="status"
+            options={STATUS_OPTIONS}
             updateFormValue={updateFormValue}
           />
           <InputText
@@ -97,6 +116,17 @@ function Settings() {
             name="power"
             updateFormValue={updateFormValue}
           />
+          <div className="form-control">
+            <label className="label cursor-pointer justify-start gap-3">
+              <input
+                type="checkbox"
+                className="toggle toggle-primary"
+                checked={!!val.isPublished}
+                onChange={togglePublished}
+              />
+              <span className="label-text">Dashboardda ko'rinsin</span>
+            </label>
+          </div>
           {/* <InputText
             labelTitle="Home Phone"
             defaultValue={val.homePhone}
@@ -142,6 +172,24 @@ function Settings() {
             name="cupon"
             updateFormValue={updateFormValue}
           /> */}
+        </div>
+
+        <div className="divider"></div>
+
+        <div>
+          <label className="label">
+            <span className="label-text">GESning xaritadagi joylashuvi (belgilash uchun xaritani bosing)</span>
+          </label>
+          <GesLocationPicker
+            latitude={val.latitude}
+            longitude={val.longitude}
+            onPick={pickLocation}
+          />
+          {val.latitude != null && val.longitude != null && (
+            <p className="text-sm text-base-content/70 mt-2">
+              Tanlangan koordinata: {val.latitude}, {val.longitude}
+            </p>
+          )}
         </div>
 
         <div className="mt-16">

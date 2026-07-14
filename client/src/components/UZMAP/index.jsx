@@ -1,63 +1,60 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
-import { geoMercator, geoPath } from "d3-geo";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import uzbekistanMap from "../../data/uzbekistan.geo.json";
-
-const VIEW_PADDING = 30;
-const VIEW_MAX_DIMENSION = 900;
+import useUzbekistanProjection from "./useUzbekistanProjection";
+import { fetchGesList, selectGesItems } from "../../features/ges/gesSlice";
 
 const STATUS_LEGEND = [
   { label: "A'lo", className: "bg-green-500" },
   { label: "Yaxshi", className: "bg-yellow-500" },
-  { label: "Yomon", className: "bg-red-500" },
+  { label: "O'rtacha", className: "bg-blue-500" },
+  { label: "Yomon", className: "bg-orange-500" },
+  { label: "Juda yomon", className: "bg-red-500" },
 ];
 
 export default function UzbekistanMap() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [hovered, setHovered] = useState(null);
 
-  // Auto-fit the projection to the geography so the ENTIRE country is always
-  // visible with no clipping. The viewbox itself is shaped to match the
-  // country's real projected aspect ratio (measured, not guessed), so "meet"
-  // scaling wastes as little space as possible and the map renders as large
-  // as the container allows.
-  const { projection, viewWidth, viewHeight } = useMemo(() => {
-    const reference = geoMercator().fitSize([1000, 1000], uzbekistanMap);
-    const [[x0, y0], [x1, y1]] = geoPath(reference).bounds(uzbekistanMap);
-    const aspect = (x1 - x0) / (y1 - y0);
+  const { projection, viewWidth, viewHeight } = useUzbekistanProjection();
 
-    const width = aspect >= 1 ? VIEW_MAX_DIMENSION : Math.round(VIEW_MAX_DIMENSION * aspect);
-    const height = aspect >= 1 ? Math.round(VIEW_MAX_DIMENSION / aspect) : VIEW_MAX_DIMENSION;
+  const items = useSelector(selectGesItems);
 
-    return {
-      viewWidth: width,
-      viewHeight: height,
-      projection: geoMercator().fitExtent(
-        [
-          [VIEW_PADDING, VIEW_PADDING],
-          [width - VIEW_PADDING, height - VIEW_PADDING],
-        ],
-        uzbekistanMap
-      ),
-    };
-  }, []);
+  useEffect(() => {
+    if (!items || items.length === 0) dispatch(fetchGesList());
+  }, [dispatch, items]);
 
-  const gesLocations = [
-    { _id: "68fc5c2daab7c0634166ed82", name: "Chorvoq GES", coordinates: [69.95, 41.63], status: "A'lo", desc: "To'liq quvvatda ishlayapti." },
-    { name: "Tuyamo‘yin GES", coordinates: [62.33, 41.0], status: "Yaxshi", desc: "Profilaktik ta’mir o'tkazilgan." },
-    { name: "Andijon GES", coordinates: [72.35, 40.8], status: "Yomon", desc: "Avariya rejimida ishlamoqda." },
-    { name: "G‘issar GES", coordinates: [66.25, 38.75], status: "Yaxshi", desc: "Ishlayapti, barqaror holatda." },
-  ];
+  // Faqat "Dashboardda ko'rinsin" deb belgilangan va joylashuvi (lat/lng)
+  // kiritilgan GESlar xaritada marker sifatida chiziladi.
+  const gesLocations = useMemo(
+    () =>
+      (items || [])
+        .filter((g) => g.isPublished && typeof g.latitude === "number" && typeof g.longitude === "number")
+        .map((g) => ({
+          _id: g._id,
+          name: g.name,
+          coordinates: [g.longitude, g.latitude],
+          status: g.status,
+          desc: [g.region, g.status].filter(Boolean).join(" — "),
+        })),
+    [items]
+  );
 
   const getStatusColor = (status) =>
     status === "A'lo"
       ? "fill-green-500"
       : status === "Yaxshi"
         ? "fill-yellow-500"
-        : status === "Yomon"
-          ? "fill-red-500"
-          : "fill-blue-500";
+        : status === "O'rtacha"
+          ? "fill-blue-500"
+          : status === "Yomon"
+            ? "fill-orange-500"
+            : status === "Juda yomon"
+              ? "fill-red-500"
+              : "fill-blue-500";
 
   const handleClick = (ges) => {
     navigate(`/app/ges?id=${ges ? ges?._id : ""}`, { state: ges });
@@ -102,7 +99,7 @@ export default function UzbekistanMap() {
           const isHovered = hovered === ges.name;
           return (
             <Marker
-              key={ges.name}
+              key={ges._id}
               coordinates={ges.coordinates}
               onMouseEnter={() => setHovered(ges.name)}
               onMouseLeave={() => setHovered(null)}
