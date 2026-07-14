@@ -9,6 +9,42 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-14 (5) — Gidrogenerator FIS (f1, f2, F_gg)
+
+- **Sabab:** Fuzzy engine yadrosi turbina bilan tasdiqlangandan keyin,
+  todo ro'yxatidagi navbatdagi qadam — generator uchun ham xuddi shu
+  dvigatelni (`evaluateCanonicalFis`) qayta ishlatib, real ikkinchi
+  "iste'molchi" bilan sinash.
+- **`server/src/services/fuzzyEngine/variableSets.ts`:** `directValueMembershipSet`
+  endi ixtiyoriy `ascendingOrder` parametrini qabul qiladi — chunki
+  `K_abs` (absorbtsiya koeffitsienti) "katta qiymat yaxshi" turidagi
+  parametr, `Tebranish`dan farqli ("kichik qiymat yaxshi"). Shu bitta
+  o'zgarish bilan mavjud `directValueMembershipSet` chaqiruvlari (turbina)
+  buzilmadi (sukut qiymat eski xatti-harakatni saqlaydi).
+- **`server/src/services/fuzzyEngine/generator.ts`** (yangi):
+  - Preprocessing: `computeActivePower`/`computeReactivePower`/
+    `computeAbsorptionCoefficient` — xom `IA,IB,IC,UA,UB,UC,cosPhi,sinPhi,
+    R60,R15`dan `P`, `Q`, `K_abs` hisoblaydi. **Eslatma:** aniq
+    koeffitsient/birlik konversiyasi to'liq 120 betlik dissertatsiya
+    matnida bo'lishi mumkin — bizda faqat avtoreferat bor, shuning uchun
+    fizik jihatdan asosli, lekin taxminiy (test/default) formula
+    ishlatildi.
+  - `assessGeneratorElectrical` (f1, 3 kirish: K_abs, P, Q) va
+    `assessGeneratorNonElectrical` (f2, 2 kirish: stator harorati,
+    tebranish) — FUZZY.md §5.B'ga mos.
+  - `assessGenerator` — `F_gg = sqrt(f1 * f2)` (deterministik, FIS emas).
+- **Service/Controller/Route:** `GeneratorAssessmentService.ts` (f1, f2,
+  F_gg — uchalasi `$transaction` ichida alohida `fuzzy_assessments`
+  qatoriga yoziladi) → `GeneratorAssessmentController.ts` → yangi endpoint
+  `POST /api/assessment/generator/:aggregateId` (`routes/Assessment.ts`ga
+  qo'shildi).
+- **Tekshirildi:** `npx tsc --noEmit` — 0 xato. `curl` bilan 2 stsenariy:
+  barcha parametrlar nominalga mos + past yuklama → f1=f2=F_gg=90/A'lo;
+  tok ikki baravar oshirilgan + K_abs past + harorat/tebranish yuqori →
+  f1=f2=F_gg=10/Juda yomon. Test aggregate va yozuvlari tozalandi.
+
+---
+
 ## 2026-07-14 (4) — Fuzzy Logic yadrosi: gidroturbina (Fgt) FIS, TypeScript'da to'liq vertikal namuna
 
 - **Sabab:** `FUZZY.md` (dissertatsiya asosida tuzatilgan) endi aniq arxitektura

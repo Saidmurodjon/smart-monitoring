@@ -54,13 +54,26 @@ export function deviationMembershipSet(
 }
 
 /**
- * To'g'ridan-to'g'ri qiymat asosidagi parametrlar uchun (masalan Tebranish —
- * qiymat qancha katta bo'lsa, shuncha yomon). `valueCenters` — [alo, yaxshi,
- * ortacha, yomon, juda_yomon] tartibida xom qiymat markazlari.
+ * To'g'ridan-to'g'ri qiymat asosidagi parametrlar uchun. `valueCenters` —
+ * o'sish tartibida (ascending) 5 ta markaz. `ascendingOrder` — qiymat
+ * o'sganda sinflar qanday o'zgarishini bildiradi:
+ *   - Tebranish kabi "kichik yaxshi" parametrlar uchun: [alo,yaxshi,ortacha,yomon,juda_yomon] (sukut)
+ *   - K_abs kabi "katta yaxshi" parametrlar uchun: [juda_yomon,yomon,ortacha,yaxshi,alo]
  */
 export function directValueMembershipSet(
   valueCenters: readonly [number, number, number, number, number],
+  ascendingOrder: readonly [OutputClass, OutputClass, OutputClass, OutputClass, OutputClass] = [
+    "alo",
+    "yaxshi",
+    "ortacha",
+    "yomon",
+    "juda_yomon",
+  ],
 ): ClassMembershipSet {
-  const [alo, yaxshi, ortacha, yomon, judaYomon] = fiveClassPartition(valueCenters);
-  return { alo, yaxshi, ortacha, yomon, juda_yomon: judaYomon };
+  const fns = fiveClassPartition(valueCenters);
+  const set = {} as ClassMembershipSet;
+  ascendingOrder.forEach((cls, i) => {
+    set[cls] = fns[i];
+  });
+  return set;
 }
