@@ -17,6 +17,7 @@ const ROLE_LABELS = { ADMIN: "Administrator", ENGINEER: "Muhandis", VIEWER: "Kuz
 function Header() {
   const dispatch = useDispatch();
   const { pageTitle } = useSelector((state) => state.header);
+  const collapsed = useSelector((state) => state.sidebar.collapsed);
   const [currentTheme, setCurrentTheme] = useState(
     localStorage.getItem("theme")
   );
@@ -59,18 +60,23 @@ function Header() {
             <Bars3Icon className="h-5 inline-block w-5" />
           </label>
 
-          {/* Logotip — bosilganda sidebar kenglig'ini almashtiradi (yig'ish/kengaytirish) */}
+          {/* Logotip — bosilganda sidebar kenglig'ini almashtiradi (yig'ish/kengaytirish).
+              Kenglik/tekislash sidebar'ning o'z kengligiga mos keladi (w-64 / lg:w-20),
+              shu sabab yig'ilganda logotip aynan sidebar ustuni markaziga tushadi. */}
           <button
             type="button"
             onClick={() => dispatch(toggleSidebarCollapsed())}
-            className="flex items-center gap-2 font-semibold text-xl hover:opacity-80"
+            className={
+              "flex items-center gap-2 font-semibold text-xl hover:opacity-80 transition-all duration-200 w-64 justify-start px-3 " +
+              (collapsed ? "lg:w-20 lg:justify-center lg:px-0" : "")
+            }
             title="Sidebar'ni yig'ish/kengaytirish"
           >
-            <img className="mask mask-squircle w-10" src="/logo192.png" alt="Smart Monitoring logo" />
-            <span className="hidden sm:inline">Smart Monitoring</span>
+            <img className="mask mask-squircle w-10 shrink-0" src="/logo192.png" alt="Smart Monitoring logo" />
+            <span className={"hidden sm:inline " + (collapsed ? "lg:hidden" : "")}>Smart Monitoring</span>
           </button>
 
-          <h1 className="text-2xl font-semibold ml-4 hidden md:inline-block">{pageTitle}</h1>
+          {/* <h1 className="text-2xl font-semibold ml-4 hidden md:inline-block">{pageTitle}</h1> */}
         </div>
 
         <div className="order-last">
