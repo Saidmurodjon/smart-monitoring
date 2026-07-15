@@ -4,6 +4,7 @@ const cors = require("cors");
 const winston = require("winston");
 const { PORT } = require("./config/swagger/config");
 const ws = require("./ws");                       // <— yangi modul
+const { bootstrapAdmin } = require("./services/auth/bootstrapAdmin");
 
 const app = express();
 const server = http.createServer(app);           // <— HTTP server
@@ -23,8 +24,12 @@ io.on("connection", (socket) => {
   winston.info(`🟢 WS connected: ${socket.id}`);
 });
 
-server.listen(PORT || 5000, () => {
-  winston.info(`HTTP+WS on http://localhost:${PORT || 5000}`);
-});
+bootstrapAdmin()
+  .catch((err) => winston.error(`bootstrapAdmin xatolik: ${err.message}`))
+  .finally(() => {
+    server.listen(PORT || 5000, () => {
+      winston.info(`HTTP+WS on http://localhost:${PORT || 5000}`);
+    });
+  });
 
 module.exports = { io }; // ixtiyoriy, lekin endi controllerlar getIO() ishlatadi

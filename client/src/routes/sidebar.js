@@ -59,6 +59,7 @@ const routes = [
     path: "/app/fuzzy-rules",
     icon: <AdjustmentsHorizontalIcon className={iconClasses} />,
     name: "Fuzzy Logic qoidalari",
+    roles: ["ADMIN"],
   },
   {
     path: "", //no url needed as this has submenu

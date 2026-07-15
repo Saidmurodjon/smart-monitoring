@@ -2,9 +2,12 @@ import routes from "../routes/sidebar";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import SidebarSubmenu from "./SidebarSubmenu";
 import XMarkIcon from "@heroicons/react/24/outline/XMarkIcon";
+import { getCurrentUserRole } from "../utils/authUser";
 
 function LeftSidebar() {
   const location = useLocation();
+  const role = getCurrentUserRole();
+  const visibleRoutes = routes.filter((route) => !route.roles || route.roles.includes(role));
 
 
   const close = (e) => {
@@ -32,7 +35,7 @@ function LeftSidebar() {
             Smart Monitoring
           </Link>{" "}
         </li>
-        {routes.map((route, k) => {
+        {visibleRoutes.map((route, k) => {
           return (
             <li className="" key={k}>
               {route.submenu ? (

@@ -96,6 +96,12 @@ function Login() {
                 Login
               </button>
 
+              <div className="divider">yoki</div>
+
+              <a href={`${SERVER_URL}auth/google`} className="btn btn-outline w-full">
+                Google orqali kirish
+              </a>
+
               <div className="text-center mt-4">
                 Don't have an account yet?{" "}
                 <Link to="/register">

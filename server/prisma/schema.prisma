@@ -7,13 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ROLES.md — admin: to'liq huquq; engineer: operatsion (agregat/statik
+// parametr); viewer: faqat o'qish.
+enum Role {
+  ADMIN
+  ENGINEER
+  VIEWER
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   fullName  String?
   orgName   String?
   phone     String?  @default("+998")
   email     String   @unique
-  password  String
+  password  String? // Google orqali kirganlarda parol yo'q
+  role      Role     @default(VIEWER)
+  provider  String   @default("local") // "local" | "google"
+  googleId  String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]  @relation("OrderAuthors")

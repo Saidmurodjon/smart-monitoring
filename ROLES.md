@@ -124,12 +124,21 @@ model User {
 - O'qish (GET) endpointlar barcha uch rolga ochiq qoladi — faqat
   autentifikatsiya talab qilinadi, rol tekshirilmaydi.
 
-## 7. Ushbu hujjat bilan bog'liq, hali qilinmagan ishlar
+## 7. Holat — amalga oshirildi (2026-07-15)
 
-Bu fayl **faqat reja/qoidalar hujjati** — quyidagilar hali amalga
-oshirilmagan, alohida so'rov bilan boshlanadi:
-- `schema.prisma`ga `Role` enum va `User.role`/`provider`/`googleId`
-  qo'shish + migratsiya.
-- `passport-google-oauth20` integratsiyasi.
-- `Authentication.js`ni qayta yozish va yoqish + `requireRole` middleware.
-- Login sahifasiga "Google orqali kirish" tugmasi (frontend).
+§1–6'dagi reja **to'liq amalga oshirildi** — batafsil PROGRESS.md
+"2026-07-15 (11)" yozuviga qarang. Qisqacha: schema/migratsiya, bcrypt
+login, bootstrap-admin, `Authentication`/`requireRole`, barcha resurslar
+bo'yicha enforcement, Google OAuth server kodi (kalitlar hali `.env`da
+yo'q — foydalanuvchi qo'shishi kerak), va frontend (Google tugmasi,
+callback sahifa, rol bo'yicha yon panel filtri) — hammasi tayyor.
+
+**Hali qilinmagan (alohida so'rov bilan boshlanadi):**
+- Parolni tiklash ("Forgot password") — sahifa bor, backendga ulanmagan
+  (bu ishdan mustaqil, oldindan mavjud bo'shliq).
+- Rol bo'yicha UI cheklovi faqat bitta joyda (fuzzy-rules sidebar bandi) —
+  boshqa sahifalardagi alohida tugmalarni (masalan viewer uchun) hali
+  yashirmaydi, faqat server darajasida bloklanadi.
+- Rate limiting (`.claude/rules/security.md` #3).
+- Real Google Client ID/Secret bilan to'liq oqimni brauzerda sinash —
+  foydalanuvchi kalitlarni qo'shgach o'zi bajaradi.

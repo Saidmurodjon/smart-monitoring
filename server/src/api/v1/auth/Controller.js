@@ -1,27 +1,40 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const prisma = require("../../../config/prisma");
 const { JWT_KEY, JWT_EXPIRES_IN } = require("../../../config/swagger/config");
-module.exports = {
-  Login: async function (req, res) {
 
+function signToken(user) {
+  return jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    JWT_KEY,
+    { algorithm: "HS256", expiresIn: JWT_EXPIRES_IN },
+  );
+}
+
+module.exports = {
+  signToken,
+  Login: async function (req, res) {
     try {
       const { password, login } = req.body;
       if (!password || !login) {
         return res.status(412).send("login va parolni to'liq kiriting");
       }
-      if (password === "admin" && login === "admin") {
-        const token = jwt.sign(
-          Object.assign({ type: "admin" }, {new:true}),
-          JWT_KEY,
-          {
-            algorithm: "HS256",
-            expiresIn: JWT_EXPIRES_IN,
-          }
-        );
-        return res.status(200).json({ token });
+
+      const user = await prisma.user.findUnique({ where: { email: login } });
+      // Google orqali ro'yxatdan o'tgan hisobda parol bo'lmasligi mumkin —
+      // bunday hisob parol bilan kira olmaydi.
+      if (!user || !user.password) {
+        return res.status(401).send("login yoki parol noto'g'ri");
       }
-      return res.status(401).send("login yoki parol noto'g'ri");
+
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+        return res.status(401).send("login yoki parol noto'g'ri");
+      }
+
+      const token = signToken(user);
+      return res.status(200).json({ token });
     } catch (error) {
-      // throw error
       return res.status(417).send("so'rov amalga oshmadi");
     }
   },

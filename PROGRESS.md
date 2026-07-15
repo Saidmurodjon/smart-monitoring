@@ -9,6 +9,91 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (11) — Rollar (admin/engineer/viewer) va Google OAuth — to'liq amalga oshirildi
+
+- **Sabab:** `ROLES.md` (shu sessiyada yozilgan reja) asosida. Ishni
+  boshlashda auth tizimi kutilganidan ko'ra ko'proq "stub" ekani aniqlandi:
+  login `login==="admin"&&password==="admin"` qattiq tekshiruvi edi (User
+  jadvali umuman ishlatilmasdi), ro'yxatdan o'tishda parol **oddiy matn**
+  holida saqlanardi, `Authentication` middleware faqat imzo tekshirar va
+  `routes/index.js`da butunlay o'chirilgan edi — ya'ni barcha API ochiq.
+  Foydalanuvchi tasdig'i bilan: (1) Google kodi hoziroq to'liq yoziladi,
+  real Client ID/Secret keyin qo'shiladi; (2) enforcement **hoziroq**
+  to'liq yoqiladi (buzuvchi o'zgarish sifatida qabul qilindi) —
+  `.env`dagi `ADMIN_EMAIL`/`ADMIN_PASSWORD` orqali birinchi ADMIN hisobi
+  server ishga tushganda avtomatik yaratiladi.
+- **Schema** (`prisma/schema.prisma`): `Role` enum (`ADMIN/ENGINEER/
+  VIEWER`), `User.role` (default `VIEWER`), `provider` (`"local"|
+  "google"`), `googleId` (unique), `password` endi ixtiyoriy (Google
+  hisoblarida yo'q). Migratsiya (`20260715062214_add_user_roles_and_oauth`)
+  — non-interactive muhitda `migrate dev` ishlamagani uchun avvalgi
+  sessiyalardagi kabi: `migrate diff --script` → SQL'ni qo'lda
+  `$executeRawUnsafe` bilan qo'llash → migratsiya papkasini qo'lda yozish →
+  `migrate resolve --applied`.
+- **Real autentifikatsiya**: `bcryptjs` qo'shildi (native build muammolari
+  bo'lmasligi uchun `bcrypt` o'rniga). `Users.js` (`controllers/Users.js`)
+  — ro'yxatdan o'tishda parol hash qilinadi, rol **har doim** `VIEWER`
+  (mijoz so'rovidan rol hech qachon qabul qilinmaydi — huquq oshirishning
+  oldini olish). `auth/Controller.js` — login endi `User` jadvalidan
+  haqiqiy qidiradi, `bcrypt.compare`, JWT'ga `{id,email,role}` yoziladi
+  (avvalgi `{type:"admin"}` o'rniga). Yangi
+  `services/auth/bootstrapAdmin.ts` — server ishga tushganda (`index.js`,
+  `server.listen`dan oldin) `users` jadvali bo'sh bo'lsa `.env`dagi
+  `ADMIN_EMAIL`/`ADMIN_PASSWORD`dan bitta ADMIN yaratadi.
+- **Middleware**: `Authentication.js` qayta yozildi — endi `req.user =
+  {id,email,role}`ni o'rnatadi (avval faqat imzo tekshirardi). Yangi
+  `middlewares/RequireRole.js` — `requireRole(...roles)` factory, 403
+  qaytaradi. `routes/index.js`: `/login`, `/auth` (Google), `/users`
+  (o'zining ichki Authentication+requireRole'i bilan — faqat GET/PUT rol
+  talab qiladi, POST ochiq qoladi) dan **keyin** `router.use(Authentication)`
+  qo'yildi — shundan keyingi barcha resurslar (`ges-list`, `ges/:gesId/
+  aggregates`, `assessment`, `aggregates` (equipment data), `fuzzy-rules`)
+  token talab qiladi. Yozish (POST/PUT/DELETE) amallariga `ROLES.md` §3
+  matritsasiga mos `requireRole` qo'shildi: GES CRUD → faqat ADMIN;
+  agregat CRUD, statik parametr, sensor yozuvi, yangi FIS baholash →
+  ADMIN+ENGINEER; fuzzy-rules yozish → faqat ADMIN. Barcha GET'lar
+  auth-only (rol tekshirilmaydi).
+- **Google OAuth** (`auth/google.js`, yangi): `passport` +
+  `passport-google-oauth20`. `GOOGLE_CLIENT_ID`/`SECRET` `.env`da yo'q
+  bo'lsa strategiya ro'yxatga olinmaydi va `/auth/google[/callback]`
+  serverni yiqitmasdan **501** qaytaradi (tekshirildi — server tirik
+  qoladi). Bor bo'lganda: email bo'yicha `User` topiladi yoki yaratiladi
+  (`role: VIEWER`, `provider: "google"`), keyin bir xil JWT shakli bilan
+  `${CLIENT_URL}/auth/google/success?token=...`ga redirect qiladi
+  (session-based emas, `session:false` — stateless JWT bilan mos).
+  `.env-example` va `.env`ga `GOOGLE_CLIENT_ID/SECRET/CALLBACK_URL`,
+  `CLIENT_URL` qo'shildi (qiymatlar bo'sh — real kalitlarni foydalanuvchi
+  o'zi Google Cloud Console'dan olib qo'shadi).
+- **Frontend**: `Login.js`ga "Google orqali kirish" tugmasi (oddiy `<a
+  href>`, OAuth uchun to'liq sahifa redirecti kerak, axios emas). Yangi
+  `pages/AuthGoogleSuccess.js` (`/auth/google/success`) — query'dan
+  tokenni o'qib `localStorage`ga saqlaydi, dashboard'ga o'tkazadi;
+  `App.js`ga public route sifatida qo'shildi, `app/auth.js`ning
+  `PUBLIC_ROUTES`iga ham (aks holda `checkAuth()` tokenni o'qishdan oldin
+  `/login`ga qaytarib yuborardi). Yangi `utils/authUser.js` —
+  `getCurrentUserRole()` (JWT payload'ni faqat UI uchun, imzosiz,
+  base64 orqali o'qiydi). `routes/sidebar.js`dagi "Fuzzy Logic qoidalari"
+  bandiga `roles: ["ADMIN"]` qo'shildi, `LeftSidebar.js` endi shu maydon
+  bo'yicha `.filter()` qiladi — admin bo'lmagan foydalanuvchida bu band
+  yon panelda ko'rinmaydi.
+- **Muhim eslatma:** bu o'zgarish qasddan **buzuvchi** — avvalgi
+  "admin/admin har doim ishlaydi" stub va "hamma API ochiq" holati endi
+  yo'q. Brauzerda avval saqlangan eski tokenlar (agar bo'lsa) `role`
+  maydonisiz — GET so'rovlar hali ham o'tadi, lekin yozish amallarida
+  403 qaytaradi; foydalanuvchi qayta login qilishi kifoya.
+- **Tekshirildi (curl, real serverga qarshi):** noto'g'ri parol → 401;
+  bootstrap admin (`admin@example.com`/`.env`dagi parol) bilan login →
+  200 + JWT (`role:"ADMIN"` dekodlab tasdiqlandi); tokensiz yozish → 401;
+  admin token bilan yozish → 201; tokensiz GET → 401; yangi VIEWER
+  ro'yxatdan o'tkazildi (`POST /users`, ochiq) → login → yozishga urinish
+  → 403, fuzzy-rules GET → 200 (auth-only), `GET /users` (admin-only) →
+  403; `GET /auth/google` (kalitlarsiz) → 501, server tirik qoldi. Test
+  ma'lumotlar (GES, VIEWER foydalanuvchi) tozalandi. `npx tsc --noEmit` —
+  toza. O'zgargan client fayllar loyihaning o'z babel presetida xatosiz
+  parse qilindi. Brauzerda Google tugmasi va sidebar filtri vizual
+  tekshirilmadi (bu muhitda brauzer tool yo'q, va real Google kalitlari
+  hali yo'q) — foydalanuvchi o'zi tekshirishi kerak.
+
 ## 2026-07-15 (10) — Agregat sahifalari: haqiqiy DB/sensor ma'lumotlariga ulash + statik parametr kiritish oynasi
 
 - **Sabab:** foydalanuvchi ikkita real sahifani ko'rsatib ("Chorvoq" GES
