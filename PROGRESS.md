@@ -9,6 +9,46 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (9) — Fuzzy Logic qoidalari uchun admin panel UI (frontend)
+
+- **Sabab:** backend admin API (`/api/v1/fuzzy-rules`) allaqachon bor edi,
+  lekin uni ishlatishning yagona yo'li `curl`/Postman edi — foydalanuvchi
+  (yoki kelajakda energetik ekspert) uchun amaliy emas. Shu bo'shliqni
+  to'ldirish uchun ikkita sahifali frontend qurildi.
+- **`features/fuzzyRules/List.js`** + **`pages/fuzzyRules/list.js`**
+  (`/app/fuzzy-rules`): barcha FIS bloklarini (Fgt, f1-f6, GES)
+  o'zgaruvchi/qoida sonlari bilan jadval qilib ko'rsatadi, bosilganda
+  tafsilot sahifasiga o'tadi.
+- **`features/fuzzyRules/Detail.js`** + **`pages/fuzzyRules/Detail.js`**
+  (`/app/fuzzy-rules/detail?type=...`):
+  - O'zgaruvchilar jadvali — **tahrirlanadigan**: turi (deviation/direct/
+    score) dropdown, 5 ta markaz raqamli input, "direct" tanlanganda
+    "Katta qiymat yaxshi" checkbox (K_abs/Rizol kabi holatlar uchun —
+    `ascendingOrder`ni to'liq 5-dropdown o'rniga bitta checkbox bilan
+    boshqaradi, soddaligi uchun). Har bir qator o'z "Saqlash" tugmasiga
+    ega, muvaffaqiyatli saqlangach ma'lumot qayta yuklanadi.
+  - Qoidalar jadvali — **faqat ko'rish** (15-35 qator, avtomatik
+    generatsiya qilingani uchun to'liq tahrirlash UI hozircha ortiqcha
+    murakkablik — kelajakda kerak bo'lsa qo'shiladi).
+- **`routes/index.js`**: `/fuzzy-rules` va `/fuzzy-rules/detail` route'lari
+  ro'yxatga qo'shildi. **`routes/sidebar.js`**: yangi yon panel bandi
+  "Fuzzy Logic qoidalari" (`AdjustmentsHorizontalIcon`).
+- **Tekshirildi:** client `webpack compiled successfully` (yo'lda
+  loyihada ishlatilmaydigan `react-hooks/exhaustive-deps` nomli
+  eslint-disable qatorini loyihaning o'z konvensiyasiga — nomlanmagan
+  bare `// eslint-disable-next-line`ga — moslashtirish kerak bo'ldi).
+  Backend `GET /api/v1/fuzzy-rules` va `GET /api/v1/fuzzy-rules/Fgt`
+  javoblari yangi sahifalar kutgan aniq shaklga (`variables`, `rules`,
+  `assessmentType`, `variableCount`, `ruleCount`) mos kelishi `curl`
+  orqali tasdiqlandi. Brauzerda vizual tekshiruv qilinmadi (bu muhitda
+  brauzer/screenshot tool yo'q) — foydalanuvchi `/app/fuzzy-rules`ni
+  brauzerda ochib ko'rishi tavsiya etiladi.
+- **Loyihaning holati:** foydalanuvchi so'ragan uchta yo'nalish (1: admin
+  panel, 2: dashboard/GES sahifalarini FIS'ga ulash, 3: API prefiksini
+  tuzatish) shu sessiyada **barchasi yakunlandi**.
+
+---
+
 ## 2026-07-15 (8) — Dashboard/GES sahifalari haqiqiy FIS natijalariga ulandi
 
 - **Sabab:** shu paytgacha barcha FIS ishi faqat backend/curl darajasida

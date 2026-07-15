@@ -6,6 +6,7 @@ import TableCellsIcon from "@heroicons/react/24/outline/TableCellsIcon";
 import WalletIcon from "@heroicons/react/24/outline/WalletIcon";
 import CodeBracketSquareIcon from "@heroicons/react/24/outline/CodeBracketSquareIcon";
 import DocumentIcon from "@heroicons/react/24/outline/DocumentIcon";
+import AdjustmentsHorizontalIcon from "@heroicons/react/24/outline/AdjustmentsHorizontalIcon";
 import {
 
   UsersIcon,
@@ -53,6 +54,11 @@ const routes = [
         name: "Yangi GES ni qo‘shish",
       },
     ],
+  },
+  {
+    path: "/app/fuzzy-rules",
+    icon: <AdjustmentsHorizontalIcon className={iconClasses} />,
+    name: "Fuzzy Logic qoidalari",
   },
   {
     path: "", //no url needed as this has submenu

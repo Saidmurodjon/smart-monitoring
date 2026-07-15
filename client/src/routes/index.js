@@ -23,6 +23,9 @@ const GesAddNew = lazy(() => import("../pages/ges/AddNew"));
 const Aggregates = lazy(() => import("../pages/aggregates/list"));
 const AggregatesAddNew = lazy(() => import("../pages/aggregates/AddNew"));
 const GesEdit = lazy(() => import("../pages/ges/Edit"));
+// Fuzzy Logic qoidalari (admin)
+const FuzzyRulesList = lazy(() => import("../pages/fuzzyRules/list"));
+const FuzzyRulesDetail = lazy(() => import("../pages/fuzzyRules/Detail"));
 // calculation route
 
 const routes = [
@@ -61,6 +64,15 @@ const routes = [
   {
     path: "ges/aggregates/add-new", // the url
     component: AggregatesAddNew, // view rendered
+  },
+
+  {
+    path: "/fuzzy-rules", // the url
+    component: FuzzyRulesList, // view rendered
+  },
+  {
+    path: "/fuzzy-rules/detail", // the url
+    component: FuzzyRulesDetail, // view rendered
   },
 
 
