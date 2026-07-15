@@ -1,5 +1,8 @@
 import type { Request, Response } from "express";
-import { runGeneratorAssessment } from "../../../services/assessment/GeneratorAssessmentService";
+import {
+  runGeneratorAssessment,
+  runGeneratorAssessmentFromStoredData,
+} from "../../../services/assessment/GeneratorAssessmentService";
 
 const REQUIRED_NUMERIC_FIELDS = [
   "IA",
@@ -66,5 +69,21 @@ export async function assessGeneratorHandler(req: Request, res: Response): Promi
   } catch (err) {
     const message = err instanceof Error ? err.message : "Baholashda xatolik yuz berdi";
     res.status(500).json({ message });
+  }
+}
+
+export async function assessGeneratorFromStoredHandler(req: Request, res: Response): Promise<void> {
+  const aggregateId = toPositiveInt(req.params.aggregateId);
+  if (aggregateId === null) {
+    res.status(400).json({ message: "Yaroqsiz aggregateId" });
+    return;
+  }
+
+  try {
+    const result = await runGeneratorAssessmentFromStoredData(aggregateId);
+    res.status(200).json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Baholashda xatolik yuz berdi";
+    res.status(422).json({ message });
   }
 }

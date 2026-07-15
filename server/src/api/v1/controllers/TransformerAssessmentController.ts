@@ -1,5 +1,8 @@
 import type { Request, Response } from "express";
-import { runTransformerAssessment } from "../../../services/assessment/TransformerAssessmentService";
+import {
+  runTransformerAssessment,
+  runTransformerAssessmentFromStoredData,
+} from "../../../services/assessment/TransformerAssessmentService";
 
 const WINDING_FIELDS = ["ryuqAB", "ryuqBC", "ryuqCA", "rnnA", "rnnB", "rnnC"] as const;
 const WINDING_NOMINAL_FIELDS = [
@@ -77,5 +80,21 @@ export async function assessTransformerHandler(req: Request, res: Response): Pro
   } catch (err) {
     const message = err instanceof Error ? err.message : "Baholashda xatolik yuz berdi";
     res.status(500).json({ message });
+  }
+}
+
+export async function assessTransformerFromStoredHandler(req: Request, res: Response): Promise<void> {
+  const aggregateId = toPositiveInt(req.params.aggregateId);
+  if (aggregateId === null) {
+    res.status(400).json({ message: "Yaroqsiz aggregateId" });
+    return;
+  }
+
+  try {
+    const result = await runTransformerAssessmentFromStoredData(aggregateId);
+    res.status(200).json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Baholashda xatolik yuz berdi";
+    res.status(422).json({ message });
   }
 }

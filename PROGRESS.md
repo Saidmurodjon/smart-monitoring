@@ -9,6 +9,41 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (3) — Generator/Transformator/GES ham "from-stored" naqshiga o'tkazildi
+
+- **Sabab:** faqat gidroturbina uchun qurilgan "DB'dagi saqlangan
+  ma'lumotlardan avtomatik baholash" yo'li qolgan uch bosqichga ham
+  takrorlandi — endi butun 4 qatlamli zanjir (turbina→generator→
+  transformator→GES) xom parametrlarni qayta-qayta yubormasdan, faqat
+  DB'dagi eng so'nggi sensor/statik ma'lumotlardan ishlaydi.
+- **`GeneratorAssessmentService.runGeneratorAssessmentFromStoredData()`:**
+  10 ta dinamik (`IA..UC, cosPhi, sinPhi, statorHarorati, tebranish`) va
+  4 ta statik (`R60, R15, pNominal, qNominal`) parametrni DB'dan o'qiydi.
+  Yangi endpoint: `POST /api/assessment/generator/:aggregateId/from-stored`.
+- **`TransformerAssessmentService.runTransformerAssessmentFromStoredData()`:**
+  **Muhim dizayn qarori** — f3/f4 (chulg'am, izolyatsiya) FUZZY.md §2'ga
+  ko'ra TO'LIQ statik (megger/absorbtsiya o'lchovlari davriy texnik
+  xizmat natijasi, uzluksiz sensor emas). Shu sabab bu qiymatlar (jumladan
+  "hozirgi o'lchov"lar ham) `equipment_static_params`da saqlanadi — "hozirgi"
+  qiymatlar `Actual` qo'shimchasi bilan (`ryuqABActual` va h.k.) nominal
+  qiymatdan ajratiladi, chunki `(aggregateId, equipmentType, paramName)`
+  unique kaliti bitta paramName uchun faqat bitta qatorga ruxsat beradi.
+  Faqat f6 (harorat, tebranish) haqiqiy real-vaqt sensor sifatida
+  `sensor_readings`da saqlanadi. Jami 18 ta statik + 2 ta dinamik parametr.
+  Yangi endpoint: `POST /api/assessment/transformer/:aggregateId/from-stored`.
+- **GES darajasi uchun alohida "from-stored" endpoint QO'SHILMADI** —
+  `GesAssessmentService.runGesAssessment()` allaqachon boshidanoq faqat
+  DB'dan (oxirgi Fgt/F_gg/F_tr) o'qiydi, xom body qabul qilmaydi — demak
+  u allaqachon "from-stored" xarakterida edi, dublikat kerak emas edi.
+- **Tekshirildi:** to'liq zanjir — bitta aggregate uchun barcha 3 jihozning
+  statik+dinamik ma'lumotlari yuborildi, so'ngra ketma-ket
+  turbina→generator→transformator→GES `from-stored` chaqirildi — barchasi
+  **90/A'lo** berdi (hech qanday xom FIS parametri qayta yuborilmadi,
+  faqat `aggregateId`). `npx tsc --noEmit` — 0 xato. Test aggregate
+  tozalandi (cascade orqali barcha static params/sensor readings ham o'chdi).
+
+---
+
 ## 2026-07-15 (2) — equipment_metadata + sensor_data (TimescaleDB hypertable) ingestion pipeline
 
 - **Sabab:** "Qoidalarni DB'ga ko'chirish" vazifasiga o'tishdan oldin
