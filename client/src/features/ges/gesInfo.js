@@ -286,13 +286,13 @@ function Transactions() {
                            <IconButton
                             iconType={"eye"}
                             value={unit}
-                            navigate={`aggregates?id=${firstData && firstData.length>0 ?firstData[0]._id : ""}/`}
-                          /> 
+                            navigate={`aggregates?aggregateId=${unit._id}`}
+                          />
                           <IconButton
                             iconType={"pensil"}
                             value={unit}
-                            navigate={`./aggregates/add-new?id=${firstData && firstData.length>0 ?firstData[0]._id : ""}`}
-                          /> 
+                            navigate={`./aggregates/add-new?gesId=${firstData && firstData.length>0 ?firstData[0]._id : ""}`}
+                          />
                           <IconButton
                             iconType={"trash"}
                             value={unit}

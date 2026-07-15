@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import type { EquipmentType } from "@prisma/client";
 import { upsertStaticParam } from "../../../repositories/EquipmentStaticParamRepository";
 import { insertReadings, type ReadingInput } from "../../../repositories/SensorReadingRepository";
+import { getAggregateDetail } from "../../../services/assessment/EquipmentDetailService";
 
 const VALID_EQUIPMENT_TYPES: readonly string[] = ["TURBINE", "GENERATOR", "TRANSFORMER"];
 
@@ -43,6 +44,27 @@ function parseParamEntries(raw: unknown): ParamEntry[] | null {
     });
   }
   return entries;
+}
+
+/** GET /api/aggregates/:aggregateId/detail — tavsifiy maydonlar + statik parametrlar + so'nggi sensor qiymatlari + FIS natijalari, bittada. */
+export async function getAggregateDetailHandler(req: Request, res: Response): Promise<void> {
+  const aggregateId = toPositiveInt(req.params.aggregateId);
+  if (aggregateId === null) {
+    res.status(400).json({ message: "Yaroqsiz aggregateId" });
+    return;
+  }
+
+  try {
+    const detail = await getAggregateDetail(aggregateId);
+    if (!detail) {
+      res.status(404).json({ message: "Agregat topilmadi" });
+      return;
+    }
+    res.status(200).json(detail);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Ma'lumotni o'qishda xatolik yuz berdi";
+    res.status(500).json({ message });
+  }
 }
 
 /** PUT /api/aggregates/:aggregateId/:equipmentType/static-params */

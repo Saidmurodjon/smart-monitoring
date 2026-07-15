@@ -1,7 +1,14 @@
 import express from "express";
-import { setStaticParamsHandler, ingestReadingsHandler } from "../controllers/EquipmentDataController";
+import {
+  setStaticParamsHandler,
+  ingestReadingsHandler,
+  getAggregateDetailHandler,
+} from "../controllers/EquipmentDataController";
 
 const router = express.Router();
+
+// GET /api/aggregates/:aggregateId/detail
+router.get("/:aggregateId/detail", getAggregateDetailHandler);
 
 // PUT /api/aggregates/:aggregateId/:equipmentType/static-params
 router.put("/:aggregateId/:equipmentType/static-params", setStaticParamsHandler);

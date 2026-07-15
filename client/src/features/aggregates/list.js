@@ -1,67 +1,83 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import TitleCard from "../../components/Cards/TitleCard";
 import Button from "../../components/buttons/Button";
-import { useLocation } from "react-router-dom";
-import { useDispatch, useSelector, shallowEqual } from "react-redux";
-import {
-  fetchGesList,
-  selectGesItems,
-  selectGesLoading,
-  selectGesError,
-  removeGes,
-} from "./gesSlice";
-import { toast } from "react-toastify";
+import { useSearchParams } from "react-router-dom";
 import http from "../../utils/http";
 import TransformerAnimation from "./animations/TransformerAnimation";
 import HydroTurbineAnimation from "./animations/HydroTurbineAnimation";
 import HydroGeneratorAnimation from "./animations/HydroGeneratorAnimation";
 import State from "../../components/buttons/State";
 
+// Live sensor qiymatini (va, bo'lsa, nominal statik qiymatni) ko'rsatadi.
+function ReadoutRow({ label, live, nominal, unit }) {
+  const hasLive = live !== undefined && live !== null;
+  return (
+    <div className="flex justify-between items-baseline">
+      <span>{label}</span>
+      <span className="text-right">
+        {hasLive ? (
+          <span>
+            {live} {unit}
+          </span>
+        ) : (
+          <span className="text-sm text-gray-400 italic">Ma'lumot yo'q</span>
+        )}
+        {nominal !== undefined && nominal !== null && (
+          <span className="block text-xs text-gray-400">nominal: {nominal} {unit}</span>
+        )}
+      </span>
+    </div>
+  );
+}
+
+function StatusRow({ label, entry }) {
+  return (
+    <div className="flex justify-between">
+      <span className="font-semibold">{label}</span>
+      {entry ? (
+        <State status={entry.status} />
+      ) : (
+        <span className="text-xs text-gray-400 italic">Hali baholanmagan</span>
+      )}
+    </div>
+  );
+}
+
 function Transactions() {
-  const location = useLocation();
-  const { total, running, maintenance, building } = useSelector(
-    (s) => s.ges?.stats
-  );
-  const geo = location.state?.geo;
-  const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const aggregateId = searchParams.get("aggregateId");
 
-  const { items, loading, error } = useSelector(
-    (s) => ({
-      items: selectGesItems(s),
-      loading: selectGesLoading(s),
-      error: selectGesError(s),
-    }),
-    shallowEqual
-  );
-
-  const selectedRegionName =
-    geo?.properties?.name ||
-    geo?.properties?.NAME_1 ||
-    geo?.name ||
-    null;
+  const [detail, setDetail] = useState(null);
+  const [loading, setLoading] = useState(Boolean(aggregateId));
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const params = selectedRegionName ? { region: selectedRegionName } : {};
-    dispatch(fetchGesList(params));
-  }, [selectedRegionName, dispatch]);
-
-  const Delete = async (row) => {
-    if (!window.confirm("Delete the item?")) return;
-    try {
-      await http.delete(`/ges-list?_id=${row._id}`);
-      dispatch(removeGes({ _id: row._id }));
-      toast.success("Item has deleted", { theme: "colored" });
-    } catch (e) {
-      const msg = e?.response?.data || e.message;
-      toast.error(String(msg), { theme: "colored" });
+    if (!aggregateId) {
+      setLoading(false);
+      return;
     }
-  };
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    http
+      .get(`/aggregates/${aggregateId}/detail`)
+      .then(({ data }) => {
+        if (!cancelled) setDetail(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err?.response?.data?.message || err.message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [aggregateId]);
 
-  // Bitta agregatni olaymiz (hozircha birinchi element)
-  const firstAgg = items && items.length > 0 ? items[0] : null;
-  const hydroTurbine = firstAgg?.hydroTurbine || {};
-  const hydroGenerator = firstAgg?.hydroGenerator || {};
-  const transformer = firstAgg?.transformer || {};
+  const staticParams = detail?.staticParams || {};
+  const readings = detail?.latestReadings || {};
+  const assessment = detail?.assessment || null;
 
   return (
     <>
@@ -72,132 +88,85 @@ function Transactions() {
           <Button
             name={"Add new"}
             btnStyle={"btn-primary px-6 btn-sm normal-case"}
-            navigate={"./add-new"}
+            navigate={`./add-new${detail?.gesId ? `?gesId=${detail.gesId}` : ""}`}
           />
         }
       >
-        {loading && <div>Yuklanmoqda...</div>}
-        {error && (
-          <div className="text-red-500">Xatolik: {String(error)}</div>
+        {!aggregateId && (
+          <div className="text-gray-500 italic py-6">
+            Agregat tanlanmagan — GES sahifasidan bir agregatni tanlang.
+          </div>
         )}
+        {loading && <div className="py-6">Yuklanmoqda...</div>}
+        {error && <div className="text-red-500 py-6">Xatolik: {String(error)}</div>}
 
-        {!loading && !error && !firstAgg && (
-          <div>Maʼlumot topilmadi</div>
-        )}
-
-        {!loading && !error && firstAgg && (
+        {!loading && !error && detail && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
             {/* 1 - Gidroturbina */}
             <div className="bg-base-100 shadow-md rounded-2xl p-6 flex flex-col justify-between">
               <div>
-                <h2 className="text-2xl font-semibold text-center mb-2">
-                  Gidroturbina
-                </h2>
-                 <HydroTurbineAnimation />
+                <h2 className="text-2xl font-semibold text-center mb-2">Gidroturbina</h2>
+                <HydroTurbineAnimation />
                 <div className="space-y-2 text-xl">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Texnik holati</span>
-                    <State status={hydroTurbine?.status || "excellent"} />
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Aylanash tezligi</span>
-                    <span>{hydroTurbine.speed_rpm || "60"} ayl/daq</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Quvvat</span>
-                    <span>{hydroTurbine.ratedPowerKW || "5000"} kVt</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Suv sarfi</span>
-                    <span>{hydroTurbine.ratedFlow_m3s || "50"} m³/s</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Tebranish</span>
-                    <span>{hydroTurbine.vibration || "60"} mkm</span>
-                  </div>
+                  <StatusRow label="Texnik holati" entry={assessment?.turbine} />
+                  <ReadoutRow
+                    label="Aylanish tezligi"
+                    live={readings.TURBINE?.aylanishTezligi}
+                    nominal={staticParams.TURBINE?.aylanishTezligi}
+                    unit="ayl/daq"
+                  />
+                  <ReadoutRow
+                    label="Quvvat"
+                    live={readings.TURBINE?.quvvat}
+                    nominal={staticParams.TURBINE?.quvvat}
+                    unit="MVt"
+                  />
+                  <ReadoutRow
+                    label="Suv sarfi"
+                    live={readings.TURBINE?.suvSarfi}
+                    nominal={staticParams.TURBINE?.suvSarfi}
+                    unit="m³/s"
+                  />
+                  <ReadoutRow label="Tebranish" live={readings.TURBINE?.tebranish} unit="mkm" />
                 </div>
-              </div>
-
-              <div className="mt-6 text-center">
-                <Button
-                  name="Batafsil"
-                  btnStyle="btn-sm px-8"
-                  navigate={`?info=`}
-                />
               </div>
             </div>
 
             {/* 2 - Gidrogenerator */}
             <div className="bg-base-100 shadow-md rounded-2xl p-6 flex flex-col justify-between">
               <div>
-                <h2 className="text-2xl font-semibold text-center mb-4">
-                  Gidrogenerator
-                </h2>
-              <HydroGeneratorAnimation/>
+                <h2 className="text-2xl font-semibold text-center mb-4">Gidrogenerator</h2>
+                <HydroGeneratorAnimation />
                 <div className="space-y-2 text-xl">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Texnik holati</span>
-                    <State status={hydroGenerator?.status || "excellent"} />
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Kabs</span>
-                    <span>{hydroGenerator.kabs || "-"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Tebranish</span>
-                    <span>{hydroGenerator.vibration || "-"} mkm</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Stator harorati</span>
-                    <span>
-                      {hydroGenerator.statorTemp || "-"} °C
-                    </span>
-                  </div>
+                  <StatusRow label="Texnik holati" entry={assessment?.generator} />
+                  <StatusRow label="Elektr qism (f1)" entry={assessment?.details?.f1} />
+                  <StatusRow label="Noelektr qism (f2)" entry={assessment?.details?.f2} />
+                  <ReadoutRow
+                    label="Stator harorati"
+                    live={readings.GENERATOR?.statorHarorati}
+                    unit="°C"
+                  />
+                  <ReadoutRow label="Tebranish" live={readings.GENERATOR?.tebranish} unit="mkm" />
                 </div>
-              </div>
-
-              <div className="mt-6 text-center">
-                <Button
-                  name="Batafsil"
-                  btnStyle="btn-sm px-8"
-                  // navigate={"./generator-details"}
-                />
               </div>
             </div>
 
             {/* 3 - Transformator */}
             <div className="bg-base-100 shadow-md rounded-2xl p-6 flex flex-col justify-between">
               <div>
-                <h2 className="text-2xl font-semibold text-center mb-4">
-                  Transformator
-                </h2>
-                <TransformerAnimation/>
+                <h2 className="text-2xl font-semibold text-center mb-4">Transformator</h2>
+                <TransformerAnimation />
                 <div className="space-y-2 text-xl">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Texnik holati</span>
-                    <State status={transformer?.status || "normal"} />
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Chulgʻam texnik holati</span>
-                    <span>{transformer.windingState || "Aʼlo"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Izolyatsiya holati</span>
-                    <span>{transformer.insulationState || "Aʼlo"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Noelektrik qism</span>
-                    <span>{transformer.mechanicalState || "Aʼlo"}</span>
-                  </div>
+                  <StatusRow label="Texnik holati" entry={assessment?.transformer} />
+                  <StatusRow label="Chulg'am texnik holati" entry={assessment?.details?.f3} />
+                  <StatusRow label="Izolyatsiya holati" entry={assessment?.details?.f4} />
+                  <StatusRow label="Noelektrik qism" entry={assessment?.details?.f6} />
+                  <ReadoutRow
+                    label="Transformator harorati"
+                    live={readings.TRANSFORMER?.transformatorHarorati}
+                    unit="°C"
+                  />
                 </div>
-              </div>
-
-              <div className="mt-6 text-center">
-                <Button
-                  name="Batafsil"
-                  btnStyle="btn-sm px-8"
-                  // navigate={"./transformer-details"}
-                />
               </div>
             </div>
           </div>

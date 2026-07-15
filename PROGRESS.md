@@ -9,6 +9,75 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (10) — Agregat sahifalari: haqiqiy DB/sensor ma'lumotlariga ulash + statik parametr kiritish oynasi
+
+- **Sabab:** foydalanuvchi ikkita real sahifani ko'rsatib ("Chorvoq" GES
+  sahifasi va "Aggregat" 3-kartali sahifa) so'radi — "texnik holat DB va
+  sensor ma'lumotlari asosida ko'rsatilsin", va "turbina/generator/
+  transformator statik ma'lumotlarini qachon/qayerda kiritamiz". Tekshiruv
+  shuni ko'rsatdi: `features/aggregates/list.js` ("Aggregat" kartalari)
+  aslida **GES ro'yxati** redux state'idan (`fetchGesList` → `/ges-list`)
+  `items[0]`ni olib, uni **Aggregate** hujjati deb talqin qilardi
+  (`firstAgg.hydroTurbine` — GES hujjatida bunday maydon yo'q) — shuning
+  uchun bu sahifadagi barcha raqamlar doim hardcode fallback edi
+  ("60 ayl/daq" va h.k.), qaysi agregat bosilganidan qat'i nazar. Va
+  `PUT /aggregates/:id/:equipmentType/static-params` yozuv endpointi
+  avvalgi sessiyada qurilgan edi, lekin hech qanday client uni hech qachon
+  chaqirmagan — ya'ni yangi qo'shilgan agregatning FIS statik nominal
+  qiymatlari (aylanishTezligi, R60/R15, transformatorning 18 ta qarshiligi
+  va h.k.) hech qayerda kiritilmasdi.
+- **Yangi backend endpoint — `GET /api/v1/aggregates/:aggregateId/detail`**
+  (`server/src/services/assessment/EquipmentDetailService.ts`,
+  `EquipmentDataController.ts`, `routes/EquipmentData.ts`): bitta chaqiruvda
+  agregatning tavsifiy JSON blob maydonlarini, uchala jihoz uchun statik
+  nominal parametrlarni (`getStaticParams`), eng so'nggi sensor
+  qiymatlarini (`getLatestReadings`, oldindan belgilangan dinamik
+  parametr ro'yxati bo'yicha — FUZZY.md §5ga mos) va eng so'nggi FIS
+  natijalarini (`getAssessmentSummary`, mavjud) birlashtirib qaytaradi.
+  Yozish tomoni o'zgarmadi — statik parametrlarni yozish uchun mavjud
+  `PUT .../static-params` endpointi ishlatiladi.
+- **`features/aggregates/addNew.js` — to'liq qayta yozildi**: bitta oynada
+  3 ta tab (Gidroturbina/Gidrogenerator/Transformator), har birida ikki
+  bo'lim — mavjud tavsifiy maydonlar (model, seriya raqami...) va yangi
+  "Texnik parametrlar (FIS uchun nominal qiymatlar)" bo'limi (turbina 3,
+  generator 4, transformator 18 ta — chulg'am nominal/joriy/izolyatsiya
+  guruhlariga bo'lingan). Tahrirlashda `/aggregates/:id/detail`dan statik
+  qiymatlar oldindan yuklanadi (yuklanguncha forma ko'rsatilmaydi — async
+  prefill paytida `InputText`ning `defaultValue`-asosli holatini
+  buzmaslik uchun). Saqlashda avval mavjud blob create/update chaqiriladi,
+  so'ng har bir jihoz uchun to'ldirilgan statik maydonlar
+  `PUT .../static-params`ga yuboriladi (bo'sh maydonlar tashlab
+  ketiladi — mavjud qiymatlarni nolga bosib yozib yubormaslik uchun).
+- **`features/aggregates/list.js` — to'liq qayta yozildi**: endi GES-list
+  redux'ini umuman ishlatmaydi; URL'dagi `?aggregateId=` bo'yicha bitta
+  `GET /aggregates/:id/detail` chaqiradi. 3 karta haqiqiy holatni
+  ko'rsatadi: umumiy holat badge'lari `assessment.turbine/generator/
+  transformer`dan, generator kartasidagi ikkinchi/uchinchi qatorlar
+  `details.f1`(elektr qism)/`f2`(noelektr qism)dan, transformator
+  kartasining 3 qatori `details.f3`(chulg'am)/`f4`(izolyatsiya)/
+  `f6`(noelektrik qism)dan (FUZZY.md §5.C bilan tasdiqlangan moslik) —
+  avvalgi hardcode "A'lo" matnlari o'rniga. Raqamli ko'rsatkichlar
+  (aylanish tezligi, quvvat, harorat...) `latestReadings`dan, ma'lumot
+  bo'lmasa "Ma'lumot yo'q" ko'rsatiladi.
+- **`features/ges/gesInfo.js` — id uzatish xatoliklari tuzatildi**: ko'z
+  ikonkasi endi to'g'ri `unit._id`ni `?aggregateId=` sifatida uzatadi
+  (avval har doim `firstData[0]._id`ni, ya'ni GES id'ni, noto'g'ri `?id=`
+  parametr nomi bilan uzatardi — yangi Aggregat sahifasi buni
+  o'qiy olmasdi). Qalam ikonkasi endi `?gesId=` (to'g'ri parametr nomi,
+  `addNew.js` shuni kutadi) bilan uzatadi — avval `?id=` deb noto'g'ri
+  nomlangan edi, ya'ni tahrirlashda `gesId` doim `null` bo'lardi.
+- **O'chirildi:** `client/src/pages/aggregates/Edit.js` — mavjud bo'lmagan
+  `features/aggregates/Settings`ni import qilardi, hech qanday route yoki
+  havola unga ishora qilmasligi grep bilan tasdiqlandi (o'lik kod edi).
+- **Tekshirildi:** `server && npx tsc --noEmit` — toza. Test GES/agregat
+  yaratib, `GET /detail` → statik parametr `PUT` → qayta `GET /detail`
+  (qiymatlar to'g'ri qaytdi) → sensor `POST /readings` → qayta `GET
+  /detail` (yangi qiymat ko'rindi) → mavjud bo'lmagan id uchun 404 →
+  test ma'lumotlar tozalandi (curl orqali, real serverga qarshi). Uchala
+  o'zgargan client fayli loyihaning o'z `babel-preset-react-app`
+  presetida xatosiz parse qilindi. Brauzerda vizual tekshiruv qilinmadi —
+  bu muhitda brauzer tool yo'q, foydalanuvchi o'zi ochib ko'rishi kerak.
+
 ## 2026-07-15 (9) — Fuzzy Logic qoidalari uchun admin panel UI (frontend)
 
 - **Sabab:** backend admin API (`/api/v1/fuzzy-rules`) allaqachon bor edi,
