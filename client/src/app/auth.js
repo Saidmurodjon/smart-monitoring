@@ -8,7 +8,6 @@ const checkAuth = () => {
     "login",
     "forgot-password",
     "register",
-    "documentation",
     "auth/google/success",
   ];
 
