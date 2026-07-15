@@ -10,6 +10,7 @@ const aggregates = require("./Aggregates");
 const auth = require("./Auth");
 const assessment = require("./Assessment");
 const equipmentData = require("./EquipmentData");
+const fuzzyRules = require("./FuzzyRules");
 const Authentication = require("../middlewares/Authentication");
 // router
 router.get("/", (req, res) => {
@@ -22,6 +23,7 @@ router.use("/ges/:gesId/aggregates", aggregates);
 router.use("/ges-list", gesList);
 router.use("/assessment", assessment);
 router.use("/aggregates", equipmentData);
+router.use("/fuzzy-rules", fuzzyRules);
 
 // router.use("/auth", auth);
 module.exports = router;

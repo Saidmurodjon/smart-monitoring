@@ -9,6 +9,55 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (6) — Qoidalar bazasi uchun admin API (CRUD) + jonli keshni bekor qilish
+
+- **Sabab:** qoidalar DB'ga ko'chirilgan bo'lsa-da, ularni o'zgartirishning
+  yagona yo'li seed skript yoki qo'lda SQL edi — bu DB'ga ko'chirishning
+  butun maqsadini (kod deploy qilmasdan sozlash imkoniyati) yo'qqa
+  chiqarardi. Shu bo'shliqni to'ldirish uchun REST API qurildi.
+- **`repositories/FuzzyRuleRepository.ts`ga qo'shildi:** `listAssessmentTypes()`
+  (barcha bloklarni o'zgaruvchi/qoida sonlari bilan ro'yxatlaydi),
+  `deleteVariableDefinition()`.
+- **`api/v1/controllers/FuzzyRuleAdminController.ts`** (yangi) va
+  **`routes/FuzzyRules.ts`** — `/api/fuzzy-rules` ostida:
+  - `GET /api/fuzzy-rules` — barcha bloklar ro'yxati
+  - `GET /api/fuzzy-rules/:assessmentType` — bitta blokning to'liq
+    o'zgaruvchi+qoida ta'riflari
+  - `PUT /api/fuzzy-rules/:assessmentType/variables/:variable` — bitta
+    o'zgaruvchi ta'rifini yaratish/yangilash
+  - `DELETE /api/fuzzy-rules/:assessmentType/variables/:variable`
+  - `PUT /api/fuzzy-rules/:assessmentType/rules` — shu blok uchun BARCHA
+    qoidalarni almashtirish
+  - **Qat'iy validatsiya:** `centers` 5 ta o'sish tartibidagi son bo'lishi
+    shart; `kind` faqat deviation/direct/score; `ascendingOrder` (agar
+    berilsa) 5 ta yaroqli sinf nomi; **`weight` 0.0–1.0 oralig'ida
+    bo'lishi API chegarasida qat'iy talab qilinadi**
+    (`.claude/rules/fuzzy-logic.md` #3 — bu birinchi marta shu qoidani
+    kod darajasida real ravishda kuchga kiritadi, ilgari faqat "ishonch"
+    bilan ishlatilardi).
+  - Har bir yozish amalidan keyin `invalidateFisDefinitionCache()`
+    chaqiriladi — o'zgarish DARHOL kuchga kiradi, `dbRuleLoader.ts`dagi
+    60 soniyalik kesh muddatini kutish shart emas.
+- **Tekshirildi (eng ta'sirchan namoyish):** gidroturbina uchun
+  "tebranish" o'zgaruvchisining "a'lo" chegarasi (0.3 → 0.1) API orqali
+  serverni qayta ishga tushirmasdan o'zgartirildi — bir xil so'rov
+  (tebranish=0.3) darhol boshqacha natija berdi (90 → 87.5, qisman "yaxshi"
+  a'zoligi paydo bo'ldi), keshning haqiqatan darhol yangilanganini
+  isbotladi. Validatsiya ham sinovdan o'tkazildi: noto'g'ri `kind`,
+  o'smaydigan `centers`, va oraliqdan tashqari `weight` (1.5) — barchasi
+  aniq xabar bilan `400` qaytardi. Keyin chegara asl holatiga (0.3)
+  qaytarildi va bir xil natija (90/A'lo) tasdiqlandi. `npx tsc --noEmit`
+  — 0 xato (yo'lda Express 5 tiplari `req.params`ni `string | string[]`
+  deb belgilagani va Prisma `groupBy`ning implicit-any muammosi tuzatildi).
+- **Loyihaning holati:** Fuzzy Logic yadrosi endi haqiqatan **dinamik
+  boshqariladigan** — domen ekspertlari (energetiklar) chegaralarni kod
+  yozmasdan, deploy qilmasdan, real vaqtda sozlashi mumkin. Bu
+  `.claude/rules/fuzzy-logic.md`ning "loyihani dinamik kengaytirish"
+  talabini to'liq qondiradi. Frontend UI (admin panel) hali qurilmagan —
+  hozircha faqat API mavjud.
+
+---
+
 ## 2026-07-15 (5) — Qoidalarni DB'ga ko'chirish YAKUNLANDI: f1, f2, f3, f4, f5, f6, GES ham DB-asosli
 
 - **Sabab:** Fgt (turbina) namunali migratsiyasidan keyingi tabiiy davomi —

@@ -14,6 +14,30 @@ export interface RuleDefinitionRow {
   weight: number;
 }
 
+export interface AssessmentTypeSummary {
+  assessmentType: string;
+  variableCount: number;
+  ruleCount: number;
+}
+
+/** DB'da ta'rif mavjud bo'lgan barcha FIS bloklarini (assessmentType) ro'yxatlaydi. */
+export async function listAssessmentTypes(): Promise<AssessmentTypeSummary[]> {
+  const [variableGroups, ruleGroups] = await Promise.all([
+    prisma.fuzzyVariableDefinition.groupBy({ by: ["assessmentType"], _count: { _all: true } }),
+    prisma.fuzzyRuleDefinition.groupBy({ by: ["assessmentType"], _count: { _all: true } }),
+  ]);
+
+  type GroupRow = { assessmentType: string; _count: { _all: number } };
+  const ruleCounts = new Map((ruleGroups as GroupRow[]).map((g) => [g.assessmentType, g._count._all]));
+  return (variableGroups as GroupRow[])
+    .map((g) => ({
+      assessmentType: g.assessmentType,
+      variableCount: g._count._all,
+      ruleCount: ruleCounts.get(g.assessmentType) ?? 0,
+    }))
+    .sort((a: AssessmentTypeSummary, b: AssessmentTypeSummary) => a.assessmentType.localeCompare(b.assessmentType));
+}
+
 export async function getVariableDefinitions(assessmentType: string): Promise<VariableDefinitionRow[]> {
   const rows = await prisma.fuzzyVariableDefinition.findMany({ where: { assessmentType } });
   return rows.map((row: FuzzyVariableDefinition) => ({
@@ -55,6 +79,11 @@ export async function upsertVariableDefinition(def: {
       ascendingOrder: def.ascendingOrder ? [...def.ascendingOrder] : undefined,
     },
   });
+}
+
+export async function deleteVariableDefinition(assessmentType: string, variable: string): Promise<boolean> {
+  const result = await prisma.fuzzyVariableDefinition.deleteMany({ where: { assessmentType, variable } });
+  return result.count > 0;
 }
 
 /** Berilgan assessmentType uchun eski qoidalarni o'chirib, yangilarini yozadi. */
