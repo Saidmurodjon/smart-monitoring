@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import TitleCard from "../../../components/Cards/TitleCard";
 import InputText from "../../../components/Input/InputText";
+import Avatar from "../../../components/Avatar";
 import { showNotification } from "../../common/headerSlice";
 import http from "../../../utils/http";
 
@@ -104,17 +105,24 @@ function ProfileSettings() {
   return (
     <>
       <TitleCard title="Profil sozlamalari" topMargin="mt-2">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="text-base-content">{profile.email}</span>
-          <span className={`badge ${ROLE_BADGE_STYLE[profile.role] || "badge-ghost"}`}>
-            {ROLE_LABELS[profile.role] || profile.role}
-          </span>
-          <span className="badge badge-outline">
-            {profile.provider === "google" ? "Google hisobi" : "Lokal hisob"}
-          </span>
+        {/* Identity header */}
+        <div className="flex items-center gap-4 pb-5 mb-5 border-b border-base-200">
+          <Avatar email={profile.email} size="w-14" textSize="text-2xl" />
+          <div className="flex flex-col gap-1.5">
+            <span className="font-semibold text-base-content break-all">{profile.email}</span>
+            <div className="flex items-center gap-2">
+              <span className={`badge badge-sm ${ROLE_BADGE_STYLE[profile.role] || "badge-ghost"}`}>
+                {ROLE_LABELS[profile.role] || profile.role}
+              </span>
+              <span className="badge badge-sm badge-outline">
+                {profile.provider === "google" ? "Google hisobi" : "Lokal hisob"}
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Editable fields */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <InputText
             labelTitle="To'liq ism"
             name="fullName"
@@ -133,12 +141,20 @@ function ProfileSettings() {
             defaultValue={draft.phone}
             updateFormValue={updateFormValue}
           />
-          <InputText labelTitle="Email" defaultValue={profile.email} updateFormValue={() => {}} isDisabled />
+          <InputText
+            labelTitle="Email"
+            labelStyle="text-base-content/60"
+            defaultValue={profile.email}
+            updateFormValue={() => {}}
+            isDisabled
+          />
         </div>
+        <p className="text-xs text-base-content/50 -mt-3">Email manzilni o'zgartirib bo'lmaydi.</p>
 
-        <div className="mt-10">
+        {/* Action row */}
+        <div className="flex justify-end border-t border-base-200 pt-4 mt-5">
           <button
-            className={"btn btn-primary float-right" + (saving ? " loading" : "")}
+            className={"btn btn-primary" + (saving ? " loading" : "")}
             onClick={updateProfile}
             disabled={saving}
           >
@@ -149,7 +165,7 @@ function ProfileSettings() {
 
       {profile.provider === "local" && (
         <TitleCard title="Parolni o'zgartirish" topMargin="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6" key={pwdFormKey}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5" key={pwdFormKey}>
             <InputText
               labelTitle="Joriy parol"
               type="password"
@@ -172,9 +188,10 @@ function ProfileSettings() {
               updateFormValue={updatePwdValue}
             />
           </div>
-          <div className="mt-8">
+
+          <div className="flex justify-end border-t border-base-200 pt-4 mt-5">
             <button
-              className={"btn btn-primary float-right" + (pwdSaving ? " loading" : "")}
+              className={"btn btn-primary" + (pwdSaving ? " loading" : "")}
               onClick={changePassword}
               disabled={pwdSaving}
             >

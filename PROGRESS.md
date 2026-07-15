@@ -9,6 +9,60 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (13) — Sidebar doimiy panel + yig'iladigan ikonka rejimi, profil forma dizayni
+
+- **Sabab:** foydalanuvchi skrinshotlarda ko'rsatdi — sidebar hali ham mobil
+  uslubidagi overlay sifatida ishlayotgan edi (ochilganda butun sahifani
+  qоrоng'ulashtiradi, X bilan yopiladi), hatto katta ekranda ham. So'ralgan:
+  desktopda doimiy panel, kichraytirilganda ikonkalar ko'rinib turadigan
+  rejim, va professional/ixcham profil tahrirlash formasi.
+- **Sabab tahlili:** `containers/Layout.js`dagi oddiy `drawer` klassi
+  DaisyUI'da barcha ekran o'lchamlarida overlay xatti-harakatini beradi.
+  O'rnatilgan DaisyUI versiyasi (`^2.41.0`, `node_modules/daisyui/dist/
+  full.css`dan bevosita tekshirildi) uchun to'g'ri klass — `drawer-open`
+  (v3+dagi nom) emas, balki **`drawer-mobile`** — bu klassning o'zida
+  `min-width:1024px` breakpoint allaqachon mavjud, qo'shimcha `lg:` prefiks
+  shart emas.
+- **`containers/Layout.js`**: `className="drawer"` → `"drawer drawer-mobile"`.
+  1024px dan pastda avvalgidek (hamburger bilan ochiladigan, qоrоng'u fon
+  bilan overlay) ishlaydi; 1024px dan yuqorida sidebar doimiy panel bo'lib,
+  overlay/yopish harakati yo'qoladi.
+- **`containers/LeftSidebar.js`** — yig'iladigan ikonka rejimi qo'shildi:
+  `collapsed` holati (`localStorage`da `sidebar-collapsed` kaliti bilan
+  saqlanadi, sahifa yangilanganda ham eslab qoladi). Kengaytirilganda —
+  avvalgidek (ikonka+matn, email/rol nishonchasi, submenyular ochiladi).
+  Yig'ilganda (`w-20`) — faqat ikonkalar (har biri `title` orqali
+  tooltip), identifikatsiya bloki faqat rolga mos rangli halqali avatarga
+  qisqaradi, "Ges haqida ma'lumot" submenyusi to'g'ridan-to'g'ri birinchi
+  bandiga (`/app/ges-list`) havola bo'lib qoladi (ikkinchi darajali "Yangi
+  GES qo'shish" faqat kengaytirilganda ko'rinadi — bitta maxsus holat
+  uchun flyout-submenyu qurish ortiqcha murakkablik deb topildi). Yig'ish/
+  kengaytirish tugmasi — faqat desktopda ko'rinadigan kichik strelka
+  (`hidden lg:inline-flex`), mobil X-yopish tugmasi esa endi `lg:hidden`
+  (desktopda kerak emas, sidebar doimiy ochiq).
+- **`containers/Header.js`**: mobil hamburger tugmasi `lg:hidden` qilindi
+  (desktopda alohida yig'ish tugmasi bor, ikkalasi bir vaqtda kerak emas).
+  Avatar logikasi umumiy komponentga chiqarildi.
+- **Yangi umumiy komponent — `components/Avatar.js`**: bosh harf asosidagi
+  ixcham avatar (`Header.js`, `LeftSidebar.js`, profil sahifasi — barchasi
+  shu bittasini ishlatadi, rang/hajm/halqa proplar orqali sozlanadi).
+- **`features/settings/profilesettings/index.js`** — forma qayta
+  tuzildi (ma'lumot/API o'zgarmadi, faqat joylashuv): identifikatsiya
+  sarlavhasi (katta avatar + email + rol/hisob turi nishonchalari,
+  pastki chiziq bilan ajratilgan), input to'ri (`gap-6`→`gap-5`,
+  Email maydoniga "o'zgartirib bo'lmaydi" izohi), va `float-right`
+  o'rniga yuqori chiziqli, o'ngga tekislangan harakat qatori — profil va
+  parol kartalari endi bir xil uch qismli tuzilishga ega (sarlavha /
+  maydonlar / harakat qatori).
+- **Tekshirildi:** `drawer-mobile` klassi va uning 1024px breakpointi
+  o'rnatilgan `daisyui@2.41.0` paketining kompilyatsiya qilingan CSS
+  faylidan bevosita tasdiqlandi (taxmin emas). `ChevronDoubleLeft/RightIcon`
+  o'rnatilgan `@heroicons/react` paketida mavjudligi tekshirildi. Barcha
+  o'zgargan fayllar loyihaning o'z babel presetida xatosiz parse qilindi.
+  Brauzerda vizual natija (kenglik o'tishlari, halqa ranglari, mobil/
+  desktop chegarasi) tekshirilmadi — foydalanuvchi keng va tor oyna
+  o'lchamlarida ko'rib tasdiqlashi kerak.
+
 ## 2026-07-15 (12) — Navbar/sidebar tozalash, real profil sozlamalari, foydalanuvchi/rol boshqaruv sahifasi
 
 - **Sabab:** ilova asli "DashWind" shablonidan boshlangan va ko'p sahifalar

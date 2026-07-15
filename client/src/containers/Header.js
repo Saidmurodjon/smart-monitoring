@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { fetchGesList } from "../features/ges/gesSlice";
 import { showNotification } from "../features/common/headerSlice";
 import { getCurrentUser } from "../utils/authUser";
+import Avatar from "../components/Avatar";
 
 const ROLE_LABELS = { ADMIN: "Administrator", ENGINEER: "Muhandis", VIEWER: "Kuzatuvchi" };
 
@@ -19,7 +20,6 @@ function Header() {
     localStorage.getItem("theme")
   );
   const user = getCurrentUser();
-  const initial = (user?.email || "?").charAt(0).toUpperCase();
 
   useEffect(() => {
     themeChange(false);
@@ -49,11 +49,11 @@ function Header() {
   return (
     <>
       <div className="navbar  flex justify-between bg-base-100  z-10 shadow-md ">
-        {/* Menu toogle for mobile view or small screen */}
+        {/* Menu toogle for mobile view or small screen — desktop has its own collapse toggle in the sidebar */}
         <div className="">
           <label
             htmlFor="left-sidebar-drawer"
-            className="btn btn-primary drawer-button"
+            className="btn btn-primary drawer-button lg:hidden"
           >
             <Bars3Icon className="h-5 inline-block w-5" />
           </label>
@@ -93,10 +93,8 @@ function Header() {
 
           {/* Profile icon, opening menu on click */}
           <div className="dropdown dropdown-end ml-4">
-            <label tabIndex={0} className="btn btn-ghost btn-circle avatar placeholder">
-              <div className="bg-primary text-primary-content rounded-full w-10">
-                <span className="text-lg">{initial}</span>
-              </div>
+            <label tabIndex={0} className="btn btn-ghost btn-circle">
+              <Avatar email={user?.email} />
             </label>
             <ul
               tabIndex={0}
