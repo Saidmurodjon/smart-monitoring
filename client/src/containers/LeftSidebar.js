@@ -1,10 +1,8 @@
 import { useState } from "react";
 import routes from "../routes/sidebar";
-import { NavLink, Link, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import SidebarSubmenu from "./SidebarSubmenu";
 import XMarkIcon from "@heroicons/react/24/outline/XMarkIcon";
-import ChevronDoubleLeftIcon from "@heroicons/react/24/outline/ChevronDoubleLeftIcon";
-import ChevronDoubleRightIcon from "@heroicons/react/24/outline/ChevronDoubleRightIcon";
 import { getCurrentUser } from "../utils/authUser";
 import Avatar from "../components/Avatar";
 
@@ -45,7 +43,7 @@ function LeftSidebar() {
       <label htmlFor="left-sidebar-drawer" className="drawer-overlay lg:hidden"></label>
       <ul
         className={
-          "menu pt-2 bg-base-100 text-base-content transition-all duration-200 " +
+          "menu pt-2 bg-base-100 text-base-content transition-all duration-200 min-h-screen flex flex-col " +
           (collapsed ? "lg:w-20 w-64" : "w-64")
         }
       >
@@ -56,70 +54,31 @@ function LeftSidebar() {
           <XMarkIcon className="h-5 inline-block w-5" />
         </button>
 
-        {/* Desktop-only collapse/expand toggle */}
-        <button
-          className="btn btn-ghost btn-sm btn-circle hidden lg:inline-flex absolute top-2 right-2 z-50"
-          onClick={toggleCollapsed}
-          title={collapsed ? "Kengaytirish" : "Yig'ish"}
-        >
-          {collapsed ? (
-            <ChevronDoubleRightIcon className="h-4 w-4" />
-          ) : (
-            <ChevronDoubleLeftIcon className="h-4 w-4" />
-          )}
-        </button>
-
+        {/* Logotip — bosilganda sidebar kenglig'ini almashtiradi (yig'ish/kengaytirish) */}
         <li className="mb-2 font-semibold text-xl">
-          <Link to={"/app/dashboard"} className={collapsed ? "justify-center" : ""} title="Smart Monitoring">
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className={`w-full flex items-center gap-2 rounded-btn hover:bg-base-200 py-2 ${
+              collapsed ? "justify-center" : "px-3"
+            }`}
+            title={collapsed ? "Kengaytirish" : "Yig'ish"}
+          >
             <img
               className="mask mask-squircle w-10"
               src="/logo192.png"
               alt="Smart Monitoring logo"
             />
             {!collapsed && "Smart Monitoring"}
-          </Link>{" "}
+          </button>
         </li>
 
-        {user &&
-          (collapsed ? (
-            <li className="mb-3 flex items-center justify-center pointer-events-none">
-              <Avatar email={user.email} size="w-9" textSize="text-base" ringClassName={ROLE_RING_STYLE[role] || ""} />
-            </li>
-          ) : (
-            <li className="mb-3">
-              <div className="flex flex-col items-start gap-1 pointer-events-none">
-                <span className="text-sm text-base-content/70 break-all">{user.email}</span>
-                <span className={`badge badge-sm ${ROLE_BADGE_STYLE[role] || "badge-ghost"}`}>
-                  {ROLE_LABELS[role] || role}
-                </span>
-              </div>
-            </li>
-          ))}
-
+        {/* Nav bandlari */}
         {visibleRoutes.map((route, k) => {
-          // Yig'ilgan holatda submenyu ochib-yopilmaydi — birinchi bandiga
-          // to'g'ridan-to'g'ri havola beriladi (ikkinchi darajali amal,
-          // masalan "Yangi GES qo'shish", faqat kengaytirilganda ko'rinadi).
-          if (route.submenu && collapsed) {
-            const target = route.submenu[0];
-            return (
-              <li className="" key={k}>
-                <NavLink
-                  end
-                  to={target.path}
-                  className="justify-center"
-                  title={route.name}
-                >
-                  {route.icon}
-                </NavLink>
-              </li>
-            );
-          }
-
           return (
             <li className="" key={k}>
               {route.submenu ? (
-                <SidebarSubmenu {...route} />
+                <SidebarSubmenu {...route} collapsed={collapsed} />
               ) : (
                 <NavLink
                   end
@@ -143,6 +102,29 @@ function LeftSidebar() {
             </li>
           );
         })}
+
+        {/* Joriy foydalanuvchi — pastga tortilgan */}
+        {user && (
+          <li className="mt-auto pt-3 border-t border-base-200">
+            {collapsed ? (
+              <div className="flex items-center justify-center py-2 pointer-events-none">
+                <Avatar
+                  email={user.email}
+                  size="w-9"
+                  textSize="text-base"
+                  ringClassName={ROLE_RING_STYLE[role] || ""}
+                />
+              </div>
+            ) : (
+              <div className="flex flex-col items-start gap-1 py-2 pointer-events-none">
+                <span className="text-sm text-base-content/70 break-all">{user.email}</span>
+                <span className={`badge badge-sm ${ROLE_BADGE_STYLE[role] || "badge-ghost"}`}>
+                  {ROLE_LABELS[role] || role}
+                </span>
+              </div>
+            )}
+          </li>
+        )}
       </ul>
     </div>
   );

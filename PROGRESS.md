@@ -9,6 +9,34 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (14) — Sidebar tuzatishlar: (13)dagi brauzer sinovidan keyingi 3 ta feedback
+
+- **Sabab:** foydalanuvchi (13)ni brauzerda sinab ko'rib 3 ta muammo topdi:
+  yig'ilganda submenyu butunlay yo'qolib qolgan edi (faqat birinchi bandiga
+  havola qolgan), yuqoridagi email/rol bloki keraksiz joyni band qilardi,
+  va alohida ">>" strelka tugmasi o'rniga "SM" logotipining o'zi yig'ish/
+  kengaytirish vazifasini bajarishi so'ralgan edi.
+- **`containers/SidebarSubmenu.js`**: yangi `collapsed` prop qabul qiladi.
+  Yig'ilganda ham ochib-yopish ishlaydi — sarlavha faqat ikonkaga
+  qisqaradi (matn/strelka yashiriladi, `title` orqali tooltip), ochilgan
+  submenyu bandlari ham ikonka+tooltip ko'rinishida qoladi (matn
+  yashiriladi). Kengaytirilganda avvalgidek to'liq matn bilan ishlaydi.
+- **`containers/LeftSidebar.js`**: (a) "yig'ilganda submenyuni bitta
+  havolaga aylantirish" maxsus holati olib tashlandi — endi
+  `SidebarSubmenu` doim ishlatiladi, `collapsed` propi bilan; (b) joriy
+  foydalanuvchi (email+rol / yig'ilganda faqat halqali avatar) bloki
+  ro'yxat yuqorisidan pastga ko'chirildi (`mt-auto` + `ul`ga
+  `min-h-screen flex flex-col`, yuqori chiziq bilan ajratilgan); (c)
+  alohida `ChevronDoubleLeft/RightIcon` tugma butunlay olib tashlandi —
+  endi "SM" logotipining o'zi (`<button onClick={toggleCollapsed}>`)
+  yig'ish/kengaytirishni boshqaradi, `/app/dashboard`ga navigatsiya esa
+  allaqachon birinchi sidebar bandi orqali mavjud bo'lgani uchun
+  logotipdan olib tashlandi.
+- **Tekshirildi:** ikkala fayl loyihaning o'z babel presetida xatosiz
+  parse qilindi. Brauzerda vizual natija (submenyu ikonkalari, pastki
+  identifikatsiya bloki, logotip bosilganda kenglik almashishi)
+  tekshirilmadi — foydalanuvchi qayta ko'rib tasdiqlashi kerak.
+
 ## 2026-07-15 (13) — Sidebar doimiy panel + yig'iladigan ikonka rejimi, profil forma dizayni
 
 - **Sabab:** foydalanuvchi skrinshotlarda ko'rsatdi — sidebar hali ham mobil
