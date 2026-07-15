@@ -9,6 +9,72 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (2) — equipment_metadata + sensor_data (TimescaleDB hypertable) ingestion pipeline
+
+- **Sabab:** "Qoidalarni DB'ga ko'chirish" vazifasiga o'tishdan oldin
+  aniqlandi: deviation-asosli o'zgaruvchilar (masalan Aylanish tezligi)
+  uchun "nominal" qiymat har bir jihozga xos — bu qiymat DB'da haqiqiy
+  saqlanmasdan turib, qoidalar bazasini DB'ga ko'chirish yarim-tugallanmagan
+  bo'lardi. Shuning uchun avval shu infratuzilma qurildi.
+- **Muhim topilma:** ushbu Neon Postgres instansida `timescaledb`
+  kengaytmasi **mavjud va yoqiladigan** ekan (`CREATE EXTENSION
+  timescaledb` muvaffaqiyatli o'tdi) — CLAUDE.md #5.1'dagi "TimescaleDB
+  continuous aggregates" talabi endi haqiqatan bajarilishi mumkin (avval
+  bu standart Neon'da mavjud emas deb taxmin qilingan edi).
+- **`server/prisma/schema.prisma`:**
+  - `EquipmentStaticParam` (`equipment_static_params`) — FUZZY.md §7
+    "equipment_metadata"ga mos, statik/nominal qiymatlar,
+    `(aggregateId, equipmentType, paramName)` bo'yicha unique.
+  - `SensorReading` (`sensor_readings`) — FUZZY.md §7 "sensor_data"ga mos.
+    **Muhim dizayn qarori:** hypertable talabi bo'yicha vaqt ustuni
+    (`recordedAt`) barcha unique/PK cheklovlarga kirishi shart — shuning
+    uchun alohida autoincrement `id` YO'Q, kompozit kalit
+    `(aggregateId, equipmentType, paramName, recordedAt)` ishlatildi.
+  - Migratsiyalar: `20260714...add_equipment_metadata_and_sensor_readings`
+    (jadval yaratish) + qo'lda yozilgan
+    `20260715002000_enable_timescaledb_hypertable` (`CREATE EXTENSION` +
+    `create_hypertable()`).
+  - **⚠️ Muhim voqea:** `prisma migrate dev --create-only` chaqirilganda,
+    Timescale'ning `create_hypertable()` o'zi avtomatik qo'shgan indeks
+    Prisma tomonidan "kutilmagan drift" deb aniqlandi va Prisma **butun
+    development bazasini reset qilishni** taklif qildi (`prisma migrate
+    reset` — barcha ma'lumot o'chirilardi). Bu buyruq **ishga
+    tushirilmadi**. Buning o'rniga: hypertable konversiyasi to'g'ridan-
+    to'g'ri (`$executeRawUnsafe` orqali) qo'lda bajarildi, so'ngra shu
+    SQL migratsiya papkasi sifatida qo'lda yozilib,
+    `prisma migrate resolve --applied` bilan tarixga qo'lda ro'yxatga
+    olindi — `migrate dev`ning drift-aniqlash yo'lidan butunlay chetlab
+    o'tildi. (Bu xuddi shu sessiyaning oldingi qismida `email @unique`
+    migratsiyasi uchun ishlatilgan texnikaning takrori.)
+- **`repositories/EquipmentStaticParamRepository.ts`** va
+  **`repositories/SensorReadingRepository.ts`** (yangi): `upsertStaticParam`/
+  `getStaticParams`, `insertReadings`/`getLatestReadings` (har bir
+  `paramName` uchun eng so'nggi yozuvni oladi).
+- **`EquipmentDataController.ts`/`routes/EquipmentData.ts`** (yangi):
+  `PUT /api/aggregates/:aggregateId/:equipmentType/static-params` va
+  `POST /api/aggregates/:aggregateId/:equipmentType/readings`.
+- **`TurbineAssessmentService.ts`ga qo'shildi:**
+  `runTurbineAssessmentFromStoredData()` — xom parametrlarni so'rov
+  body'sida talab qilish o'rniga, DB'dagi eng so'nggi sensor o'qishlari +
+  nominal statik parametrlarni o'qib avtomatik baholaydi. Yangi endpoint:
+  `POST /api/assessment/turbine/:aggregateId/from-stored`. Bu FUZZY.md
+  §11'dagi haqiqiy real-vaqt oqimiga mos yo'l (hozircha faqat turbina
+  uchun — generator/transformator/GES uchun xuddi shunday naqsh bilan
+  keyinroq qo'shiladi).
+- **Tozalash:** `ReadingController.js` (Mongoose davridan qolgan, hech
+  qayerda ulanmagan, chaqirilsa xato beradigan o'lik kod — `Reading.create`
+  aniqlanmagan) o'chirildi, chunki uning vazifasini endi
+  `EquipmentDataController`/`SensorReadingRepository` to'g'ri bajaradi.
+- **Tekshirildi:** to'liq zanjir — aggregate yaratish → nominal statik
+  qo'yish → sensor o'qish yuborish → `from-stored` orqali baholash → 90/
+  A'lo. Ma'lumot yo'qligida aniq `422` va aylanuvchi xabar. Yangi (yomon)
+  tebranish o'qishi yuborilganda "eng so'nggi" to'g'ri yangilanib, natija
+  mos ravishda 50/O'rtacha'ga tushdi (§2026-07-15(1)dagi fallback qoida
+  mexanizmi bilan mos). `npx tsc --noEmit` — 0 xato. Test aggregate
+  tozalandi (cascade orqali static params/sensor readings ham o'chdi).
+
+---
+
 ## 2026-07-15 (1) — Aralash-holat qoidalari qo'shildi: eng muhim topilgan cheklov hal qilindi
 
 - **Sabab:** o'tgan sessiyada topilgan MUHIM cheklov — "kanonik" 5-qoidali

@@ -40,17 +40,19 @@ model Ges {
 }
 
 model Aggregate {
-  id               Int               @id @default(autoincrement())
+  id               Int                    @id @default(autoincrement())
   hydroTurbine     Json?
   hydroGenerator   Json?
   transformer      Json?
   gesId            Int
-  ges              Ges               @relation(fields: [gesId], references: [id], onDelete: Cascade)
-  state            String            @default("running")
-  isPublished      Boolean           @default(false)
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  ges              Ges                    @relation(fields: [gesId], references: [id], onDelete: Cascade)
+  state            String                 @default("running")
+  isPublished      Boolean                @default(false)
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
   fuzzyAssessments FuzzyAssessment[]
+  staticParams     EquipmentStaticParam[]
+  sensorReadings   SensorReading[]
 
   @@map("aggregates")
 }
@@ -80,6 +82,43 @@ model FuzzyAssessment {
 
   @@index([aggregateId, equipmentType, assessmentType])
   @@map("fuzzy_assessments")
+}
+
+// Statik parametrlar (nominal qiymatlar, ta'mirdan keyin o'zgaradigan
+// qarshiliklar va h.k.) — FUZZY.md §7 "equipment_metadata" jadvaliga mos.
+// Bir (aggregateId, equipmentType, paramName) juftligi uchun bitta joriy
+// qiymat saqlanadi (yangilanganda ustiga yoziladi — tarix kerak emas).
+model EquipmentStaticParam {
+  id            Int           @id @default(autoincrement())
+  aggregateId   Int
+  aggregate     Aggregate     @relation(fields: [aggregateId], references: [id], onDelete: Cascade)
+  equipmentType EquipmentType
+  paramName     String
+  paramValue    Float
+  unit          String?
+  paramType     String        @default("nominal") // "nominal" | "warning_high" | ...
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([aggregateId, equipmentType, paramName])
+  @@map("equipment_static_params")
+}
+
+// Dinamik (sensordan keladigan) parametrlar — FUZZY.md §7 "sensor_data"
+// jadvaliga mos, TimescaleDB hypertable sifatida ishlatiladi (vaqt
+// seriyali samaradorlik uchun, CLAUDE.md #5.1). Hypertable talabi bo'yicha
+// vaqt ustuni (`recordedAt`) barcha unique/PK cheklovlarga kirishi shart —
+// shu sabab alohida autoincrement `id` yo'q, kompozit kalit ishlatiladi.
+model SensorReading {
+  aggregateId   Int
+  aggregate     Aggregate     @relation(fields: [aggregateId], references: [id], onDelete: Cascade)
+  equipmentType EquipmentType
+  paramName     String
+  value         Float
+  unit          String?
+  recordedAt    DateTime      @default(now())
+
+  @@id([aggregateId, equipmentType, paramName, recordedAt])
+  @@map("sensor_readings")
 }
 
 model HydroGenerator {

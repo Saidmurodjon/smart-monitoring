@@ -488,10 +488,17 @@ ulangan bo‘lsa). Tarix grafigi — holat o‘zgarishi trendi.
   jihoz darajasi (Fgg, Ftr — deterministik `sqrt`; f5 — FIS) → GES darajasi
   (FIS, 3 kirishli).
 - Barcha darajada bir xil **5 ta chegara** (20/40/60/80) ishlatiladi.
-- `equipment_metadata` (statik) va Redis/kesh, `sensor_data` (dinamik,
-  TimescaleDB, vaqt tamg‘asi bilan), `fuzzy_assessments` (har bosqich
-  natijasi, derived), `equipment_failures` (ishonchlilik hisobi uchun,
-  hozircha keyingi bosqich) — jami 4 ta jadval kerak.
+- `equipment_metadata` (statik — amalda `equipment_static_params`),
+  `sensor_data` (dinamik — amalda `sensor_readings`, **haqiqatan
+  TimescaleDB hypertable**, chunki bu Neon instansida `timescaledb`
+  kengaytmasi mavjud va yoqilgan), `fuzzy_assessments` (har bosqich
+  natijasi, derived) — **amalga oshirilgan** (2026-07-15). Ingestion
+  endpointlari (`PUT/POST /api/aggregates/:id/:equipmentType/...`) va
+  "DB'dan avtomatik baholash" yo'li (`POST
+  /api/assessment/turbine/:id/from-stored`) hozircha faqat gidroturbina
+  uchun namuna sifatida ulangan — generator/transformator/GES uchun xuddi
+  shu naqsh keyinroq takrorlanadi. `equipment_failures` (ishonchlilik
+  hisobi uchun) hali qo'shilmagan.
 - Real vaqt oqimi: MQTT → Backend → (1) DB yozish, (2) preprocessing,
   (3) FIS hisoblash (barcha qatlamlar), (4) WebSocket push. Frontend faqat
   kerakli natijalarni (ball, status, asosiy parametrlar) oladi — tarmoq

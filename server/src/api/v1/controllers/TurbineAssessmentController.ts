@@ -1,5 +1,8 @@
 import type { Request, Response } from "express";
-import { runTurbineAssessment } from "../../../services/assessment/TurbineAssessmentService";
+import {
+  runTurbineAssessment,
+  runTurbineAssessmentFromStoredData,
+} from "../../../services/assessment/TurbineAssessmentService";
 
 const REQUIRED_NUMERIC_FIELDS = [
   "aylanishTezligi",
@@ -50,5 +53,21 @@ export async function assessTurbineHandler(req: Request, res: Response): Promise
   } catch (err) {
     const message = err instanceof Error ? err.message : "Baholashda xatolik yuz berdi";
     res.status(500).json({ message });
+  }
+}
+
+export async function assessTurbineFromStoredHandler(req: Request, res: Response): Promise<void> {
+  const aggregateId = toPositiveInt(req.params.aggregateId);
+  if (aggregateId === null) {
+    res.status(400).json({ message: "Yaroqsiz aggregateId" });
+    return;
+  }
+
+  try {
+    const result = await runTurbineAssessmentFromStoredData(aggregateId);
+    res.status(200).json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Baholashda xatolik yuz berdi";
+    res.status(422).json({ message });
   }
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import { assessTurbineHandler } from "../controllers/TurbineAssessmentController";
+import { assessTurbineHandler, assessTurbineFromStoredHandler } from "../controllers/TurbineAssessmentController";
 import { assessGeneratorHandler } from "../controllers/GeneratorAssessmentController";
 import { assessTransformerHandler } from "../controllers/TransformerAssessmentController";
 import { assessGesHandler } from "../controllers/GesAssessmentController";
@@ -8,6 +8,10 @@ const router = express.Router();
 
 // POST /api/assessment/turbine/:aggregateId
 router.post("/turbine/:aggregateId", assessTurbineHandler);
+
+// POST /api/assessment/turbine/:aggregateId/from-stored — DB'dagi so'nggi
+// sensor o'qishlari + statik nominal parametrlar asosida (xom body kerak emas)
+router.post("/turbine/:aggregateId/from-stored", assessTurbineFromStoredHandler);
 
 // POST /api/assessment/generator/:aggregateId
 router.post("/generator/:aggregateId", assessGeneratorHandler);
