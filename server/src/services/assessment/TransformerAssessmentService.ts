@@ -1,7 +1,10 @@
+import winston from "winston";
 import prisma from "../../config/prisma";
 import {
   assessTransformer,
+  assessTransformerFromDb,
   type InsulationResistance,
+  type TransformerAssessmentResult,
   type TransformerNonElectricalInput,
   type WindingResistance,
 } from "../fuzzyEngine/transformer";
@@ -34,6 +37,27 @@ export interface TransformerAssessmentResponse {
   fTr: { assessmentId: number; score: number; status: string };
 }
 
+/** Turbina uchun ishlatilgan xuddi shu DB-birinchi/kod-fallback naqshi. */
+async function assessWithFallback(
+  windingActual: WindingResistance,
+  windingNominal: WindingResistance,
+  insulation: InsulationResistance,
+  nonElectrical: TransformerNonElectricalInput,
+): Promise<TransformerAssessmentResult> {
+  try {
+    return await assessTransformerFromDb(
+      { actual: windingActual, nominal: windingNominal },
+      insulation,
+      nonElectrical,
+    );
+  } catch (err) {
+    winston.warn("Transformator (f3-f6): DB qoidalari ishlatilmadi, kod ichidagi default FIS'ga qaytildi", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return assessTransformer({ actual: windingActual, nominal: windingNominal }, insulation, nonElectrical);
+  }
+}
+
 export async function runTransformerAssessment(
   aggregateId: number,
   windingActual: WindingResistance,
@@ -41,8 +65,9 @@ export async function runTransformerAssessment(
   insulation: InsulationResistance,
   nonElectrical: TransformerNonElectricalInput,
 ): Promise<TransformerAssessmentResponse> {
-  const { f3, f4, f5, f6, fTrScore } = assessTransformer(
-    { actual: windingActual, nominal: windingNominal },
+  const { f3, f4, f5, f6, fTrScore } = await assessWithFallback(
+    windingActual,
+    windingNominal,
     insulation,
     nonElectrical,
   );

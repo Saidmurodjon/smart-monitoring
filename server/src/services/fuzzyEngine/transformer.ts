@@ -1,5 +1,6 @@
-import { evaluateCanonicalFis, type FisResult } from "./engine";
+import { evaluateCanonicalFis, evaluateFis, type FisResult } from "./engine";
 import { deviationMembershipSet, directValueMembershipSet, scoreMembershipSet } from "./variableSets";
+import { loadFisDefinition } from "./dbRuleLoader";
 
 // FUZZY.md §5.C — Transformator.
 // f3 (chulg'am) va f4 (izolyatsiya) — statik, 6 tadan kirish. f5 = FIS(f3,f4)
@@ -31,6 +32,12 @@ export function assessWinding(actual: WindingResistance, nominal: WindingResista
   return evaluateCanonicalFis({ ...actual }, variableSets);
 }
 
+/** DB'dagi qoidalar/ta'riflardan foydalanuvchi f3. */
+export async function assessWindingFromDb(actual: WindingResistance, nominal: WindingResistance): Promise<FisResult> {
+  const { variableSets, rules } = await loadFisDefinition("f3", { ...nominal });
+  return evaluateFis({ ...actual }, variableSets, rules);
+}
+
 export interface InsulationResistance {
   rizol1: number; // R_izol.Yk-Pk+K, MOhm
   rizol2: number; // R_izol.Pk-Yk+K, MOhm
@@ -53,6 +60,12 @@ export function assessInsulation(input: InsulationResistance): FisResult {
   return evaluateCanonicalFis({ ...input }, variableSets);
 }
 
+/** DB'dagi qoidalar/ta'riflardan foydalanuvchi f4. */
+export async function assessInsulationFromDb(input: InsulationResistance): Promise<FisResult> {
+  const { variableSets, rules } = await loadFisDefinition("f4");
+  return evaluateFis({ ...input }, variableSets, rules);
+}
+
 /**
  * f5 — Elektr qism: f3 va f4 ning ANIQ (crisp) natijalarini qayta
  * fuzzifikatsiya qilib, alohida qoida bazasi orqali hisoblaydi (FUZZY.md
@@ -65,6 +78,12 @@ export function assessElectricalPart(windingScore: number, insulationScore: numb
     insulation: scoreMembershipSet(),
   };
   return evaluateCanonicalFis({ winding: windingScore, insulation: insulationScore }, variableSets);
+}
+
+/** DB'dagi qoidalar/ta'riflardan foydalanuvchi f5. */
+export async function assessElectricalPartFromDb(windingScore: number, insulationScore: number): Promise<FisResult> {
+  const { variableSets, rules } = await loadFisDefinition("f5");
+  return evaluateFis({ winding: windingScore, insulation: insulationScore }, variableSets, rules);
 }
 
 export interface TransformerNonElectricalInput {
@@ -86,6 +105,18 @@ export function assessTransformerNonElectrical(input: TransformerNonElectricalIn
   );
 }
 
+/** DB'dagi qoidalar/ta'riflardan foydalanuvchi f6. */
+export async function assessTransformerNonElectricalFromDb(
+  input: TransformerNonElectricalInput,
+): Promise<FisResult> {
+  const { variableSets, rules } = await loadFisDefinition("f6");
+  return evaluateFis(
+    { transformatorHarorati: input.transformatorHarorati, tebranish: input.tebranish },
+    variableSets,
+    rules,
+  );
+}
+
 export interface TransformerAssessmentResult {
   f3: FisResult;
   f4: FisResult;
@@ -103,6 +134,21 @@ export function assessTransformer(
   const f4 = assessInsulation(insulation);
   const f5 = assessElectricalPart(f3.score, f4.score);
   const f6 = assessTransformerNonElectrical(nonElectrical);
+  const fTrScore = Math.round(Math.sqrt(f5.score * f6.score) * 100) / 100;
+
+  return { f3, f4, f5, f6, fTrScore };
+}
+
+/** DB'dagi qoidalar/ta'riflardan foydalanuvchi to'liq transformator baholovchisi. */
+export async function assessTransformerFromDb(
+  winding: { actual: WindingResistance; nominal: WindingResistance },
+  insulation: InsulationResistance,
+  nonElectrical: TransformerNonElectricalInput,
+): Promise<TransformerAssessmentResult> {
+  const f3 = await assessWindingFromDb(winding.actual, winding.nominal);
+  const f4 = await assessInsulationFromDb(insulation);
+  const f5 = await assessElectricalPartFromDb(f3.score, f4.score);
+  const f6 = await assessTransformerNonElectricalFromDb(nonElectrical);
   const fTrScore = Math.round(Math.sqrt(f5.score * f6.score) * 100) / 100;
 
   return { f3, f4, f5, f6, fTrScore };

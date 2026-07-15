@@ -1,12 +1,26 @@
+import winston from "winston";
 import prisma from "../../config/prisma";
 import { findLatestScore } from "../../repositories/FuzzyAssessmentRepository";
-import { assessGesLevel } from "../fuzzyEngine/ges";
+import { assessGesLevel, assessGesLevelFromDb } from "../fuzzyEngine/ges";
+import type { FisResult } from "../fuzzyEngine/engine";
 
 export interface GesAssessmentResult {
   assessmentId: number;
   score: number;
   status: string;
   inputs: { fgt: number; fgg: number; ftr: number };
+}
+
+/** Turbina uchun ishlatilgan xuddi shu DB-birinchi/kod-fallback naqshi. */
+async function assessWithFallback(fgt: number, fgg: number, ftr: number): Promise<FisResult> {
+  try {
+    return await assessGesLevelFromDb(fgt, fgg, ftr);
+  } catch (err) {
+    winston.warn("GES darajasi: DB qoidalari ishlatilmadi, kod ichidagi default FIS'ga qaytildi", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return assessGesLevel(fgt, fgg, ftr);
+  }
 }
 
 /**
@@ -33,7 +47,7 @@ export async function runGesAssessment(aggregateId: number): Promise<GesAssessme
     );
   }
 
-  const result = assessGesLevel(fgt as number, fgg as number, ftr as number);
+  const result = await assessWithFallback(fgt as number, fgg as number, ftr as number);
 
   const saved = await prisma.fuzzyAssessment.create({
     data: {

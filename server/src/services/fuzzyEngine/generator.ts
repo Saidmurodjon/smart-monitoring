@@ -1,5 +1,6 @@
-import { evaluateCanonicalFis, type FisResult } from "./engine";
+import { evaluateCanonicalFis, evaluateFis, type FisResult } from "./engine";
 import { OUTPUT_CLASS_LABELS, classifyScore, deviationMembershipSet, directValueMembershipSet } from "./variableSets";
+import { loadFisDefinition } from "./dbRuleLoader";
 
 // FUZZY.md §5.B — Gidrogenerator.
 //
@@ -59,6 +60,23 @@ export function assessGeneratorElectrical(
   return evaluateCanonicalFis({ kAbs, activePower, reactivePower }, variableSets);
 }
 
+/** DB'dagi qoidalar/ta'riflardan foydalanuvchi f1 (`.claude/rules/fuzzy-logic.md` #2). */
+export async function assessGeneratorElectricalFromDb(
+  raw: GeneratorElectricalRaw,
+  nominal: GeneratorElectricalNominal,
+): Promise<FisResult> {
+  const kAbs = computeAbsorptionCoefficient(raw);
+  const activePower = computeActivePower(raw);
+  const reactivePower = computeReactivePower(raw);
+
+  const { variableSets, rules } = await loadFisDefinition("f1", {
+    activePower: nominal.pNominal,
+    reactivePower: nominal.qNominal,
+  });
+
+  return evaluateFis({ kAbs, activePower, reactivePower }, variableSets, rules);
+}
+
 export interface GeneratorNonElectricalInput {
   statorHarorati: number; // T_stat, °C
   tebranish: number; // mm/s
@@ -74,6 +92,12 @@ export function assessGeneratorNonElectrical(input: GeneratorNonElectricalInput)
     { statorHarorati: input.statorHarorati, tebranish: input.tebranish },
     variableSets,
   );
+}
+
+/** DB'dagi qoidalar/ta'riflardan foydalanuvchi f2. */
+export async function assessGeneratorNonElectricalFromDb(input: GeneratorNonElectricalInput): Promise<FisResult> {
+  const { variableSets, rules } = await loadFisDefinition("f2");
+  return evaluateFis({ statorHarorati: input.statorHarorati, tebranish: input.tebranish }, variableSets, rules);
 }
 
 export interface GeneratorAssessmentResult {
@@ -93,6 +117,24 @@ export function assessGenerator(
 ): GeneratorAssessmentResult {
   const f1 = assessGeneratorElectrical(electricalRaw, electricalNominal);
   const f2 = assessGeneratorNonElectrical(nonElectrical);
+  const fGgScore = Math.round(Math.sqrt(f1.score * f2.score) * 100) / 100;
+
+  return {
+    f1,
+    f2,
+    fGgScore,
+    fGgStatus: OUTPUT_CLASS_LABELS[classifyScore(fGgScore)],
+  };
+}
+
+/** DB'dagi qoidalar/ta'riflardan foydalanuvchi to'liq generator baholovchisi. */
+export async function assessGeneratorFromDb(
+  electricalRaw: GeneratorElectricalRaw,
+  electricalNominal: GeneratorElectricalNominal,
+  nonElectrical: GeneratorNonElectricalInput,
+): Promise<GeneratorAssessmentResult> {
+  const f1 = await assessGeneratorElectricalFromDb(electricalRaw, electricalNominal);
+  const f2 = await assessGeneratorNonElectricalFromDb(nonElectrical);
   const fGgScore = Math.round(Math.sqrt(f1.score * f2.score) * 100) / 100;
 
   return {

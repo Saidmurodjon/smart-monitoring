@@ -1,6 +1,9 @@
+import winston from "winston";
 import prisma from "../../config/prisma";
 import {
   assessGenerator,
+  assessGeneratorFromDb,
+  type GeneratorAssessmentResult,
   type GeneratorElectricalNominal,
   type GeneratorElectricalRaw,
   type GeneratorNonElectricalInput,
@@ -17,13 +20,29 @@ export interface GeneratorAssessmentResponse {
   fGg: { assessmentId: number; score: number; status: string };
 }
 
+/** Turbina uchun ishlatilgan xuddi shu DB-birinchi/kod-fallback naqshi. */
+async function assessWithFallback(
+  electricalRaw: GeneratorElectricalRaw,
+  electricalNominal: GeneratorElectricalNominal,
+  nonElectrical: GeneratorNonElectricalInput,
+): Promise<GeneratorAssessmentResult> {
+  try {
+    return await assessGeneratorFromDb(electricalRaw, electricalNominal, nonElectrical);
+  } catch (err) {
+    winston.warn("Generator (f1/f2): DB qoidalari ishlatilmadi, kod ichidagi default FIS'ga qaytildi", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return assessGenerator(electricalRaw, electricalNominal, nonElectrical);
+  }
+}
+
 export async function runGeneratorAssessment(
   aggregateId: number,
   electricalRaw: GeneratorElectricalRaw,
   electricalNominal: GeneratorElectricalNominal,
   nonElectrical: GeneratorNonElectricalInput,
 ): Promise<GeneratorAssessmentResponse> {
-  const { f1, f2, fGgScore, fGgStatus } = assessGenerator(electricalRaw, electricalNominal, nonElectrical);
+  const { f1, f2, fGgScore, fGgStatus } = await assessWithFallback(electricalRaw, electricalNominal, nonElectrical);
 
   const [f1Row, f2Row, fGgRow] = await prisma.$transaction([
     prisma.fuzzyAssessment.create({

@@ -195,15 +195,16 @@ emas edi).
 
 > **Yangilanish (2026-07-15):** `.claude/rules/fuzzy-logic.md` #2'ga ko'ra
 > qoidalar/aʼzolik funksiyalari endi kodda emas, DB'da saqlanadi
-> (`fuzzy_variable_definitions`, `fuzzy_rule_definitions`) — **Fgt
-> (gidroturbina) uchun bu allaqachon amalga oshirilgan** (namunali
-> migratsiya). Quyidagi qiymatlar hali ham to'g'ri (aynan shu qiymatlar
-> DB'ga seed qilingan, `scripts/seedFuzzyRulesTurbine.ts`), lekin ular
-> endi "hozircha kod ichida" emas — kod ichidagi versiyasi
-> (`fuzzyEngine/turbine.ts`dagi `assessTurbine()`) faqat DB ishlamay
-> qolganda ishlaydigan **fallback** rolini bajaradi. f1, f2, f3, f4, f6
-> va GES darajasi hali ham kod ichida hardcoded — xuddi shu naqsh bilan
-> keyinroq DB'ga ko'chiriladi.
+> (`fuzzy_variable_definitions`, `fuzzy_rule_definitions`) — **BARCHA FIS
+> bloklari (Fgt, f1, f2, f3, f4, f5, f6, GES) uchun bu amalga
+> oshirilgan** (`scripts/seedFuzzyRules.ts`). Quyidagi qiymatlar hali ham
+> to'g'ri (aynan shu qiymatlar DB'ga seed qilingan), lekin ular endi
+> "hozircha kod ichida" emas — har bir modulning kod ichidagi pure
+> versiyasi (`assessTurbine()`, `assessGenerator()`, `assessTransformer()`,
+> `assessGesLevel()`) faqat DB ishlamay qolganda (ulanish uzilishi, hali
+> seed qilinmagan) ishlaydigan **fallback** rolini bajaradi —
+> `.claude/rules/fuzzy-logic.md` #2'dagi "faqat asosiy (default) qoida
+> kodda qolishi mumkin" talabiga mos.
 
 ### A. Gidroturbina (Fgt)
 Inputlar (4 ta dinamik): Aylanish_tezligi (RPM), Quvvat (MW), Suv_sarfi (m³/s), Tebranish (mm/s)

@@ -9,6 +9,51 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (5) — Qoidalarni DB'ga ko'chirish YAKUNLANDI: f1, f2, f3, f4, f5, f6, GES ham DB-asosli
+
+- **Sabab:** Fgt (turbina) namunali migratsiyasidan keyingi tabiiy davomi —
+  qolgan barcha FIS bloklari xuddi shu isbotlangan naqsh bilan ko'chirildi.
+  Fuzzy Logic yadrosini DB'ga ko'chirish vazifasi shu bilan **to'liq
+  yakunlandi**.
+- **`scripts/seedFuzzyRulesTurbine.ts` o'chirildi**, o'rniga
+  **`scripts/seedFuzzyRules.ts`** (yagona, barcha 8 ta blokni — Fgt, f1,
+  f2, f3, f4, f5, f6, GES — bitta joyda tavsiflovchi konfiguratsiya
+  massivi orqali) — ikkita alohida skript bir-biridan uzoqlashib
+  ketmasligi uchun konsolidatsiya qilindi. Natija: 8 blok × jami 4+3+2+
+  6+6+2+2+3=28 o'zgaruvchi, 25+20+15+35+35+15+15+20=180 ta qoida DB'ga
+  yozildi.
+- **`fuzzyEngine/{generator,transformer,ges}.ts`ga qo'shildi:** har biriga
+  mos `assessXFromDb()` funksiyalari (`assessGeneratorElectricalFromDb`,
+  `assessGeneratorNonElectricalFromDb`, `assessGeneratorFromDb`,
+  `assessWindingFromDb`, `assessInsulationFromDb`,
+  `assessElectricalPartFromDb` — f5 uchun, ikkinchi darajali FIS ekanligi
+  saqlanib qoldi — `assessTransformerNonElectricalFromDb`,
+  `assessTransformerFromDb`, `assessGesLevelFromDb`). Eski kod-ichidagi
+  pure funksiyalar (`assessGenerator`, `assessTransformer`,
+  `assessGesLevel`) **o'chirilmadi** — fallback sifatida qoldi.
+- **`{Generator,Transformer,Ges}AssessmentService.ts`ga qo'shildi:** har
+  biriga Turbina uchun ishlatilgan xuddi shu `assessWithFallback()`
+  naqshi — avval DB'dan urinadi, xato bo'lsa `winston.warn(...)` bilan
+  kod ichidagi defaultga qaytadi.
+- **Tekshirildi (yana ham to'liq regressiyasizlik isboti):** bitta
+  aggregate uchun to'liq zanjir — turbina/generator/transformator
+  (yaxshi va yomon holatlar) + GES darajasi (jumladan avvalgi eng muhim
+  topilma — bitta jihoz yomon, qolganlari yaxshi → 50/O'rtacha) — DB
+  yo'li orqali **barchasi avvalgi (kod-asosli) natijalar bilan aynan bir
+  xil** chiqdi. Server logida hech qanday fallback ogohlantirishi
+  yozilmadi — demak butun zanjir haqiqatan DB'dan ishladi, tasodifiy
+  emas. `npx tsc --noEmit` — 0 xato. Test aggregate'lar tozalandi.
+- **Loyihaning holati:** Fuzzy Logic yadrosi endi to'liq
+  `.claude/rules/fuzzy-logic.md`ga mos: qoidalar DB'da, kod ichida faqat
+  "default 10 ta qoida" (aslida — har bir blokning o'zining kanonik+
+  fallback default to'plami, DB ishlamay qolganda ishlatiladigan xavfsiz
+  zaxira). Keyingi tabiiy qadamlar (bu sessiyada qilinmagan): qoidalarni
+  tahrirlash uchun admin UI/endpoint, va DB'dagi qoidalarni domen
+  ekspertlari (energetiklar) tomonidan real qiymatlarga sozlash — hozirgi
+  barcha chegaralar hali ham test/default (FUZZY.md'da izohlangan).
+
+---
+
 ## 2026-07-15 (4) — Qoidalarni DB'ga ko'chirish: Fgt (gidroturbina) namunali migratsiya + kod-fallback
 
 - **Sabab:** `.claude/rules/fuzzy-logic.md` #2: "Barcha IF-THEN qoidalari
