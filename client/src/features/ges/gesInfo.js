@@ -7,6 +7,7 @@ import Button from "../../components/buttons/Button";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import GesAnimation from "./GesAnimation";
 import State from "../../components/buttons/State";
+import http from "../../utils/http";
 
 // status badge ranglari
 function getStatusClass(status) {
@@ -38,6 +39,9 @@ function Transactions() {
 
   // aktiv tanlangan agregat (o'ng panel uchun)
   const [activeUnitIndex, setActiveUnitIndex] = useState(0);
+  // har bir agregat uchun eng so'nggi Fuzzy Logic (FIS) baholash natijalari,
+  // aggregate._id bo'yicha xaritalangan: { turbine, generator, transformer, ges, details }
+  const [assessments, setAssessments] = useState({});
 // console.log(firstData);
 
   // ma'lumot yuklash
@@ -50,8 +54,39 @@ function Transactions() {
 
   }, [selectedName]);
 
+  // Har bir agregat uchun FIS natijalarini DB'dan o'qiydi (hisoblamaydi —
+  // faqat mavjud oxirgi baholashlarni ko'rsatadi).
+  useEffect(() => {
+    const units = firstData?.[0]?.aggregates || [];
+    if (units.length === 0) return;
+
+    let cancelled = false;
+    (async () => {
+      const entries = await Promise.all(
+        units.map(async (unit) => {
+          try {
+            const { data } = await http.get(`/assessment/${unit._id}/summary`);
+            return [unit._id, data];
+          } catch (err) {
+            return [unit._id, null];
+          }
+        })
+      );
+      if (!cancelled) setAssessments(Object.fromEntries(entries));
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [firstData]);
+
   // agregatlar soni
   const unitCount = firstData?.length ?? ges?.totalUnits ?? 0;
+
+  // "Umumiy holati" — birinchi agregatning GES-darajasidagi FIS bahosi
+  // (odatda bitta GES uchun bitta agregat bo'ladi — CLAUDE.md).
+  const primaryUnitId = firstData?.[0]?.aggregates?.[0]?._id;
+  const primaryAssessment = primaryUnitId ? assessments[primaryUnitId] : null;
 
   // o'ng panelda ko'rsatiladigan agregat
   const activeUnit =
@@ -118,7 +153,13 @@ function Transactions() {
                   Umumiy holati
                 </div>
                 <div>
-                <State status={ges?.status || "good"} />
+                  {primaryAssessment?.ges ? (
+                    <State status={primaryAssessment.ges.status} />
+                  ) : (
+                    <span className="text-xs text-gray-400 italic">
+                      Hali baholanmagan
+                    </span>
+                  )}
                 </div>
 
                 <div className="font-semibold italic text-gray-800">
@@ -220,12 +261,25 @@ function Transactions() {
                         </td>
 
                        <td className="">
-                         <State status={unit.status || "good"} />
+                         {assessments[unit._id]?.turbine ? (
+                           <State status={assessments[unit._id].turbine.status} />
+                         ) : (
+                           <span className="text-xs text-gray-400 italic">—</span>
+                         )}
                         </td>
                         <td className="">
-                         <State status={unit.status || "normal"} />
-                        </td>                        <td className="">
-                         <State status={unit.status || "bad"} />
+                         {assessments[unit._id]?.generator ? (
+                           <State status={assessments[unit._id].generator.status} />
+                         ) : (
+                           <span className="text-xs text-gray-400 italic">—</span>
+                         )}
+                        </td>
+                        <td className="">
+                         {assessments[unit._id]?.transformer ? (
+                           <State status={assessments[unit._id].transformer.status} />
+                         ) : (
+                           <span className="text-xs text-gray-400 italic">—</span>
+                         )}
                         </td>
                       
                         <td className="whitespace-nowrap text-right">

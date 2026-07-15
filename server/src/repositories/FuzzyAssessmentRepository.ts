@@ -18,3 +18,26 @@ export async function findLatestScore(
   });
   return row?.healthScore ?? null;
 }
+
+export interface LatestAssessmentRow {
+  equipmentType: EquipmentType;
+  assessmentType: string;
+  healthScore: number;
+  healthStatus: string;
+  assessedAt: Date;
+}
+
+/**
+ * Har bir (equipmentType, assessmentType) juftligi uchun eng so'nggi
+ * yozuvni bitta so'rovda oladi — dashboard/GES sahifalarida hozirgi
+ * holatni ko'rsatish uchun (Fgt, f1, f2, F_gg, f3, f4, f5, f6, F_tr, GES).
+ */
+export async function findLatestAssessmentsForAggregate(aggregateId: number): Promise<LatestAssessmentRow[]> {
+  const rows = await prisma.fuzzyAssessment.findMany({
+    where: { aggregateId },
+    distinct: ["equipmentType", "assessmentType"],
+    orderBy: { assessedAt: "desc" },
+    select: { equipmentType: true, assessmentType: true, healthScore: true, healthStatus: true, assessedAt: true },
+  });
+  return rows;
+}

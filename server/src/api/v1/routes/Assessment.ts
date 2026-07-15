@@ -6,8 +6,13 @@ import {
   assessTransformerFromStoredHandler,
 } from "../controllers/TransformerAssessmentController";
 import { assessGesHandler } from "../controllers/GesAssessmentController";
+import { getAssessmentSummaryHandler } from "../controllers/AssessmentSummaryController";
 
 const router = express.Router();
+
+// GET /api/assessment/:aggregateId/summary — hisoblamaydi, faqat DB'dagi
+// eng so'nggi natijalarni o'qiydi (dashboard/GES sahifalari uchun)
+router.get("/:aggregateId/summary", getAssessmentSummaryHandler);
 
 // POST /api/assessment/turbine/:aggregateId
 router.post("/turbine/:aggregateId", assessTurbineHandler);

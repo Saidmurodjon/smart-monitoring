@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import uzbekistanMap from "../../data/uzbekistan.geo.json";
 import useUzbekistanProjection from "./useUzbekistanProjection";
 import { fetchGesList, selectGesItems } from "../../features/ges/gesSlice";
+import http from "../../utils/http";
 
 const STATUS_LEGEND = [
   { label: "A'lo", className: "bg-green-500" },
@@ -27,20 +28,55 @@ export default function UzbekistanMap() {
     if (!items || items.length === 0) dispatch(fetchGesList());
   }, [dispatch, items]);
 
+  // Har bir GES uchun haqiqiy Fuzzy Logic (FIS) natijasi — birinchi
+  // agregatning GES-darajasidagi bahosi (DB'dan o'qiladi, hisoblamaydi).
+  // GES._id bo'yicha xaritalangan: { score, status, assessedAt }
+  const [fisStatuses, setFisStatuses] = useState({});
+
+  useEffect(() => {
+    const candidates = (items || []).filter((g) => g.aggregates?.length > 0);
+    if (candidates.length === 0) return;
+
+    let cancelled = false;
+    (async () => {
+      const entries = await Promise.all(
+        candidates.map(async (g) => {
+          const aggregateId = g.aggregates[0]._id || g.aggregates[0].id;
+          try {
+            const { data } = await http.get(`/assessment/${aggregateId}/summary`);
+            return [g._id, data?.ges || null];
+          } catch (err) {
+            return [g._id, null];
+          }
+        })
+      );
+      if (!cancelled) setFisStatuses(Object.fromEntries(entries));
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [items]);
+
   // Faqat "Dashboardda ko'rinsin" deb belgilangan va joylashuvi (lat/lng)
-  // kiritilgan GESlar xaritada marker sifatida chiziladi.
+  // kiritilgan GESlar xaritada marker sifatida chiziladi. Status — agar
+  // haqiqiy FIS bahosi mavjud bo'lsa o'sha, aks holda qo'lda kiritilgan
+  // (qoralama) status.
   const gesLocations = useMemo(
     () =>
       (items || [])
         .filter((g) => g.isPublished && typeof g.latitude === "number" && typeof g.longitude === "number")
-        .map((g) => ({
-          _id: g._id,
-          name: g.name,
-          coordinates: [g.longitude, g.latitude],
-          status: g.status,
-          desc: [g.region, g.status].filter(Boolean).join(" — "),
-        })),
-    [items]
+        .map((g) => {
+          const fisStatus = fisStatuses[g._id]?.status;
+          return {
+            _id: g._id,
+            name: g.name,
+            coordinates: [g.longitude, g.latitude],
+            status: fisStatus || g.status,
+            desc: [g.region, fisStatus || g.status].filter(Boolean).join(" — "),
+          };
+        }),
+    [items, fisStatuses]
   );
 
   const getStatusColor = (status) =>

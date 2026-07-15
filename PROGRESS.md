@@ -9,6 +9,51 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (8) — Dashboard/GES sahifalari haqiqiy FIS natijalariga ulandi
+
+- **Sabab:** shu paytgacha barcha FIS ishi faqat backend/curl darajasida
+  tekshirilgan edi — frontend hech qayerda haqiqiy baholash natijalarini
+  ko'rsatmasdi (GES kartochkalarida qo'lda kiritilgan `status` maydoni,
+  xaritada ham xuddi shu qo'lda kiritilgan qiymat ishlatilardi).
+- **Backend — yangi "faqat o'qish" xulosa endpointi:**
+  `repositories/FuzzyAssessmentRepository.ts`ga `findLatestAssessmentsForAggregate()`
+  qo'shildi (Prisma `distinct` + `orderBy` — bitta so'rovda har bir
+  (equipmentType, assessmentType) juftligi uchun eng so'nggi qatorni
+  oladi). `services/assessment/AssessmentSummaryService.ts` (yangi) buni
+  frontend uchun qulay struktura ({turbine, generator, transformer, ges,
+  details}) ga aylantiradi. Yangi endpoint:
+  `GET /api/v1/assessment/:aggregateId/summary` — **hisoblamaydi**, faqat
+  DB'dagi mavjud natijalarni o'qiydi (tez, yon-effektsiz).
+- **`client/src/components/buttons/State.js`:** endi FIS'ning aniq matnli
+  holat nomlarini ("A'lo", "Yaxshi", "O'rtacha", "Yomon", "Juda yomon")
+  to'g'ridan-to'g'ri qabul qiladi (avval faqat ichki kalitlar
+  excellent/good/normal/bad/critical'ni tanirdi) — orqaga moslashuvchan
+  xaritalash (`FIS_STATUS_TO_KEY`) qo'shildi, eski ishlatishlar buzilmadi.
+- **`features/ges/gesInfo.js`:** GES tafsilot sahifasida endi har bir
+  agregat qatori uchun haqiqiy turbina/generator/transformator holati
+  (`/assessment/:id/summary` orqali) ko'rsatiladi, avvalgi "uchala ustun
+  ham bitta xom `unit.status` maydonini takrorlaydi" muammosi tuzatildi.
+  "Umumiy holati" endi GES-darajasidagi haqiqiy FIS bahosini ko'rsatadi
+  (agar hali baholanmagan bo'lsa — "Hali baholanmagan" deb ochiq
+  ko'rsatiladi, xato yoki soxta qiymat emas).
+- **`components/UZMAP/index.jsx`:** har bir GES markeri endi (agar
+  agregati va FIS bahosi mavjud bo'lsa) haqiqiy GES-darajasidagi holatni
+  ko'rsatadi, aks holda qo'lda kiritilgan `status`ga tushadi (fallback,
+  xarita hech qachon "bo'sh" ko'rinmaydi).
+- **Tekshirildi:** to'liq zanjir — GES (id=2, Chorvoq) uchun test agregat
+  yaratilib, barcha 4 baholash (turbina/generator/transformator/GES)
+  ishga tushirildi, so'ngra `ges-list` javobida agregatning `_id`si va
+  `/assessment/:id/summary` natijasi frontend kod kutgan aniq shaklga
+  mos kelishi curl orqali tasdiqlandi (komponentlar brauzerda vizual
+  tekshirilmagan — bu muhitda brauzer/screenshot tool yo'q). Yo'lda
+  Neon'ning vaqtinchalik ulanish uzilishi (`P2028` transaction timeout)
+  serverni qulatdi — bu `Aggregates.js`dagi oldindan mavjud, ushbu
+  sessiyaga aloqasi yo'q "unhandled rejection" bo'shlig'i; server qayta
+  ishga tushirilib davom etildi, alohida tuzatilmadi (scope tashqarisida).
+  `npx tsc --noEmit` — 0 xato, client `webpack compiled successfully`.
+
+---
+
 ## 2026-07-15 (7) — API prefiks nomuvofiqligi to'g'irlandi: `/api` → `/api/v1`
 
 - **Sabab:** CLAUDE.md #3 "Barcha endpointlar `/api/v1/` prefiksi ostida"

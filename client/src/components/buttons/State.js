@@ -17,9 +17,22 @@ const LABELS = {
   critical:  "Juda yomon",
 };
 
+// Fuzzy Logic (FIS) natijalari aynan shu matnli holat nomlarini qaytaradi
+// (server/src/services/fuzzyEngine/variableSets.js OUTPUT_CLASS_LABELS
+// bilan bir xil) — shu sabab to'g'ridan-to'g'ri `status="A'lo"` kabi
+// qiymatlar bilan ham ishlaydigan qilib moslashtirildi.
+const FIS_STATUS_TO_KEY = {
+  "A'lo": "excellent",
+  "Yaxshi": "good",
+  "O'rtacha": "normal",
+  "Yomon": "bad",
+  "Juda yomon": "critical",
+};
+
 function State({ status, className = "" }) {
-  const colorClass = COLORS[status] || COLORS.normal;
-  const label = LABELS[status] || LABELS.normal;
+  const key = FIS_STATUS_TO_KEY[status] || status;
+  const colorClass = COLORS[key] || COLORS.normal;
+  const label = LABELS[key] || status || LABELS.normal;
 
   return (
     <span
