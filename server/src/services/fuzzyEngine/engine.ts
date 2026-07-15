@@ -8,17 +8,15 @@ import {
 } from "./variableSets";
 
 /**
- * Generic Mamdani FIS baholovchisi — Artikbaev N.A. PhD dissertatsiyasidagi
- * (2024, Chorvoq GES amaliyoti) "kanonik" qoida shakliga mos: har bir chiqish
- * sinfi (juda_yomon..a'lo) uchun BITTA qoida bor, va bu qoida BARCHA kirish
- * parametrlarini o'sha SINFning a'zolik funksiyasi bo'yicha tekshiradi:
+ * Generic Mamdani FIS baholovchisi.
  *
- *   W_i = min(mu(x1 in sinf_i), mu(x2 in sinf_i), ..., 1)
- *   mu*_i = max(W_i * vazn_i, 0)
- *   F = sum(markaz_i * mu*_i) / sum(mu*_i)      // og'irlikli o'rtacha (centroid)
- *
- * .claude/rules/fuzzy-logic.md #3: har bir qoida 0.0-1.0 vaznga ega,
- * defuzzifikatsiyadan oldin qo'llaniladi — shu sabab `ruleWeights` mavjud.
+ * Har bir qoida: `min(a'zolik darajalari, 1) * vazn` orqali "ishga tushish
+ * kuchi" (firing strength) hisoblanadi (Artikbaev N.A. PhD dissertatsiyasi,
+ * 2024, Chorvoq GES amaliyoti — `.claude/rules/fuzzy-logic.md` #3: har bir
+ * qoida 0.0-1.0 vaznga ega). Bir xil chiqish sinfiga ega bir nechta qoida
+ * ishga tushsa, ular orasidan ENG KUCHLISI olinadi — standart Mamdani
+ * "qoidalar orasida OR = max" agregatsiyasi. So'ngra og'irlikli o'rtacha
+ * (centroid) orqali 0-100 ballga aylantiriladi.
  *
  * Bitta chaqiruv < 1ms ichida bajariladi (sof arifmetika), shuning uchun
  * .claude/rules/fuzzy-logic.md #4'dagi 50ms chegarasi bilan hech qanday
@@ -37,14 +35,45 @@ export interface FisResult {
   firedRules: FiredRule[];
 }
 
-export function evaluateCanonicalFis(
+/**
+ * Bitta FIS qoidasi. `antecedents` — tekshiriladigan o'zgaruvchilar
+ * to'plami (o'zgaruvchi nomi -> talab qilingan sinf). Ro'yxatda
+ * bo'lmagan o'zgaruvchilar bu qoida uchun "muhim emas" — ular tekshirilmaydi.
+ */
+export interface FisRule {
+  antecedents: Readonly<Record<string, OutputClass>>;
+  outputClass: OutputClass;
+  weight: number;
+}
+
+function ruleFiringStrength(
+  rule: FisRule,
   inputs: Readonly<Record<string, number>>,
   variableSets: Readonly<Record<string, ClassMembershipSet>>,
-  ruleWeights: Readonly<Partial<Record<OutputClass, number>>> = {},
+): number {
+  const memberships: number[] = [1]; // dissertatsiyadagi min(..., 1)
+  for (const variable of Object.keys(rule.antecedents)) {
+    const value = inputs[variable];
+    if (typeof value !== "number" || Number.isNaN(value)) {
+      throw new Error(`Kirish parametri "${variable}" uchun yaroqli son berilmagan`);
+    }
+    memberships.push(variableSets[variable][rule.antecedents[variable]](value));
+  }
+  return Math.max(Math.min(...memberships) * rule.weight, 0);
+}
+
+/**
+ * Istalgan qoidalar ro'yxati bilan ishlaydigan asosiy baholovchi —
+ * kelajakda DB'dan yuklanadigan haqiqiy qoidalar (`.claude/rules/
+ * fuzzy-logic.md` #2) ham to'g'ridan-to'g'ri shu funksiyaga beriladi.
+ */
+export function evaluateFis(
+  inputs: Readonly<Record<string, number>>,
+  variableSets: Readonly<Record<string, ClassMembershipSet>>,
+  rules: readonly FisRule[],
 ): FisResult {
-  const variables = Object.keys(variableSets);
-  if (variables.length === 0) {
-    throw new Error("FIS uchun kamida bitta kirish parametri kerak");
+  if (rules.length === 0) {
+    throw new Error("FIS uchun kamida bitta qoida kerak");
   }
 
   const strengths: Record<OutputClass, number> = {
@@ -55,34 +84,22 @@ export function evaluateCanonicalFis(
     alo: 0,
   };
 
-  for (const outputClass of OUTPUT_CLASSES) {
-    const memberships = variables.map((variable) => {
-      const value = inputs[variable];
-      if (typeof value !== "number" || Number.isNaN(value)) {
-        throw new Error(`Kirish parametri "${variable}" uchun yaroqli son berilmagan`);
-      }
-      return variableSets[variable][outputClass](value);
-    });
-    memberships.push(1); // dissertatsiyadagi min(..., 1)
-    const weight = ruleWeights[outputClass] ?? 1;
-    strengths[outputClass] = Math.max(Math.min(...memberships) * weight, 0);
+  for (const rule of rules) {
+    const strength = ruleFiringStrength(rule, inputs, variableSets);
+    if (strength > strengths[rule.outputClass]) {
+      strengths[rule.outputClass] = strength;
+    }
   }
 
   const numerator = OUTPUT_CLASSES.reduce((sum, cls) => sum + OUTPUT_CLASS_CENTERS[cls] * strengths[cls], 0);
   const denominator = OUTPUT_CLASSES.reduce((sum, cls) => sum + strengths[cls], 0);
 
   if (denominator === 0) {
-    // Kirish qiymatlari bir vaqtning o'zida bironta sinfga (juda_yomon..a'lo)
-    // to'liq mos kelmadi — bu "kanonik" 5 qoidali FIS'ning bilinган
-    // cheklovi (masalan bitta parametr a'lo, boshqasi juda yomon bo'lsa,
-    // hech qaysi qoida to'liq ishga tushmaydi). Bunday holatda 0 ballga
-    // sukut bo'yicha qaytish noto'g'ri (chalg'ituvchi) natija berardi —
-    // shuning uchun aniq xato tashlanadi; chaqiruvchi tomon
-    // (.claude/rules/fuzzy-logic.md #3: xatolikda oldingi cache qaytarilsin)
-    // buni ushlab, oldingi baholashni qaytarishi kerak.
-    throw new Error(
-      "FIS hisoblanmadi: kirish qiymatlari birorta chiqish sinfiga bir vaqtda mos kelmadi (qoidalar bazasi to'liqroq bo'lishi kerak)",
-    );
+    // `buildCanonicalRules()`dagi fallback qoidalar butun kirish domenini
+    // qoplagani uchun bu amalda deyarli hech qachon yuz bermaydi — faqat
+    // qo'lda tuzilgan, domenni to'liq qoplamaydigan qoidalar bazasi
+    // berilganda yuzaga kelishi mumkin bo'lgan himoya (assertion).
+    throw new Error("FIS hisoblanmadi: hech qaysi qoida ishga tushmadi (qoidalar bazasi domenni to'liq qoplamaydi)");
   }
 
   const score = numerator / denominator;
@@ -97,4 +114,62 @@ export function evaluateCanonicalFis(
       strength: Math.round(strengths[cls] * 1000) / 1000,
     })),
   };
+}
+
+const DEFAULT_FALLBACK_WEIGHT = 0.5;
+
+/**
+ * "Kanonik" qoidalar bazasini avtomatik quradi — ikki qatlam:
+ *
+ *  1. Har bir chiqish sinfi uchun BITTA "AND" qoida (vazn 1.0) — BARCHA
+ *     o'zgaruvchilar o'sha sinfga bir vaqtda mos kelishi kerak. Bu
+ *     dissertatsiyaning asl formulasi — barcha parametrlar rozi
+ *     bo'lganda ishlaydi.
+ *
+ *  2. Har bir o'zgaruvchi × har bir sinf uchun "aralash-holat" fallback
+ *     qoidasi (bitta o'zgaruvchiga bog'liq, vazn `fallbackWeight`,
+ *     sukut 0.5) — kirishlar turli sinflarga tarqalganda ham (masalan
+ *     bitta parametr yomon, qolganlari yaxshi) FIS baho bera olishi
+ *     uchun. Qoidalar orasida MAX agregatsiyasi ishlatilgani sababli,
+ *     bitta yomon o'zgaruvchi o'z ovozini yo'qotmaydi — ko'p sonli yaxshi
+ *     o'zgaruvchilar orasida "o'rtachalashib" yuvilib ketmaydi (xavfsizlik
+ *     nuqtai nazaridan muhim: bitta halokatli parametr butun baholashni
+ *     "A'lo"ga tortib keta olmaydi).
+ *
+ * AND-qoida to'liq mos kelganda (vazn 1.0) fallback qoidalardan (vazn
+ * 0.5) har doim ustun turadi — shuning uchun barcha kirishlar rozi
+ * bo'lgan "toza" holatlarda natija aynan dissertatsiya formulasiga mos
+ * qoladi, o'zgarmaydi.
+ */
+export function buildCanonicalRules(
+  variables: readonly string[],
+  fallbackWeight: number = DEFAULT_FALLBACK_WEIGHT,
+): FisRule[] {
+  const rules: FisRule[] = [];
+
+  for (const outputClass of OUTPUT_CLASSES) {
+    const antecedents: Record<string, OutputClass> = {};
+    for (const variable of variables) antecedents[variable] = outputClass;
+    rules.push({ antecedents, outputClass, weight: 1 });
+  }
+
+  for (const variable of variables) {
+    for (const outputClass of OUTPUT_CLASSES) {
+      rules.push({ antecedents: { [variable]: outputClass }, outputClass, weight: fallbackWeight });
+    }
+  }
+
+  return rules;
+}
+
+export function evaluateCanonicalFis(
+  inputs: Readonly<Record<string, number>>,
+  variableSets: Readonly<Record<string, ClassMembershipSet>>,
+  fallbackWeight: number = DEFAULT_FALLBACK_WEIGHT,
+): FisResult {
+  const variables = Object.keys(variableSets);
+  if (variables.length === 0) {
+    throw new Error("FIS uchun kamida bitta kirish parametri kerak");
+  }
+  return evaluateFis(inputs, variableSets, buildCanonicalRules(variables, fallbackWeight));
 }

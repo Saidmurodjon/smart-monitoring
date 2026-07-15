@@ -9,6 +9,53 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (1) — Aralash-holat qoidalari qo'shildi: eng muhim topilgan cheklov hal qilindi
+
+- **Sabab:** o'tgan sessiyada topilgan MUHIM cheklov — "kanonik" 5-qoidali
+  FIS eng ko'p uchraydigan real holatni (bitta jihoz yomon, qolganlari
+  yaxshi) baholay olmasdi (aniq xato tashlardi). Bu ustuvor vazifa sifatida
+  belgilangan edi, shu sessiyada hal qilindi.
+- **`fuzzyEngine/engine.ts`** (qayta yozildi, lekin barcha chaqiruvchi
+  fayllar — `turbine.ts`, `generator.ts`, `transformer.ts`, `ges.ts` —
+  o'zgarishsiz qoldi, chunki `evaluateCanonicalFis(inputs, variableSets)`
+  ochiq API imzosi saqlanib qolgan):
+  - Yangi generic `FisRule` tipi (`antecedents`, `outputClass`, `weight`)
+    va `evaluateFis(inputs, variableSets, rules)` — istalgan qoidalar
+    ro'yxati bilan ishlaydi (kelajakda DB'dan yuklanadigan haqiqiy
+    qoidalar ham shu funksiyaga beriladi).
+  - `buildCanonicalRules(variables, fallbackWeight=0.5)` — ikki qatlamli
+    qoidalar bazasini avtomatik quradi: (1) eski AND-qoidalar (vazn 1.0,
+    dissertatsiya formulasi, o'zgarmagan), (2) yangi — har bir
+    o'zgaruvchi × har bir sinf uchun bitta-parametrli fallback qoida
+    (vazn 0.5). Bir xil sinfga bir nechta qoida ishga tushsa, ular
+    orasidan ENG KUCHLISI olinadi (MAX agregatsiya, YIG'INDI emas) — bu
+    bitta halokatli parametrning ko'p sonli yaxshi parametrlar orasida
+    "yuvilib ketishining" oldini oladi (xavfsizlik uchun muhim tanlov).
+  - `denominator===0` uchun xato tashlash logikasi saqlanib qoldi, lekin
+    endi faqat haqiqiy himoya (assertion) — fallback qoidalar butun kirish
+    domenini qoplagani uchun amalda deyarli hech qachon ishga tushmaydi.
+  - **Muhim xossasi:** barcha kirishlar rozi bo'lgan "toza" holatlarda
+    natija **hech o'zgarmadi** (AND-qoida vazni 1.0 > fallback vazni 0.5,
+    shuning uchun to'liq mos kelganda AND-qoida hukmronlik qiladi) —
+    avvalgi barcha test natijalari (90/A'lo, 10/Juda yomon) qayta
+    tekshirilib, aynan bir xil chiqishi tasdiqlandi (regressiyasiz).
+- **`FUZZY.md`ga yangi §4.5** qo'shildi — bu qoida qurilishi dissertatsiya
+  avtoreferatida yo'qligi, bizning topilgan-muammoga-yechim ekanligi aniq
+  belgilab qo'yildi (to'liq 120 betlik matn topilsa, almashtirilishi mumkin).
+- **Tekshirildi:** avvalgi barcha "toza" stsenariylar (turbina/generator/
+  transformator good/bad) qayta ishga tushirilib, bir xil natija berdi.
+  Ilgari `422`/xato qaytargan ikkita aralash stsenariy endi mantiqiy
+  baholangan natija berdi:
+  - Turbina: aylanish tezligi/quvvat/suv sarfi o'rtacha-yomon + tebranish
+    halokatli → **23.33 ("Yomon")** — qo'lda hisoblangan taxminiy qiymatga
+    (≈23.3) mos keldi.
+  - GES darajasi: turbina=10 (Juda yomon), generator=90, transformator=90
+    → **50 ("O'rtacha")** — oddiy o'rtacha bo'lganida 63.3 ("Yaxshi")
+    chiqardi, bu xavfsizlik nuqtai nazaridan yetarlicha ehtiyotkor emas edi.
+  `npx tsc --noEmit` — 0 xato. Test aggregate'lar tozalandi.
+
+---
+
 ## 2026-07-14 (7) — GES-darajasidagi FIS + to'liq zanjir tekshiruvi + MUHIM cheklov topildi
 
 - **Sabab:** todo ro'yxatidagi 4-qatlamning oxirgi qismi — Fgt/F_gg/F_tr'ni

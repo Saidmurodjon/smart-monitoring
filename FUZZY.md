@@ -143,6 +143,54 @@ mos keladi:
 | `60 < F ≤ 80` | Yaxshi |
 | `F > 80` | A’lo |
 
+## 4.5. Qoidalar bazasi: kanonik + aralash-holat fallback (bizning qo'shimchamiz)
+
+> **Muhim eslatma:** bu bo'lim dissertatsiya avtoreferatida yo'q — bu
+> implementatsiya paytida topilgan real muammoning bizning yechimimiz.
+> To'liq 120 betlik dissertatsiya matnida to'liqroq qoidalar jadvali
+> bo'lishi mumkin; bu yerdagi yechim shu jadval topilguncha ishlatiladigan
+> amaliy, asosli muqobil.
+
+§3-4'dagi "kanonik" formula (`W_i = min(barcha kirishlar sinf_i'da, 1)`) —
+har bir chiqish sinfi uchun BITTA qoida, va bu qoida BARCHA kirish
+parametrlari BIR VAQTDA o'sha sinfga mos kelishini talab qiladi. Bu
+dissertatsiya formulasini aynan takrorlaydi, lekin **jiddiy amaliy
+kamchiligi bor**: agar kirishlar turli sinflarga tarqalgan bo'lsa (masalan
+gidroturbinaning tebranishi "juda yomon", lekin quvvati "yaxshi" bo'lsa),
+**hech qaysi qoida ishga tushmaydi** — bu esa aynan eng ko'p uchraydigan
+real holat (bitta parametr yomonlashgan, qolganlari hali normal).
+
+**Yechim — ikki qatlamli qoidalar bazasi** (`fuzzyEngine/engine.ts`,
+`buildCanonicalRules()`):
+
+1. **Kanonik AND-qoidalar** (vazn `1.0`) — dissertatsiyadagi asl formula,
+   yuqorida tavsiflangan.
+2. **Fallback bitta-o'zgaruvchili qoidalar** (vazn `0.5`, sozlanadigan) —
+   har bir kirish parametri × har bir chiqish sinfi uchun alohida qoida:
+   "IF shu-bitta-parametr sinf_i'da THEN chiqish sinf_i'ga hissa qo'shadi".
+   Boshqa parametrlar bu qoidada tekshirilmaydi.
+
+Bir xil chiqish sinfiga bir nechta qoida (masalan AND-qoida + bir nechta
+fallback qoida) ishga tushsa, ular orasidan **eng kuchlisi** olinadi
+(standart Mamdani "qoidalar orasida OR = max" agregatsiyasi) — YIG'INDI
+emas. Bu muhim: agar 3 ta parametrdan 2 tasi "a'lo", 1 tasi "juda yomon"
+bo'lsa, "juda yomon" sinfi ko'p sonli "a'lo" ovozlari orasida
+o'rtachalashib yuvilib ketmaydi — bitta halokatli parametr har doim o'z
+sinfi uchun to'liq ovoz beradi (xavfsizlik nuqtai nazaridan muhim: erta
+aniqlash printsipi, CLAUDE.md).
+
+Barcha kirishlar rozi bo'lgan "toza" holatda (masalan hammasi nominal)
+AND-qoida (vazn 1.0) fallback qoidalardan (vazn 0.5) har doim ustun
+turadi — shuning uchun natija dissertatsiya formulasiga aynan mos qoladi,
+**hech narsa o'zgarmaydi**. Fallback qoidalar faqat kirishlar mos
+kelmagan holatlarda "bo'shliqni to'ldiradi".
+
+**Misol** (haqiqiy test natijasi): GES darajasida gidroturbina = 10
+("Juda yomon"), gidrogenerator = 90, transformator = 90 bo'lsa — yakuniy
+GES bahosi **50 ("O'rtacha")** bo'ladi (oddiy o'rtacha bo'lganida 63.3,
+"Yaxshi" chiqardi — bu xavfsizlik nuqtai nazaridan yetarlicha ehtiyotkor
+emas edi).
+
 ## 5. Har bir FIS uchun aʼzolik funksiyalari va qoidalar
 
 > Hozir test uchun; keyinchalik aʼzolik funksiyalari va qoidalar har bir
