@@ -25,7 +25,7 @@ function LeftSidebar() {
   };
 
   return (
-    <div className="drawer-side z-50">
+    <div className="drawer-side z-50 overflow-hidden">
       <label htmlFor="left-sidebar-drawer" className="drawer-overlay lg:hidden"></label>
       <ul
         className={

@@ -35,8 +35,13 @@ function SidebarSubmenu({ submenu, name, icon, collapsed }) {
         )}
       </div>
 
-      {/** Submenu list */}
-      <div className={` w-full ` + (isExpanded ? "" : "hidden")}>
+      {/** Submenu list — max-height orqali silliq ochilib-yopiladi (hidden'ning o'rniga, u sakrab ketardi) */}
+      <div
+        className={
+          "w-full overflow-hidden transition-all duration-300 ease-in-out " +
+          (isExpanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0")
+        }
+      >
         <ul className={`menu menu-compact ${collapsed ? "px-0" : ""}`}>
           {submenu.map((m, k) => {
             return (

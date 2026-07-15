@@ -67,13 +67,15 @@ function Header() {
             type="button"
             onClick={() => dispatch(toggleSidebarCollapsed())}
             className={
-              "flex items-center gap-2 font-semibold text-xl hover:opacity-80 transition-all duration-200 w-64 justify-start px-3 " +
-              (collapsed ? "lg:w-20 lg:justify-center lg:px-0" : "")
+              "flex items-center gap-2 font-semibold text-xl hover:opacity-80 transition-all duration-200 overflow-hidden w-64 justify-start px-3 " +
+              (collapsed ? "lg:w-20 lg:justify-center lg:px-0 lg:gap-0" : "")
             }
             title="Sidebar'ni yig'ish/kengaytirish"
           >
             <img className="mask mask-squircle w-10 shrink-0" src="/logo192.png" alt="Smart Monitoring logo" />
-            <span className={"hidden sm:inline " + (collapsed ? "lg:hidden" : "")}>Smart Monitoring</span>
+            <span className={"whitespace-nowrap hidden sm:inline " + (collapsed ? "lg:hidden" : "")}>
+              Smart Monitoring
+            </span>
           </button>
 
           {/* <h1 className="text-2xl font-semibold ml-4 hidden md:inline-block">{pageTitle}</h1> */}
