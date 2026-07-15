@@ -9,6 +9,74 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (4) — Qoidalarni DB'ga ko'chirish: Fgt (gidroturbina) namunali migratsiya + kod-fallback
+
+- **Sabab:** `.claude/rules/fuzzy-logic.md` #2: "Barcha IF-THEN qoidalari
+  fuzzy_rules jadvalda saqlanishi kerak (qattiq kod emas). Faqat asosiy
+  (default) 10 ta qoida kodda bo'lishi mumkin." Bu sessiyaning oxirgi
+  yirik vazifasi edi. Turbina (Fgt) — sessiya davomida qat'iy o'rnatilgan
+  "avval bitta jihoz to'liq, keyin umumlashtirish" naqshiga ko'ra namunali
+  migratsiya sifatida tanlandi.
+- **`server/prisma/schema.prisma`:** ikkita yangi model —
+  `FuzzyVariableDefinition` (`fuzzy_variable_definitions`: assessmentType,
+  variable, kind ["deviation"|"direct"|"score"], centers, ascendingOrder)
+  va `FuzzyRuleDefinition` (`fuzzy_rule_definitions`: assessmentType,
+  antecedents JSON, outputClass, weight). Migratsiya toza o'tdi (drift
+  muammosi bo'lmadi).
+- **`repositories/FuzzyRuleRepository.ts`** (yangi): `getVariableDefinitions`/
+  `getRuleDefinitions` (o'qish) va `upsertVariableDefinition`/
+  `replaceRuleDefinitions` (seed/boshqaruv uchun).
+- **`fuzzyEngine/dbRuleLoader.ts`** (yangi): DB qatorlarini
+  `evaluateFis()` kutgan `variableSets`/`rules` shakliga aylantiradi.
+  **Muhim arxitekturaviy foyda:** bu bosqichda `engine.ts`ga HECH QANDAY
+  o'zgarish kerak bo'lmadi — oldingi sessiyada (aralash-holat qoidalari
+  ishi paytida) `evaluateFis(inputs, variableSets, rules)` allaqachon
+  "istalgan qoidalar ro'yxati bilan ishlaydigan" generic funksiya
+  qilib qurilgan edi, shuning uchun DB'dan kelgan qoidalar ham bir xil
+  yo'l bilan ishlaydi. Ta'riflar (kamdan-kam o'zgaradi) 60 soniyalik
+  xotira keshi bilan saqlanadi; nominal qiymatlar (aggregate'ga xos)
+  keshlanmaydi.
+- **`fuzzyEngine/turbine.ts`ga qo'shildi:** `assessTurbineFromDb()` —
+  asosiy yo'l, DB'dan o'qiydi. Eski `assessTurbine()` (kod ichida
+  hardcoded) **o'chirilmadi** — fuzzy-logic.md #2'ga ko'ra "default 10
+  qoida" kodda qolishiga ruxsat beriladi, va bu endi DB ishlamay qolsa
+  ishlatiladigan **fallback** vazifasini bajaradi.
+- **`TurbineAssessmentService.ts`:** yangi `assessWithFallback()` —
+  avval `assessTurbineFromDb()`ni sinaydi, xato bo'lsa (DB'da ta'rif
+  yo'q yoki ulanish muammosi) `winston.warn(...)` bilan ogohlantirib,
+  kod ichidagi `assessTurbine()`ga qaytadi — CLAUDE.md #5.3 "FIS
+  hisoblashda xatolik yuz bersa, oldingi baholash natijasi qaytarilsin"
+  ruhiga mos (hisoblash to'xtab qolmaydi). Bu ikkala mavjud endpoint
+  (`POST .../turbine/:id` va `.../turbine/:id/from-stored`) uchun
+  avtomatik ishlaydi — alohida o'zgartirish kerak bo'lmadi.
+- **`scripts/seedFuzzyRulesTurbine.ts`** (yangi, `npx tsx
+  scripts/seedFuzzyRulesTurbine.ts` bilan ishga tushiriladi): DB'ni
+  `turbine.ts`dagi hozirgi qiymatlar bilan to'ldiradi — muhimi,
+  qoidalarni QO'LDA yozib chiqmasdan, `buildCanonicalRules()`ning
+  o'zini chaqirib avtomatik generatsiya qiladi (transkripsiya xatosi
+  ehtimoli yo'q). 4 ta o'zgaruvchi ta'rifi + 25 ta qoida (5 kanonik +
+  4 o'zgaruvchi × 5 sinf fallback) saqlandi.
+- **Tekshirildi (eng muhimi — REGRESSIYASIZLIK isboti):** barcha 3 ta
+  oldingi test stsenariysi DB yo'li orqali **aynan bir xil** natija
+  berdi — 90/A'lo, 10/Juda yomon, 23.33/Yomon (firedRules kuchlari
+  ham bitta-bittalab mos, masalan mixed holatda 0.5/0.333/0.167).
+  So'ngra fallback mexanizmi ham alohida sinovdan o'tkazildi: DB'dagi
+  Fgt ta'riflari vaqtincha o'chirilib (server qayta ishga tushirilib
+  xotira keshi tozalanganidan keyin), bir xil so'rov yuborildi — natija
+  yana 90/A'lo bo'ldi, log'da aniq ogohlantirish yozildi
+  (`"Fgt: DB qoidalari ishlatilmadi, kod ichidagi default FIS'ga
+  qaytildi"`), server ishlayverdi. Keyin ta'riflar qayta seed qilindi.
+  `npx tsc --noEmit` — 0 xato.
+- **Hali qilinmagan:** f1, f2, f3, f4, f6, GES darajasi hali kod ichida
+  hardcoded qolmoqda (o'zlarining `assessTurbine()`ga o'xshash pure
+  funksiyalari bilan) — ular ham xuddi shu naqsh bilan (DB loader +
+  seed skript + fallback) keyingi bosqichda ko'chiriladi. Buning uchun
+  `dbRuleLoader.ts`/`FuzzyRuleRepository.ts` allaqachon generic — faqat
+  har bir blok uchun seed skript va service'dagi fallback logikasi
+  qo'shilishi kerak.
+
+---
+
 ## 2026-07-15 (3) — Generator/Transformator/GES ham "from-stored" naqshiga o'tkazildi
 
 - **Sabab:** faqat gidroturbina uchun qurilgan "DB'dagi saqlangan

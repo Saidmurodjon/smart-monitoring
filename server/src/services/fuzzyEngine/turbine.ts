@@ -1,9 +1,18 @@
-import { evaluateCanonicalFis, type FisResult } from "./engine";
+import { evaluateCanonicalFis, evaluateFis, type FisResult } from "./engine";
 import { deviationMembershipSet, directValueMembershipSet } from "./variableSets";
+import { loadFisDefinition } from "./dbRuleLoader";
 
 // FUZZY.md §5.A — Gidroturbina (Fgt): 4 ta dinamik kirish, statik parametr
-// yo'q. Chegaralar hozircha test/default qiymatlar — .claude/rules/
-// fuzzy-logic.md #2ga ko'ra, keyinchalik DB'ga ko'chiriladi.
+// yo'q.
+//
+// `assessTurbine()` — .claude/rules/fuzzy-logic.md #2'dagi "faqat asosiy
+// (default) 10 ta qoida kodda bo'lishi mumkin" qoidasiga mos, kodda
+// qolgan DEFAULT/fallback FIS (DB ishlamay qolsa yoki hali seed
+// qilinmagan bo'lsa ishlatiladi).
+//
+// `assessTurbineFromDb()` — asosiy yo'l: qoidalar va a'zolik funksiyalari
+// `fuzzy_variable_definitions`/`fuzzy_rule_definitions` jadvallaridan
+// o'qiladi (`TurbineAssessmentService` shu funksiyani birinchi urinadi).
 
 export interface TurbineInput {
   aylanishTezligi: number; // RPM
@@ -34,5 +43,24 @@ export function assessTurbine(input: TurbineInput, nominal: TurbineNominal): Fis
       tebranish: input.tebranish,
     },
     variableSets,
+  );
+}
+
+export async function assessTurbineFromDb(input: TurbineInput, nominal: TurbineNominal): Promise<FisResult> {
+  const { variableSets, rules } = await loadFisDefinition("Fgt", {
+    aylanishTezligi: nominal.aylanishTezligiNominal,
+    quvvat: nominal.quvvatNominal,
+    suvSarfi: nominal.suvSarfiNominal,
+  });
+
+  return evaluateFis(
+    {
+      aylanishTezligi: input.aylanishTezligi,
+      quvvat: input.quvvat,
+      suvSarfi: input.suvSarfi,
+      tebranish: input.tebranish,
+    },
+    variableSets,
+    rules,
   );
 }

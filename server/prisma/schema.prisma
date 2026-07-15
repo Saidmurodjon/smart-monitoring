@@ -121,6 +121,42 @@ model SensorReading {
   @@map("sensor_readings")
 }
 
+// .claude/rules/fuzzy-logic.md #2: "Barcha IF-THEN qoidalari fuzzy_rules
+// jadvalda saqlanishi kerak (qattiq kod emas). Faqat asosiy (default) 10 ta
+// qoida kodda bo'lishi mumkin." Bitta o'zgaruvchining a'zolik funksiyasini
+// (5 sinf) qurish uchun yetarli ma'lumot: turi + 5 ta markaz.
+//
+// kind: "deviation" (nominaldan og'ish, masalan Aylanish tezligi — nominal
+// qiymat equipment_static_params'dan `variable` nomi bo'yicha olinadi),
+// "direct" (xom qiymat, masalan Tebranish), "score" (boshqa FIS chiqishi,
+// 0-100 domen, masalan f3/f4 — f5'ga kirish sifatida).
+model FuzzyVariableDefinition {
+  id             Int      @id @default(autoincrement())
+  assessmentType String // "Fgt", "f1", "f2", "f3", "f4", "f6", "GES"
+  variable       String // masalan "aylanishTezligi"
+  kind           String // "deviation" | "direct" | "score"
+  centers        Json // [n,n,n,n,n] o'sish tartibida
+  ascendingOrder Json? // faqat "direct" uchun; null = sukut (kichik qiymat yaxshi)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([assessmentType, variable])
+  @@map("fuzzy_variable_definitions")
+}
+
+model FuzzyRuleDefinition {
+  id             Int      @id @default(autoincrement())
+  assessmentType String
+  antecedents    Json // { o'zgaruvchi: chiqishSinfi, ... }
+  outputClass    String
+  weight         Float    @default(1)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([assessmentType])
+  @@map("fuzzy_rule_definitions")
+}
+
 model HydroGenerator {
   id        Int      @id @default(autoincrement())
   name      String?
