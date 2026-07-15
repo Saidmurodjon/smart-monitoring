@@ -8,6 +8,7 @@ import ArrowPathIcon from "@heroicons/react/24/outline/ArrowPathIcon";
 import { Link } from "react-router-dom";
 import { fetchGesList } from "../features/ges/gesSlice";
 import { showNotification } from "../features/common/headerSlice";
+import { toggleSidebarCollapsed } from "../features/common/sidebarSlice";
 import { getCurrentUser } from "../utils/authUser";
 import Avatar from "../components/Avatar";
 
@@ -48,16 +49,28 @@ function Header() {
 
   return (
     <>
-      <div className="navbar  flex justify-between bg-base-100  z-10 shadow-md ">
-        {/* Menu toogle for mobile view or small screen — desktop has its own collapse toggle in the sidebar */}
-        <div className="">
+      <div className="navbar fixed top-0 inset-x-0 z-40 w-full flex justify-between bg-base-100 shadow-md">
+        <div className="flex items-center">
+          {/* Mobile-only overlay drawer toggle */}
           <label
             htmlFor="left-sidebar-drawer"
-            className="btn btn-primary drawer-button lg:hidden"
+            className="btn btn-primary drawer-button lg:hidden mr-2"
           >
             <Bars3Icon className="h-5 inline-block w-5" />
           </label>
-          <h1 className="text-2xl font-semibold ml-2">{pageTitle}</h1>
+
+          {/* Logotip — bosilganda sidebar kenglig'ini almashtiradi (yig'ish/kengaytirish) */}
+          <button
+            type="button"
+            onClick={() => dispatch(toggleSidebarCollapsed())}
+            className="flex items-center gap-2 font-semibold text-xl hover:opacity-80"
+            title="Sidebar'ni yig'ish/kengaytirish"
+          >
+            <img className="mask mask-squircle w-10" src="/logo192.png" alt="Smart Monitoring logo" />
+            <span className="hidden sm:inline">Smart Monitoring</span>
+          </button>
+
+          <h1 className="text-2xl font-semibold ml-4 hidden md:inline-block">{pageTitle}</h1>
         </div>
 
         <div className="order-last">

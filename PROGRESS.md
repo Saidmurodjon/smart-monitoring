@@ -9,6 +9,59 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (15) — Navbar to'liq kenglikda va doim ko'rinadigan qilindi, logotip navbarga ko'chirildi
+
+- **Sabab:** (13)/(14)dagi brauzer sinovi yana muammolarni ko'rsatdi: navbar
+  faqat kontent ustuni kengligida edi (sidebar bilan yonma-yon, ekranning
+  to'liq eniga cho'zilmagan), "auto-hide" xususiyati tufayli scroll
+  qilinganda kontent navbar OSTIDA/USTIDA chiqib ketardi (`PageContent.js`
+  ichidagi eski `showHeader`/mouse-tracking mexanizmi), va sidebar
+  logotip+identifikatsiya blokini o'z ichiga olgani uchun keraksiz joy
+  band qilardi.
+- **Ildiz sabab:** `Layout.js` `<Header/>`ni `PageContent.js` ICHIGA,
+  `drawer-content`ning ichiga joylashtirgan edi — shuning uchun navbar
+  hech qachon to'liq enga cho'zila olmasdi. DaisyUI'ning `.drawer{height:
+  100vh}` qat'iy qoidasi (`daisyui@2.41.0`ning kompilyatsiya qilingan
+  CSS'idan yana tasdiqlandi) tufayli yechim: navbar drawer'dan TASHQARIDA,
+  `position:fixed` to'liq enli panel sifatida qoladi, drawer esa navbar
+  balandligiga (`.navbar{min-height:4rem}` — ya'ni `pt-16`) teng
+  padding-top oladi — bu 100vh balandlikka HECH NARSA QO'SHMAYDI, faqat
+  ichki tarkibni pastga suradi (qo'shimcha scroll paydo bo'lmaydi).
+- **`containers/Header.js`**: navbar endi `fixed top-0 inset-x-0 z-40
+  w-full`. Logotip + "Smart Monitoring" matni navbar boshiga ko'chirildi,
+  bosilganda `toggleSidebarCollapsed()` dispatch qiladi (sidebar
+  logotipdan endi mustaqil).
+- **Yangi `features/common/sidebarSlice.js`** + `app/store.js`ga
+  ro'yxatga olindi: `collapsed` holati endi Redux'da (avval
+  `LeftSidebar.js`ning lokal state'i edi) — chunki endi uni ikkita
+  mustaqil komponent (`Header.js` yozadi, `LeftSidebar.js` o'qiydi)
+  ishlatadi, umumiy ota-komponent holati yo'q. `localStorage`dagi
+  `sidebar-collapsed` kaliti saqlanib qoladi.
+- **`containers/PageContent.js`**: butun "auto-hide" mexanizmi
+  (`showHeader` state, scroll/mousemove/mouseleave listenerlar, `absolute`
+  wrapper) va `Header` import/render'i butunlay olib tashlandi — endi
+  faqat `drawer-content` + `<main>` qoladi.
+- **`containers/Layout.js`**: `<Header/>` endi to'g'ridan-to'g'ri shu
+  yerda render qilinadi (drawer'dan oldin), drawer wrapper'ga `pt-16`
+  qo'shildi.
+- **`containers/LeftSidebar.js`**: logotip `<li>` va pastdagi email/rol
+  identifikatsiya bloki butunlay olib tashlandi (foydalanuvchi so'roviga
+  ko'ra — bu ma'lumot navbar profil dropdown'ida allaqachon bor).
+  `collapsed` endi `useSelector(s => s.sidebar.collapsed)` orqali
+  o'qiladi, lokal state/toggle logikasi yo'q. Mobil overlay navbar
+  ustidan chiqishi uchun `z-50` qo'shildi (navbar `z-40`).
+- **`features/settings/profilesettings/index.js`**: parolni o'zgartirish
+  bo'limi allaqachon (13)da qo'shilgani va `provider === "local"`ga
+  to'g'ri bog'langani tasdiqlandi (o'zgarishsiz qoldi). Kichik ixchamlash:
+  `gap-5`→`gap-4`, identifikatsiya sarlavhasi va kartalar orasidagi
+  bo'shliq toraytirildi.
+- **Tekshirildi:** barcha o'zgargan/yangi fayllar loyihaning o'z babel
+  presetida xatosiz parse qilindi, eski `showHeader`ga hech qanday
+  qoldiq havola yo'qligi grep bilan tasdiqlandi. Brauzerda vizual natija
+  (navbar to'liq enda ekanligi, kontent uning ostiga yashirinmasligi,
+  sidebar scrollsiz sig'ishi, mobil kenglikda z-tartib to'g'riligi)
+  tekshirilmadi — foydalanuvchi qayta ko'rib tasdiqlashi kerak.
+
 ## 2026-07-15 (14) — Sidebar tuzatishlar: (13)dagi brauzer sinovidan keyingi 3 ta feedback
 
 - **Sabab:** foydalanuvchi (13)ni brauzerda sinab ko'rib 3 ta muammo topdi:

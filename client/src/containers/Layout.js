@@ -1,3 +1,4 @@
+import Header from "./Header"
 import PageContent from "./PageContent"
 import LeftSidebar from "./LeftSidebar"
 import { useSelector, useDispatch } from 'react-redux'
@@ -24,8 +25,12 @@ function Layout(){
 
     return(
       <>
-        { /* Left drawer - overlay+toggle on mobile, permanent rail on desktop (drawer-mobile, daisyui@2) */ }
-        <div className="drawer drawer-mobile">
+        { /* Navbar - full width, fixed, always visible (h-16 / min-height:4rem) */ }
+        <Header/>
+
+        { /* Left drawer - overlay+toggle on mobile, permanent rail on desktop (drawer-mobile, daisyui@2).
+             pt-16 offsets the fixed navbar's height so content starts below it, not under it. */ }
+        <div className="drawer drawer-mobile pt-16">
             <input id="left-sidebar-drawer" type="checkbox" className="drawer-toggle" defaultChecked />
             <PageContent/>
             <LeftSidebar />

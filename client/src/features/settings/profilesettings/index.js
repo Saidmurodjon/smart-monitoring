@@ -106,8 +106,8 @@ function ProfileSettings() {
     <>
       <TitleCard title="Profil sozlamalari" topMargin="mt-2">
         {/* Identity header */}
-        <div className="flex items-center gap-4 pb-5 mb-5 border-b border-base-200">
-          <Avatar email={profile.email} size="w-14" textSize="text-2xl" />
+        <div className="flex items-center gap-4 pb-4 mb-4 border-b border-base-200">
+          <Avatar email={profile.email} size="w-12" textSize="text-xl" />
           <div className="flex flex-col gap-1.5">
             <span className="font-semibold text-base-content break-all">{profile.email}</span>
             <div className="flex items-center gap-2">
@@ -122,7 +122,7 @@ function ProfileSettings() {
         </div>
 
         {/* Editable fields */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InputText
             labelTitle="To'liq ism"
             name="fullName"
@@ -164,8 +164,8 @@ function ProfileSettings() {
       </TitleCard>
 
       {profile.provider === "local" && (
-        <TitleCard title="Parolni o'zgartirish" topMargin="mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5" key={pwdFormKey}>
+        <TitleCard title="Parolni o'zgartirish" topMargin="mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4" key={pwdFormKey}>
             <InputText
               labelTitle="Joriy parol"
               type="password"
