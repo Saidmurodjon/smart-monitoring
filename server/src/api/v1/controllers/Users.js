@@ -36,6 +36,60 @@ module.exports = {
     }
   },
 
+  /** GET /api/v1/users/me — joriy foydalanuvchining o'z profili. */
+  GetMe: async function (req, res) {
+    try {
+      const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+      if (!user) return res.status(404).send("Foydalanuvchi topilmadi");
+      const { password, ...safe } = user;
+      return res.status(200).send(withMongoId(safe));
+    } catch (err) {
+      return res.status(417).send("So'rov amalga oshmadi");
+    }
+  },
+
+  /** PUT /api/v1/users/me — o'z profilini tahrirlash. Faqat fullName/orgName/phone
+   * qabul qilinadi — email/role/provider mijoz so'rovidan hech qachon o'zgarmaydi. */
+  UpdateMe: async function (req, res) {
+    const { fullName, orgName, phone } = req.body;
+    try {
+      const updated = await prisma.user.update({
+        where: { id: req.user.id },
+        data: { fullName, orgName, phone },
+      });
+      const { password, ...safe } = updated;
+      return res.status(200).send(withMongoId(safe));
+    } catch (err) {
+      return res.status(417).send("Saqlashda xatolik yuz berdi");
+    }
+  },
+
+  /** PUT /api/v1/users/me/password — o'z parolini almashtirish. Body: { currentPassword, newPassword } */
+  UpdateMyPassword: async function (req, res) {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(412).send("Joriy va yangi parolni to'liq kiriting");
+    }
+    if (String(newPassword).length < 6) {
+      return res.status(412).send("Yangi parol kamida 6 belgidan iborat bo'lishi kerak");
+    }
+    try {
+      const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+      if (!user || !user.password) {
+        return res.status(400).send("Bu hisobda parol mavjud emas (Google orqali kirilgan)");
+      }
+      const match = await bcrypt.compare(currentPassword, user.password);
+      if (!match) {
+        return res.status(401).send("Joriy parol noto'g'ri");
+      }
+      const hashed = await bcrypt.hash(newPassword, SALT_ROUNDS);
+      await prisma.user.update({ where: { id: req.user.id }, data: { password: hashed } });
+      return res.status(200).send("Parol muvaffaqiyatli o'zgartirildi");
+    } catch (err) {
+      return res.status(417).send("So'rov amalga oshmadi");
+    }
+  },
+
   /** PUT /api/v1/users/:id/role — faqat admin. Body: { role: "ADMIN"|"ENGINEER"|"VIEWER" } */
   UpdateRole: async function (req, res) {
     const id = Number(req.params.id);

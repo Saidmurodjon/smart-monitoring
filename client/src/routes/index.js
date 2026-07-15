@@ -9,12 +9,7 @@ const Blank = lazy(() => import("../pages/protected/Blank"));
 const Charts = lazy(() => import("../pages/protected/Charts"));
 const Integration = lazy(() => import("../pages/protected/Integration"));
 const Calendar = lazy(() => import("../pages/protected/Calendar"));
-const Team = lazy(() => import("../pages/protected/Team"));
-const Bills = lazy(() => import("../pages/protected/Bills"));
 const ProfileSettings = lazy(() =>import("../pages/protected/ProfileSettings"));
-const GettingStarted = lazy(() => import("../pages/GettingStarted"));
-const DocFeatures = lazy(() => import("../pages/DocFeatures"));
-const DocComponents = lazy(() => import("../pages/DocComponents"));
 
 // Ges route
 const GesInfo = lazy(() => import("../pages/ges/GesInfo"));
@@ -26,6 +21,8 @@ const GesEdit = lazy(() => import("../pages/ges/Edit"));
 // Fuzzy Logic qoidalari (admin)
 const FuzzyRulesList = lazy(() => import("../pages/fuzzyRules/list"));
 const FuzzyRulesDetail = lazy(() => import("../pages/fuzzyRules/Detail"));
+// Foydalanuvchilar va rollar (admin)
+const UsersList = lazy(() => import("../pages/users/list"));
 // calculation route
 
 const routes = [
@@ -74,15 +71,15 @@ const routes = [
     path: "/fuzzy-rules/detail", // the url
     component: FuzzyRulesDetail, // view rendered
   },
+  {
+    path: "/users", // the url
+    component: UsersList, // view rendered
+  },
 
 
   {
     path: "/welcome", // the url
     component: Welcome, // view rendered
-  },
-  {
-    path: "/settings-team",
-    component: Team,
   },
   {
     path: "/calendar",
@@ -92,22 +89,6 @@ const routes = [
   {
     path: "/settings-profile",
     component: ProfileSettings,
-  },
-  {
-    path: "/settings-billing",
-    component: Bills,
-  },
-  {
-    path: "/getting-started",
-    component: GettingStarted,
-  },
-  {
-    path: "/features",
-    component: DocFeatures,
-  },
-  {
-    path: "/components",
-    component: DocComponents,
   },
   {
     path: "/charts",

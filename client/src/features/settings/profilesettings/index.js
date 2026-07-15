@@ -1,50 +1,190 @@
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import TitleCard from "../../../components/Cards/TitleCard";
+import InputText from "../../../components/Input/InputText";
+import { showNotification } from "../../common/headerSlice";
+import http from "../../../utils/http";
 
-import { useDispatch } from "react-redux"
-import TitleCard from "../../../components/Cards/TitleCard"
-import { showNotification } from '../../common/headerSlice'
-import InputText from '../../../components/Input/InputText'
-import TextAreaInput from '../../../components/Input/TextAreaInput'
-import ToogleInput from '../../../components/Input/ToogleInput'
+const ROLE_LABELS = {
+  ADMIN: "Administrator",
+  ENGINEER: "Muhandis",
+  VIEWER: "Kuzatuvchi",
+};
 
-function ProfileSettings(){
+const ROLE_BADGE_STYLE = {
+  ADMIN: "badge-primary",
+  ENGINEER: "badge-info",
+  VIEWER: "badge-ghost",
+};
 
+function ProfileSettings() {
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch()
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [draft, setDraft] = useState({ fullName: "", orgName: "", phone: "" });
 
-    // Call API to update profile settings changes
-    const updateProfile = () => {
-        dispatch(showNotification({message : "Profile Updated", status : 1}))    
+  const [pwdDraft, setPwdDraft] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+  const [pwdSaving, setPwdSaving] = useState(false);
+  const [pwdFormKey, setPwdFormKey] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await http.get("/users/me");
+        if (cancelled) return;
+        setProfile(data);
+        setDraft({ fullName: data.fullName || "", orgName: data.orgName || "", phone: data.phone || "" });
+      } catch (err) {
+        dispatch(showNotification({ message: "Profilni yuklashda xatolik yuz berdi", status: 0 }));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line
+  }, []);
+
+  const updateFormValue = (e) => {
+    setDraft((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const updateProfile = async () => {
+    setSaving(true);
+    try {
+      const { data } = await http.put("/users/me", draft);
+      setProfile(data);
+      dispatch(showNotification({ message: "Profil yangilandi", status: 1 }));
+    } catch (err) {
+      const msg = err?.response?.data || "Saqlashda xatolik yuz berdi";
+      dispatch(showNotification({ message: String(msg), status: 0 }));
+    } finally {
+      setSaving(false);
     }
+  };
 
-    const updateFormValue = ({updateType, value}) => {
-        console.log(updateType)
+  const updatePwdValue = (e) => {
+    setPwdDraft((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const changePassword = async () => {
+    if (!pwdDraft.newPassword || pwdDraft.newPassword !== pwdDraft.confirmPassword) {
+      dispatch(showNotification({ message: "Yangi parollar mos kelmadi", status: 0 }));
+      return;
     }
+    setPwdSaving(true);
+    try {
+      await http.put("/users/me/password", {
+        currentPassword: pwdDraft.currentPassword,
+        newPassword: pwdDraft.newPassword,
+      });
+      dispatch(showNotification({ message: "Parol muvaffaqiyatli o'zgartirildi", status: 1 }));
+      setPwdDraft({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      setPwdFormKey((k) => k + 1);
+    } catch (err) {
+      const msg = err?.response?.data || "Parolni o'zgartirishda xatolik yuz berdi";
+      dispatch(showNotification({ message: String(msg), status: 0 }));
+    } finally {
+      setPwdSaving(false);
+    }
+  };
 
-    return(
-        <>
-            
-            <TitleCard title="Profile Settings" topMargin="mt-2">
+  if (loading) {
+    return (
+      <TitleCard title="Profil sozlamalari" topMargin="mt-2">
+        <div className="py-10 text-center text-gray-500 italic">Yuklanmoqda...</div>
+      </TitleCard>
+    );
+  }
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputText labelTitle="Name" defaultValue="Alex" updateFormValue={updateFormValue}/>
-                    <InputText labelTitle="Email Id" defaultValue="alex@dashwind.com" updateFormValue={updateFormValue}/>
-                    <InputText labelTitle="Title" defaultValue="UI/UX Designer" updateFormValue={updateFormValue}/>
-                    <InputText labelTitle="Place" defaultValue="California" updateFormValue={updateFormValue}/>
-                    <TextAreaInput labelTitle="About" defaultValue="Doing what I love, part time traveller" updateFormValue={updateFormValue}/>
-                </div>
-                <div className="divider" ></div>
+  return (
+    <>
+      <TitleCard title="Profil sozlamalari" topMargin="mt-2">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-base-content">{profile.email}</span>
+          <span className={`badge ${ROLE_BADGE_STYLE[profile.role] || "badge-ghost"}`}>
+            {ROLE_LABELS[profile.role] || profile.role}
+          </span>
+          <span className="badge badge-outline">
+            {profile.provider === "google" ? "Google hisobi" : "Lokal hisob"}
+          </span>
+        </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputText labelTitle="Language" defaultValue="English" updateFormValue={updateFormValue}/>
-                    <InputText labelTitle="Timezone" defaultValue="IST" updateFormValue={updateFormValue}/>
-                    <ToogleInput updateType="syncData" labelTitle="Sync Data" defaultValue={true} updateFormValue={updateFormValue}/>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <InputText
+            labelTitle="To'liq ism"
+            name="fullName"
+            defaultValue={draft.fullName}
+            updateFormValue={updateFormValue}
+          />
+          <InputText
+            labelTitle="Tashkilot"
+            name="orgName"
+            defaultValue={draft.orgName}
+            updateFormValue={updateFormValue}
+          />
+          <InputText
+            labelTitle="Telefon"
+            name="phone"
+            defaultValue={draft.phone}
+            updateFormValue={updateFormValue}
+          />
+          <InputText labelTitle="Email" defaultValue={profile.email} updateFormValue={() => {}} isDisabled />
+        </div>
 
-                <div className="mt-16"><button className="btn btn-primary float-right" onClick={() => updateProfile()}>Update</button></div>
-            </TitleCard>
-        </>
-    )
+        <div className="mt-10">
+          <button
+            className={"btn btn-primary float-right" + (saving ? " loading" : "")}
+            onClick={updateProfile}
+            disabled={saving}
+          >
+            Saqlash
+          </button>
+        </div>
+      </TitleCard>
+
+      {profile.provider === "local" && (
+        <TitleCard title="Parolni o'zgartirish" topMargin="mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6" key={pwdFormKey}>
+            <InputText
+              labelTitle="Joriy parol"
+              type="password"
+              name="currentPassword"
+              defaultValue={pwdDraft.currentPassword}
+              updateFormValue={updatePwdValue}
+            />
+            <InputText
+              labelTitle="Yangi parol"
+              type="password"
+              name="newPassword"
+              defaultValue={pwdDraft.newPassword}
+              updateFormValue={updatePwdValue}
+            />
+            <InputText
+              labelTitle="Yangi parolni tasdiqlang"
+              type="password"
+              name="confirmPassword"
+              defaultValue={pwdDraft.confirmPassword}
+              updateFormValue={updatePwdValue}
+            />
+          </div>
+          <div className="mt-8">
+            <button
+              className={"btn btn-primary float-right" + (pwdSaving ? " loading" : "")}
+              onClick={changePassword}
+              disabled={pwdSaving}
+            >
+              Parolni yangilash
+            </button>
+          </div>
+        </TitleCard>
+      )}
+    </>
+  );
 }
 
-
-export default ProfileSettings
+export default ProfileSettings;

@@ -1,9 +1,9 @@
-import DocFeatures from "../features/documentation/DocFeatures";
+import List from "../../features/users";
 
 function ExternalPage() {
   return (
     <div className="">
-      <DocFeatures />
+      <List />
     </div>
   );
 }

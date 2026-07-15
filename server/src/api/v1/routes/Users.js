@@ -10,6 +10,11 @@ const requireRole = require("../middlewares/RequireRole");
 // controller ichida majburlanadi).
 router.route("/").post(conntroller.Post);
 
+// O'z profilini ko'rish/tahrirlash — istalgan rol, faqat o'ziniki.
+router.route("/me").get(Authentication, conntroller.GetMe);
+router.route("/me").put(Authentication, conntroller.UpdateMe);
+router.route("/me/password").put(Authentication, conntroller.UpdateMyPassword);
+
 // Foydalanuvchilar ro'yxati va rol boshqaruvi — faqat admin.
 router.route("/").get(Authentication, requireRole("ADMIN"), conntroller.Get);
 router.route("/:id/role").put(Authentication, requireRole("ADMIN"), conntroller.UpdateRole);

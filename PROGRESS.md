@@ -9,6 +9,78 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (12) — Navbar/sidebar tozalash, real profil sozlamalari, foydalanuvchi/rol boshqaruv sahifasi
+
+- **Sabab:** ilova asli "DashWind" shablonidan boshlangan va ko'p sahifalar
+  hech qachon almashtirilmagan edi. Har bir sidebar bandini tekshirish
+  shuni ko'rsatdi: "Pages" (Login/Register/Forgot-password — login qilib
+  bo'lgan foydalanuvchi uchun mantiqsiz, Register haqiqiy API chaqirmaydi),
+  "Documentation" (umumiy shablon hujjatlari), "Billing" (soxta hisob-
+  fakturalar), "Team Members" (soxta a'zolar, "Invite" tugmasi hech narsa
+  qilmaydi), "Profile Settings" (qattiq kodlangan "Alex"/"alex@dashwind.
+  com", Update tugmasi haqiqiy API chaqirmasdan faqat soxta toast
+  ko'rsatardi) — hammasi backend'ga ulanmagan. Navbar'da Search/Share
+  tugmalari `onClick`siz, xabarnoma qo'ng'irog'i qattiq kodlangan 15 ta
+  soxta "sotuv 30% oshdi" xabari, Filter oynasi hech narsani filtrlamaydi,
+  avatar esa o'lik tashqi xizmatga (`placeimg.com`) ishora qilardi.
+  Foydalanuvchi tasdig'i bilan (AskUserQuestion): hammasi **to'liq olib
+  tashlandi**, "Team Members" o'rniga esa haqiqiy zaruriy funksiya —
+  foydalanuvchi/rol boshqaruvi — qurildi (`PUT /api/v1/users/:id/role`
+  avvalgi Roles ishida qurilgan edi, lekin UI yo'q edi — adminning rolni
+  o'zgartirishning yagona yo'li xom SQL edi).
+- **Server — o'z profilini boshqarish** (`controllers/Users.js`,
+  `routes/Users.js`): `GET /api/v1/users/me`, `PUT /api/v1/users/me`
+  (faqat `fullName`/`orgName`/`phone` — `email`/`role`/`provider` mijoz
+  so'rovidan hech qachon qabul qilinmaydi, ro'yxatdan o'tishdagi kabi
+  huquq oshirish himoyasi), `PUT /api/v1/users/me/password` (joriy parol
+  `bcrypt.compare` bilan tekshiriladi, Google hisoblar uchun 400 qaytaradi
+  — ularda parol yo'q). Uchalasi ham `Authentication`dan keyin, istalgan
+  rol uchun ochiq (o'ziniki bilan ishlaydi).
+- **Client — real Profil sozlamalari**
+  (`features/settings/profilesettings/index.js`, to'liq qayta yozildi):
+  ochilganda `/users/me`dan haqiqiy ma'lumot yuklanadi, saqlash haqiqiy
+  `PUT`ga boradi, rol/hisob turi (Google/Lokal) badge sifatida ko'rsatiladi
+  (o'zgartirib bo'lmaydi). Alohida "Parolni o'zgartirish" bo'limi — faqat
+  `provider === "local"` bo'lsa ko'rinadi.
+- **Client — yangi "Foydalanuvchilar" sahifasi** (`features/users/index.js`,
+  `pages/users/list.js`, admin-only, `/app/users`): `GET /users` orqali
+  ro'yxat, har bir qatordagi rol `<select>` o'zgarganda
+  `PUT /users/:id/role` chaqiradi — `fuzzyRules/List.js`dagi jadval
+  uslubiga mos.
+- **Sidebar tozalandi** (`routes/sidebar.js`): Pages/Documentation/Billing
+  butunlay olib tashlandi, "Team Members" → "Foydalanuvchilar" (admin-only)
+  bilan almashtirildi. "Yangi GES ni qo'shish" `roles:["ADMIN"]` (server
+  tomonidagi GES-yaratish cheklovi bilan mos). `LeftSidebar.js` endi
+  submenyu ichidagi bandlarni ham rolga qarab filtrlaydi (avval faqat
+  yuqori darajadagi bandlarni filtrlardi), va logotip ostida joriy
+  foydalanuvchi email + rol nishonchasini ko'rsatadi (`getCurrentUser()`,
+  qo'shimcha so'rovsiz — JWT'dan). Logotip havolasi `/app/welcome` (soxta
+  shablon "Get Started" sahifasi) o'rniga `/app/dashboard`ga o'zgartirildi.
+- **Navbar tozalandi** (`containers/Header.js`): ishlamaydigan Search/Share
+  tugmalari, soxta xabarnoma qo'ng'irog'i va Filter oynasi (ikkalasi ham
+  butunlay soxta kontentga ochilardi — tekshirib ko'rilgan) olib
+  tashlandi, `noOfNotifications` boshlang'ich holati ham
+  (`features/common/headerSlice.js`) o'chirildi. `placeimg.com` avatar →
+  bosh harf-asosidagi rangli doira (tashqi so'rovsiz). Profil dropdown
+  endi haqiqiy email + rol nishonchasini ko'rsatadi, "Bill History" havolasi
+  olib tashlandi. Real ishlaydiganlari (yangilash, mavzu almashtirish,
+  chiqish) o'zgarmadi.
+- **O'chirilgan o'lik fayllar**: `pages/protected/{Team,Bills}.js`,
+  `pages/{GettingStarted,DocFeatures,DocComponents}.js`,
+  `features/settings/{team,billing}/`, `features/documentation/` —
+  barchasi endi hech qanday route yoki havoladan ko'rinmasligi tasdiqlandi
+  (grep bilan), `routes/index.js`dan mos yozuvlar olib tashlandi.
+- **Tekshirildi:** `GET/PUT /users/me` va `PUT /users/me/password`
+  curl bilan to'liq sinaldi (noto'g'ri joriy parol → 401; to'g'ri →
+  200, keyin yangi parol bilan qayta login muvaffaqiyatli bo'ldi;
+  `PUT /users/me`ga `role:"VIEWER"` yuborilganda ham rol `ADMIN`
+  bo'lib qoldi — huquq oshirish himoyasi ishladi); test uchun
+  o'zgartirilgan admin parol/ism `.env`dagi asl qiymatlarga qaytarib
+  tiklandi. Barcha o'zgargan/yangi client fayllar loyihaning o'z babel
+  presetida xatosiz parse qilindi. Brauzerda vizual ko'rinish (badge
+  ranglari, joylashuv) tekshirilmadi — foydalanuvchi o'zi ko'rib
+  tasdiqlashi kerak.
+
 ## 2026-07-15 (11) — Rollar (admin/engineer/viewer) va Google OAuth — to'liq amalga oshirildi
 
 - **Sabab:** `ROLES.md` (shu sessiyada yozilgan reja) asosida. Ishni

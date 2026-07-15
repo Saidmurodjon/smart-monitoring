@@ -1,26 +1,25 @@
 import { themeChange } from "theme-change";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import BellIcon from "@heroicons/react/24/outline/BellIcon";
 import Bars3Icon from "@heroicons/react/24/outline/Bars3Icon";
 import MoonIcon from "@heroicons/react/24/outline/MoonIcon";
 import SunIcon from "@heroicons/react/24/outline/SunIcon";
 import ArrowPathIcon from "@heroicons/react/24/outline/ArrowPathIcon";
-import MagnifyingGlassIcon from "@heroicons/react/24/outline/MagnifyingGlassIcon";
-import ShareIcon from "@heroicons/react/24/outline/ShareIcon";
-import { openRightDrawer } from "../features/common/rightDrawerSlice";
-import { RIGHT_DRAWER_TYPES } from "../utils/globalConstantUtil";
-import FunnelIcon from "@heroicons/react/24/outline/FunnelIcon";
 import { Link } from "react-router-dom";
 import { fetchGesList } from "../features/ges/gesSlice";
 import { showNotification } from "../features/common/headerSlice";
+import { getCurrentUser } from "../utils/authUser";
+
+const ROLE_LABELS = { ADMIN: "Administrator", ENGINEER: "Muhandis", VIEWER: "Kuzatuvchi" };
 
 function Header() {
   const dispatch = useDispatch();
-  const { noOfNotifications, pageTitle } = useSelector((state) => state.header);
+  const { pageTitle } = useSelector((state) => state.header);
   const [currentTheme, setCurrentTheme] = useState(
     localStorage.getItem("theme")
   );
+  const user = getCurrentUser();
+  const initial = (user?.email || "?").charAt(0).toUpperCase();
 
   useEffect(() => {
     themeChange(false);
@@ -38,24 +37,6 @@ function Header() {
       // eslint-disable-next-line
   }, []);
 
-  // Opening right sidebar for notification
-  const openNotification = () => {
-    dispatch(
-      openRightDrawer({
-        header: "Notifications",
-        bodyType: RIGHT_DRAWER_TYPES.NOTIFICATION,
-      })
-    );
-  };
-  // Opening right sidebar for notification
-  const openFilter = () => {
-    dispatch(
-      openRightDrawer({
-        header: "Filter",
-        bodyType: RIGHT_DRAWER_TYPES.FILTER,
-      })
-    );
-  };
   const refreshData = () => {
     dispatch(fetchGesList());
     dispatch(showNotification({ message: "Ma'lumotlar yangilandi", status: 1 }));
@@ -80,17 +61,6 @@ function Header() {
         </div>
 
         <div className="order-last">
-          {/* Multiple theme selection, uncomment this if you want to enable multiple themes selection, 
-                also includes corporate and retro themes in tailwind.config file */}
-
-          {/* <select className="select select-sm mr-4" data-choose-theme>
-                    <option disabled selected>Theme</option>
-                    <option value="light">Default</option>
-                    <option value="dark">Dark</option>
-                    <option value="corporate">Corporate</option>
-                    <option value="retro">Retro</option>
-                </select> */}
-
           {/* Refresh data */}
           <button
             className="btn btn-ghost btn-circle"
@@ -98,31 +68,6 @@ function Header() {
             aria-label="Yangilash"
           >
             <ArrowPathIcon className="h-6 w-6" />
-          </button>
-
-          {/* Notification icon */}
-          <button
-            className="btn btn-ghost ml-4  btn-circle"
-            onClick={() => openNotification()}
-          >
-            <div className="indicator">
-              <BellIcon className="h-6 w-6" />
-              {noOfNotifications > 0 ? (
-                <span className="indicator-item badge badge-secondary badge-sm">
-                  {noOfNotifications}
-                </span>
-              ) : null}
-            </div>
-          </button>
-          {/* Filter icon (sana oralig'ini tanlash shu yerda ochiladi) */}
-          <button
-            className="btn btn-ghost ml-4  btn-circle"
-            onClick={() => openFilter()}
-          >
-            <div className="indicator">
-              <FunnelIcon className="h-6 w-6" />
-
-            </div>
           </button>
 
           {/* Light and dark theme selection toogle **/}
@@ -146,39 +91,34 @@ function Header() {
             />
           </label>
 
-          {/* Search */}
-          <button className="btn btn-ghost ml-4 btn-circle" aria-label="Qidiruv">
-            <MagnifyingGlassIcon className="h-6 w-6" />
-          </button>
-
-          {/* Share */}
-          <button className="btn btn-ghost ml-4 btn-circle" aria-label="Ulashish">
-            <ShareIcon className="h-6 w-6" />
-          </button>
-
           {/* Profile icon, opening menu on click */}
           <div className="dropdown dropdown-end ml-4">
-            <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-              <div className="w-10 rounded-full">
-                <img src="https://placeimg.com/80/80/people" alt="profile" />
+            <label tabIndex={0} className="btn btn-ghost btn-circle avatar placeholder">
+              <div className="bg-primary text-primary-content rounded-full w-10">
+                <span className="text-lg">{initial}</span>
               </div>
             </label>
             <ul
               tabIndex={0}
-              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
+              className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-64"
             >
-              <li className="justify-between">
-                <Link to={"/app/settings-profile"}>
-                  Profile Settings
-                  <span className="badge">New</span>
-                </Link>
-              </li>
+              {user && (
+                <li className="pointer-events-none px-2 py-1">
+                  <div className="flex flex-col items-start gap-1">
+                    <span className="text-sm font-semibold break-all">{user.email}</span>
+                    <span className="badge badge-sm badge-outline">
+                      {ROLE_LABELS[user.role] || user.role}
+                    </span>
+                  </div>
+                </li>
+              )}
+              <div className="divider mt-0 mb-0"></div>
               <li className="">
-                <Link to={"/app/settings-billing"}>Bill History</Link>
+                <Link to={"/app/settings-profile"}>Profil sozlamalari</Link>
               </li>
               <div className="divider mt-0 mb-0"></div>
               <li>
-                <span onClick={logoutUser}>Logout</span>
+                <span onClick={logoutUser}>Chiqish</span>
               </li>
             </ul>
           </div>
