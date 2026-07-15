@@ -9,6 +9,31 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-15 (7) — API prefiks nomuvofiqligi to'g'irlandi: `/api` → `/api/v1`
+
+- **Sabab:** CLAUDE.md #3 "Barcha endpointlar `/api/v1/` prefiksi ostida"
+  deydi, lekin amalda barcha route'lar `/api/` ostida edi (ilgari
+  aniqlangan, lekin ataylab tegilmagan nomuvofiqlik). Foydalanuvchi buni
+  aniq tanladi (3 ta variant orasidan) hal qilinishi kerak bo'lgan ish
+  sifatida.
+- **`server/src/api/v1/start/Routes.js`:** `app.use("/api", appRouter)`
+  → `app.use("/api/v1", appRouter)`.
+- **Client tomonida 5 ta joy yangilandi** (barchasi bitta manba —
+  `REACT_APP_API_URL`/`REACT_APP_SERVER_URL` env o'zgaruvchilari va
+  ularning fallback qiymatlari orqali ishlaydi, boshqa hech qanday
+  hardcoded `localhost:5000/api` qolmagan — tekshirildi):
+  `client/.env` (`REACT_APP_SERVER_URL`), `utils/http.js`, `utils/api.js`,
+  `features/aggregates/gesSlice.js`, `features/ges/gesSlice.js`.
+- **Tekshirildi:** backend qayta ishga tushirilib, `/api/v1/ges-list` →
+  200, eski `/api/ges-list` → 404 (endi mavjud emas) tasdiqlandi. Client
+  dev server ham qayta ishga tushirilib (CRA `.env` o'zgarishlarini faqat
+  to'liq restart orqali oladi — hot-reload yetarli emas), bundle
+  ichidan `localhost:5000/api/v1` borligi va eski qiymat qolmaganligi
+  to'g'ridan-to'g'ri tekshirildi. To'liq turbina baholash zanjiri yangi
+  prefiks orqali ham 90/A'lo berdi.
+
+---
+
 ## 2026-07-15 (6) — Qoidalar bazasi uchun admin API (CRUD) + jonli keshni bekor qilish
 
 - **Sabab:** qoidalar DB'ga ko'chirilgan bo'lsa-da, ularni o'zgartirishning

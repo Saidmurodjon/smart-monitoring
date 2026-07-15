@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import http from "../../utils/http";
-const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1";
 
 const initial = {
   items: [],
