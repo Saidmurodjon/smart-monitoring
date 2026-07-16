@@ -9,6 +9,44 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-16 (2) — Chorvoq GES uchun namuna (test) ma'lumot seed skripti
+
+- **Sabab:** baza qayta o'rnatilgach (yuqoridagi (1)-yozuvdagi topilma —
+  boshqa/toza Neon bazasi) `ges_list`/`aggregates` bo'sh qoldi. Foydalanuvchi
+  UI/dashboard'ni sinash uchun Chorvoq GES misolida namuna ma'lumot so'radi.
+- **Yangi `server/scripts/seedChorvoqGes.ts`**: 1 ta GES ("Chorvoq GES",
+  Toshkent viloyati, Bo'stonliq tumani) + 2 ta agregat yaratadi — biri
+  "sog'lom" (nominalga yaqin qiymatlar), biri "ogohlantirish darajasida"
+  (past yuklama/yuqori harorat/tebranish) — dashboard'da farqli holatlarni
+  ko'rsatish uchun. Har ikkalasiga TURBINE/GENERATOR/TRANSFORMER uchun
+  to'liq statik parametr (nominal) va sensor o'qish (dinamik) qatorlari
+  qo'shiladi, aniq `EquipmentStaticParamRepository`/`SensorReadingRepository`
+  orqali (paramName'lar mavjud `*AssessmentService.ts` fayllaridan olindi —
+  mos kelmasa FIS "ma'lumot yetishmayapti" xatosi berardi).
+  Ishga tushirish: `npx tsx scripts/seedChorvoqGes.ts`.
+- **Muhim topilgan xato (seed yozishda)**: `fuzzyEngine/generator.ts`dagi
+  `computeActivePower`/`computeReactivePower` formulasi
+  `(UA*IA+UB*IB+UC*IC)*cosPhi/sinPhi` — standart 3-fazali formuladan farqli
+  (√3 yoki /1000 YO'Q). Boshida `pNominal`ni "haqiqiy" 100 MW deb qo'ygan
+  edim — bu formulaning haqiqiy chiqishi (~24500 atrofida, UA/IA
+  birliklariga bog'liq) bilan mos kelmay, ikkala agregat uchun ham f1
+  "Yomon" chiqardi (sog'lomiga ham). Tuzatildi: `pNominal`/`qNominal`
+  endi shu formuladan "sog'lom" o'qishlar asosida hisoblab qo'yilgan
+  (real fizik MW emas) — natijada f1 to'g'ri farqlanadi: 1-agregat 68.33
+  "Yaxshi", 2-agregat 46.73 "O'rtacha". Skriptdagi kodli izoh shu
+  formulaga tayanish sababini tushuntiradi (kelajakda "to'g'irlab"
+  qo'yilmasligi uchun).
+- **`server/scripts/seedFuzzyRules.ts`** (avvaldan mavjud, GES-ga bog'liq
+  emas, global) — bu safar ham qayta ishga tushirildi, chunki toza bazada
+  `FuzzyVariableDefinition`/`FuzzyRuleDefinition` bo'sh edi (FIS DB-birinchi
+  yo'li ishlashi uchun shart, aks holda kod-fallback ishlatiladi).
+- **Sinov**: to'liq FIS zanjiri (`/assessment/turbine|generator|transformer/
+  :id/from-stored` + `/assessment/ges/:id`) ikkala agregat uchun ham
+  `curl` orqali ishga tushirildi — natijalar kutilganidek farqlandi
+  (GES darajasida: 1-agregat 78.94 "Yaxshi", 2-agregat 47.39 "O'rtacha"),
+  so'ng `aggregates/:id/detail` orqali dashboard ko'radigan shaklda ham
+  tekshirildi.
+
 ## 2026-07-16 (1) — Email orqali ro'yxatdan o'tishni admin tasdiqlashi, parolni tiklash
 
 - **Sabab:** GES — strategik infratuzilma, shuning uchun endi ro'yxatdan
