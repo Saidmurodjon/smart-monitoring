@@ -10,12 +10,23 @@ const ROLE_LABELS = {
   ENGINEER: "Muhandis",
   VIEWER: "Kuzatuvchi",
 };
+const STATUS_LABELS = {
+  PENDING: "Kutilmoqda",
+  APPROVED: "Tasdiqlangan",
+  REJECTED: "Rad etilgan",
+};
+const STATUS_BADGE_STYLE = {
+  PENDING: "badge-warning",
+  APPROVED: "badge-success",
+  REJECTED: "badge-error",
+};
 
 function UsersList() {
   const dispatch = useDispatch();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
+  const [pendingRoleChoice, setPendingRoleChoice] = useState({});
 
   const load = async () => {
     setLoading(true);
@@ -48,13 +59,43 @@ function UsersList() {
     }
   };
 
+  const approveUser = async (id) => {
+    const role = pendingRoleChoice[id] || "VIEWER";
+    setSavingId(id);
+    try {
+      await http.put(`/users/${id}/approve`, { role });
+      dispatch(showNotification({ message: "Foydalanuvchi tasdiqlandi", status: 1 }));
+      await load();
+    } catch (err) {
+      const msg = err?.response?.data || "Tasdiqlashda xatolik yuz berdi";
+      dispatch(showNotification({ message: String(msg), status: 0 }));
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  const rejectUser = async (id) => {
+    setSavingId(id);
+    try {
+      await http.put(`/users/${id}/reject`, {});
+      dispatch(showNotification({ message: "Foydalanuvchi rad etildi", status: 1 }));
+      await load();
+    } catch (err) {
+      const msg = err?.response?.data || "Rad etishda xatolik yuz berdi";
+      dispatch(showNotification({ message: String(msg), status: 0 }));
+    } finally {
+      setSavingId(null);
+    }
+  };
+
   return (
     <TitleCard title="Foydalanuvchilar va rollar" topMargin="mt-2">
       <p className="text-sm text-base-content/70 mb-4">
-        Har bir foydalanuvchining tizimdagi rolini shu yerdan boshqarishingiz
-        mumkin. Rol qanday vazifani bajarishi haqida{" "}
-        <span className="font-semibold">ROLES.md</span> faylida batafsil
-        yozilgan.
+        Yangi ro'yxatdan o'tgan foydalanuvchilar "Kutilmoqda" holatida
+        ko'rinadi — rolini tanlab tasdiqlang yoki rad eting. Tasdiqlangan
+        foydalanuvchilarning rolini istalgan vaqtda o'zgartirishingiz mumkin.
+        Batafsil <span className="font-semibold">ROLES.md</span> va{" "}
+        <span className="font-semibold">SENDMAIL.md</span> fayllarida.
       </p>
 
       {loading ? (
@@ -69,7 +110,8 @@ function UsersList() {
                 <th>Ism</th>
                 <th>Email</th>
                 <th>Hisob turi</th>
-                <th>Rol</th>
+                <th>Holat</th>
+                <th>Rol / Amallar</th>
               </tr>
             </thead>
             <tbody>
@@ -83,18 +125,56 @@ function UsersList() {
                     </span>
                   </td>
                   <td>
-                    <select
-                      className="select select-bordered select-sm"
-                      value={u.role}
-                      disabled={savingId === u.id}
-                      onChange={(e) => changeRole(u.id, e.target.value)}
-                    >
-                      {ROLE_OPTIONS.map((r) => (
-                        <option key={r} value={r}>
-                          {ROLE_LABELS[r]}
-                        </option>
-                      ))}
-                    </select>
+                    <span className={`badge ${STATUS_BADGE_STYLE[u.status] || "badge-ghost"}`}>
+                      {STATUS_LABELS[u.status] || u.status}
+                    </span>
+                  </td>
+                  <td>
+                    {u.status === "PENDING" ? (
+                      <div className="flex items-center gap-2">
+                        <select
+                          className="select select-bordered select-sm"
+                          value={pendingRoleChoice[u.id] || "VIEWER"}
+                          disabled={savingId === u.id}
+                          onChange={(e) =>
+                            setPendingRoleChoice((prev) => ({ ...prev, [u.id]: e.target.value }))
+                          }
+                        >
+                          {ROLE_OPTIONS.map((r) => (
+                            <option key={r} value={r}>
+                              {ROLE_LABELS[r]}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          className="btn btn-success btn-xs"
+                          disabled={savingId === u.id}
+                          onClick={() => approveUser(u.id)}
+                        >
+                          Tasdiqlash
+                        </button>
+                        <button
+                          className="btn btn-error btn-outline btn-xs"
+                          disabled={savingId === u.id}
+                          onClick={() => rejectUser(u.id)}
+                        >
+                          Rad etish
+                        </button>
+                      </div>
+                    ) : (
+                      <select
+                        className="select select-bordered select-sm"
+                        value={u.role}
+                        disabled={savingId === u.id}
+                        onChange={(e) => changeRole(u.id, e.target.value)}
+                      >
+                        {ROLE_OPTIONS.map((r) => (
+                          <option key={r} value={r}>
+                            {ROLE_LABELS[r]}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </td>
                 </tr>
               ))}

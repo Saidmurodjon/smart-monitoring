@@ -18,5 +18,8 @@ router.route("/me/password").put(Authentication, conntroller.UpdateMyPassword);
 // Foydalanuvchilar ro'yxati va rol boshqaruvi — faqat admin.
 router.route("/").get(Authentication, requireRole("ADMIN"), conntroller.Get);
 router.route("/:id/role").put(Authentication, requireRole("ADMIN"), conntroller.UpdateRole);
+// SENDMAIL.md — PENDING foydalanuvchini tasdiqlash/rad etish, faqat admin.
+router.route("/:id/approve").put(Authentication, requireRole("ADMIN"), conntroller.ApproveUser);
+router.route("/:id/reject").put(Authentication, requireRole("ADMIN"), conntroller.RejectUser);
 
 module.exports = router;

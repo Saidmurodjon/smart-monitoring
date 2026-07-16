@@ -6,6 +6,7 @@ const users = require("./Users");
 
 const login = require("../auth/Router");
 const googleAuth = require("../auth/google");
+const passwordReset = require("../auth/PasswordReset");
 const gesList = require("./GesList");
 const aggregates = require("./Aggregates");
 const assessment = require("./Assessment");
@@ -22,6 +23,7 @@ router.get("/", (req, res) => {
 // ichkarida Authentication+requireRole qo'llaydi (POST ochiq qoladi).
 router.use("/login", login);
 router.use("/auth", googleAuth);
+router.use("/auth", passwordReset);
 router.use("/users", users);
 
 // ROLES.md §6-7 — shu qatordan keyingi hamma resurs uchun tizimga kirish

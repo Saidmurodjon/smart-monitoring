@@ -9,6 +9,8 @@ const checkAuth = () => {
     "forgot-password",
     "register",
     "auth/google/success",
+    "reset-password",
+    "auth/pending",
   ];
 
   const isPublicPage = PUBLIC_ROUTES.some((r) =>

@@ -21,8 +21,18 @@ export async function bootstrapAdmin(): Promise<void> {
   }
 
   const hashed = await bcrypt.hash(password, SALT_ROUNDS);
+  // SENDMAIL.md — yangi ro'yxatdan o'tganlar PENDING bo'lib yaratiladi, lekin
+  // bootstrap-admin buni chetlab o'tishi shart: aks holda birinchi ADMIN o'zi
+  // ham tasdiqlanishini kutib, tizimga kira olmay qoladi.
   await prisma.user.create({
-    data: { email, password: hashed, role: "ADMIN", provider: "local", fullName: "Administrator" },
+    data: {
+      email,
+      password: hashed,
+      role: "ADMIN",
+      status: "APPROVED",
+      provider: "local",
+      fullName: "Administrator",
+    },
   });
   winston.info(`Boshlang'ich ADMIN hisobi yaratildi: ${email}`);
 }

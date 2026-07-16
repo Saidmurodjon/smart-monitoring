@@ -1,8 +1,15 @@
 const bcrypt = require("bcryptjs");
 const prisma = require("../../../config/prisma");
 const { withMongoId } = require("../../../utils/mongoCompat");
+const {
+  sendRegistrationReceivedEmail,
+  sendAdminNewUserNotification,
+  sendAccountApprovedEmail,
+  sendAccountRejectedEmail,
+} = require("../../../services/mail/notifications");
 
 const SALT_ROUNDS = 10;
+const VALID_ROLES = ["ADMIN", "ENGINEER", "VIEWER"];
 
 // This is user model
 module.exports = {
@@ -15,7 +22,7 @@ module.exports = {
   Post: async function (req, res) {
     const { email, password, fullName, phone, orgName } = req.body;
     try {
-      if (!email || !password || !fullName || !phone || !orgName) {
+      if (!email || !password || !fullName || !phone) {
         return res.status(412).send("Ma'lumotlarni to'liq kiriting");
       }
       const userCheck = await prisma.user.findUnique({ where: { email } });
@@ -25,12 +32,16 @@ module.exports = {
           .send("Ushbu foydalanuvchi avval ro'yxatdan o'tgan");
       }
       const hashed = await bcrypt.hash(password, SALT_ROUNDS);
-      // Xavfsizlik: ro'yxatdan o'tishda rol har doim VIEWER — mijoz
-      // so'rovidan rol qabul qilinmaydi (huquqni oshirishning oldini olish).
-      await prisma.user.create({
+      // Xavfsizlik: ro'yxatdan o'tishda rol har doim VIEWER va holat har doim
+      // PENDING — mijoz so'rovidan rol/holat qabul qilinmaydi (huquqni
+      // oshirishning oldini olish). SENDMAIL.md — admin tasdiqlaguncha
+      // login imkonsiz (Controller.js Login).
+      const user = await prisma.user.create({
         data: { email, password: hashed, fullName, phone, orgName, role: "VIEWER", provider: "local" },
       });
-      return res.status(201).send("Siz ro'yxatdan o'tdingiz");
+      sendRegistrationReceivedEmail(user);
+      sendAdminNewUserNotification(user);
+      return res.status(201).send("Arizangiz qabul qilindi. Administrator tasdiqlagach, emailingizga xabar boradi.");
     } catch (err) {
       res.status(417).send("Yaratishda hatolik yuz berdi");
     }
@@ -94,7 +105,6 @@ module.exports = {
   UpdateRole: async function (req, res) {
     const id = Number(req.params.id);
     const { role } = req.body;
-    const VALID_ROLES = ["ADMIN", "ENGINEER", "VIEWER"];
     if (!Number.isInteger(id) || id <= 0) {
       return res.status(400).send("Yaroqsiz foydalanuvchi ID");
     }
@@ -103,6 +113,43 @@ module.exports = {
     }
     try {
       const updated = await prisma.user.update({ where: { id }, data: { role } });
+      const { password, ...safe } = updated;
+      return res.status(200).send(withMongoId(safe));
+    } catch (err) {
+      return res.status(404).send("Foydalanuvchi topilmadi");
+    }
+  },
+
+  /** PUT /api/v1/users/:id/approve — faqat admin. Body: { role }.
+   * PENDING (yoki REJECTED) foydalanuvchini tasdiqlaydi va rol beradi. */
+  ApproveUser: async function (req, res) {
+    const id = Number(req.params.id);
+    const { role } = req.body;
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).send("Yaroqsiz foydalanuvchi ID");
+    }
+    if (!VALID_ROLES.includes(role)) {
+      return res.status(400).send("Yaroqsiz rol — ADMIN, ENGINEER yoki VIEWER bo'lishi kerak");
+    }
+    try {
+      const updated = await prisma.user.update({ where: { id }, data: { role, status: "APPROVED" } });
+      sendAccountApprovedEmail(updated, role);
+      const { password, ...safe } = updated;
+      return res.status(200).send(withMongoId(safe));
+    } catch (err) {
+      return res.status(404).send("Foydalanuvchi topilmadi");
+    }
+  },
+
+  /** PUT /api/v1/users/:id/reject — faqat admin. PENDING foydalanuvchini rad etadi. */
+  RejectUser: async function (req, res) {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).send("Yaroqsiz foydalanuvchi ID");
+    }
+    try {
+      const updated = await prisma.user.update({ where: { id }, data: { status: "REJECTED" } });
+      sendAccountRejectedEmail(updated);
       const { password, ...safe } = updated;
       return res.status(200).send(withMongoId(safe));
     } catch (err) {

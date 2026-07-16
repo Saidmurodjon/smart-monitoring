@@ -9,6 +9,69 @@ Har bir yozuv: **sana**, **nima qilindi**, **nega**, **qaysi fayllar**.
 
 ---
 
+## 2026-07-16 (1) — Email orqali ro'yxatdan o'tishni admin tasdiqlashi, parolni tiklash
+
+- **Sabab:** GES — strategik infratuzilma, shuning uchun endi ro'yxatdan
+  o'tish (lokal yoki Google) darhol faol hisob bermaydi: yangi foydalanuvchi
+  `PENDING` holatda yaratiladi, admin uni ko'rib chiqib rol berib
+  tasdiqlamaguncha (yoki rad etmaguncha) login imkonsiz. Har bosqichda
+  email xabarnoma yuboriladi. Parolni tiklash ("Forgot password") — avval
+  faqat UI stub edi, endi to'liq ishlaydigan token-asoslangan oqim.
+  To'liq dizayn/qarorlar: **`SENDMAIL.md`**.
+- **Muhim topilma (ushbu ishga bevosita aloqasi yo'q, lekin kritik edi):**
+  server ishga tushirilganda `.env`dagi `DATABASE_URL` avvalgi
+  sessiyalardan **butunlay boshqa/toza Neon bazasiga** ishora qilayotgani
+  aniqlandi — `users` jadvalida `role`/`provider`/`googleId` ustunlari,
+  `fuzzy_rule_definitions`/`fuzzy_variable_definitions` jadvallari va
+  TimescaleDB hypertable konversiyasi yo'q edi (bazada 0 ta foydalanuvchi).
+  Foydalanuvchi tasdig'idan so'ng barcha yetishmayotgan migratsiyalar
+  (`20260715002000`, `20260715004008`, `20260715062214`) qo'lda qo'llanildi
+  va Prisma tarixiga (`_prisma_migrations`) to'g'ri belgilandi — endi
+  `prisma migrate status` "up to date" deb ko'rsatadi.
+- **Ma'lumotlar bazasi**: yangi `AccountStatus` enum (`PENDING`/`APPROVED`/
+  `REJECTED`), `User.status` (standart `PENDING`), yangi
+  `PasswordResetToken` jadvali. Migratsiya (`20260716070000_...`) mavjud
+  foydalanuvchilarni avtomatik `APPROVED` qilib qo'ydi — hech kim
+  bloklanmadi.
+- **Yangi `server/src/services/mail/`** (`mailer.ts`, `templates.ts`,
+  `notifications.ts`) — [Resend](https://resend.com) API orqali xat
+  yuborish, `RESEND_API_KEY` sozlanmagan bo'lsa jim o'tkazib yuboradi
+  (asosiy oqim buzilmaydi — Google OAuth'dagi 501-fallback bilan bir xil
+  printsip).
+- **`services/auth/bootstrapAdmin.ts`**: birinchi ADMIN endi
+  `status: "APPROVED"` bilan yaratiladi (aks holda o'zi ham tasdiqlanishini
+  kutib qolardi).
+- **`controllers/Users.js`**: `Post` (ro'yxatdan o'tish) `orgName`ni
+  ixtiyoriy qildi, `PENDING`+ikkita xat (foydalanuvchiga va adminlarga)
+  yuboradi. Yangi `ApproveUser` (`PUT /users/:id/approve`, body `{role}`)
+  va `RejectUser` (`PUT /users/:id/reject`) — ikkalasi ham faqat admin,
+  tegishli xat yuboradi.
+- **`auth/Controller.js` (Login)**: parol to'g'ri tekshirilgandan KEYIN
+  `status` tekshiriladi (403 + o'zbekcha xabar `PENDING`/`REJECTED` uchun) —
+  noto'g'ri parol taxminiga hisob holati sizib chiqmasligi uchun.
+- **`auth/google.js`**: yangi Google hisob ham `PENDING` yaratiladi va
+  ro'yxatdan o'tish xatlarini oladi; `status !== APPROVED` bo'lsa token
+  berilmaydi, `CLIENT_URL/auth/pending?status=...`ga yo'naltiriladi.
+- **Yangi `auth/PasswordResetController.js` + `auth/PasswordReset.js`**:
+  `POST /auth/forgot-password` (email enumeration'dan himoya — natija
+  har doim bir xil), `POST /auth/reset-password` (token 1 soat amal
+  qiladi, bir marta ishlatiladi).
+- **Klient**: `features/user/Register.js` va `ForgotPassword.js` haqiqiy
+  API'ga ulandi (avval ikkalasi ham soxta edi); yangi
+  `features/user/ResetPassword.js` + `pages/ResetPassword.js`,
+  `pages/AuthPending.js`; `features/users/index.js` (admin) — holat
+  ustuni + PENDING qatorlar uchun rol tanlash+Tasdiqlash/Rad etish
+  tugmalari.
+- **Sinov:** barcha backend oqimlari `curl` orqali uchidan-uchigacha
+  tekshirildi (register→pending-block→approve→login, reject→login-block,
+  forgot→reset→login-with-new-password, token-ni qayta ishlatishga urinish
+  → 400), `RESEND_API_KEY` sozlanmagan holatda ham hech biri buzilmadi.
+  Klient fayllari babel parse-check'dan o'tkazildi (brauzer vositasi yo'q).
+- **Qolgan ish (keyingi so'rov bilan):** `RESEND_API_KEY`ni foydalanuvchi
+  o'zi to'ldiradi (Google OAuth kalitlari kabi); `SENDMAIL.md` §6'dagi
+  takliflar (rate limiting, REJECTED uchun qayta ariza, login xavfsizlik
+  xabarnomasi, real domen sender).
+
 ## 2026-07-15 (15) — Navbar to'liq kenglikda va doim ko'rinadigan qilindi, logotip navbarga ko'chirildi
 
 - **Sabab:** (13)/(14)dagi brauzer sinovi yana muammolarni ko'rsatdi: navbar

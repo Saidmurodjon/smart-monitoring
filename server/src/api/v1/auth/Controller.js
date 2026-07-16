@@ -32,6 +32,19 @@ module.exports = {
         return res.status(401).send("login yoki parol noto'g'ri");
       }
 
+      // SENDMAIL.md — parol to'g'ri tekshirilgandan KEYIN holat tekshiriladi
+      // (noto'g'ri parol taxminiga hisob holati haqida ma'lumot sizdirilmaydi).
+      if (user.status === "PENDING") {
+        return res
+          .status(403)
+          .send("Hisobingiz hali administrator tomonidan tasdiqlanmagan. Tasdiqlangach sizga email orqali xabar boradi.");
+      }
+      if (user.status === "REJECTED") {
+        return res
+          .status(403)
+          .send("Hisobingizga ruxsat berilmadi. Batafsil ma'lumot uchun administratorga murojaat qiling.");
+      }
+
       const token = signToken(user);
       return res.status(200).json({ token });
     } catch (error) {

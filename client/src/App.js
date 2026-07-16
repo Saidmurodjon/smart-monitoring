@@ -12,6 +12,8 @@ const Login = lazy(() => import('./pages/Login'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const Register = lazy(() => import('./pages/Register'))
 const AuthGoogleSuccess = lazy(() => import('./pages/AuthGoogleSuccess'))
+const ResetPassword = lazy(() => import('./pages/ResetPassword'))
+const AuthPending = lazy(() => import('./pages/AuthPending'))
 
 // Initializing different libraries
 initializeApp()
@@ -37,6 +39,8 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/register" element={<Register />} />
           <Route path="/auth/google/success" element={<AuthGoogleSuccess />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/auth/pending" element={<AuthPending />} />
 
           {/* Place new routes over this */}
           <Route path="/app/*" element={<Layout />} />

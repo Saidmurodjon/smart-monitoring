@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import LandingIntro from "./LandingIntro";
@@ -5,9 +6,11 @@ import ErrorText from "../../components/Typography/ErrorText";
 import InputText from "../../components/Input/InputText";
 import CheckCircleIcon from "@heroicons/react/24/solid/CheckCircleIcon";
 
+const SERVER_URL = process.env.REACT_APP_SERVER_URL;
+
 function ForgotPassword() {
   const INITIAL_USER_OBJ = {
-    emailId: "",
+    email: "",
   };
 
   const [loading, setLoading] = useState(false);
@@ -15,17 +18,23 @@ function ForgotPassword() {
   const [linkSent, setLinkSent] = useState(false);
   const [userObj, setUserObj] = useState(INITIAL_USER_OBJ);
 
-  const submitForm = (e) => {
+  const submitForm = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
-    if (userObj.emailId.trim() === "")
-      return setErrorMessage("Email Id is required! (use any value)");
-    else {
-      setLoading(true);
-      // Call API to send password reset link
+    if (userObj.email.trim() === "")
+      return setErrorMessage("Email kiritilishi shart!");
+
+    setLoading(true);
+    try {
+      await axios.post(`${SERVER_URL}auth/forgot-password`, userObj);
       setLoading(false);
       setLinkSent(true);
+    } catch (error) {
+      setLoading(false);
+      // Xavfsizlik: backend email mavjudligidan qat'iy nazar 200 qaytaradi,
+      // shu sabab bu yerga faqat tarmoq/server xatoligida tushiladi.
+      setErrorMessage(error.response?.data || "So'rov yuborishda xatolik yuz berdi");
     }
   };
 
@@ -43,7 +52,7 @@ function ForgotPassword() {
           </div>
           <div className="py-24 px-10">
             <h2 className="text-2xl font-semibold mb-2 text-center">
-              Forgot Password
+              Parolni tiklash
             </h2>
 
             {linkSent && (
@@ -51,14 +60,14 @@ function ForgotPassword() {
                 <div className="text-center mt-8">
                   <CheckCircleIcon className="inline-block w-32 text-success" />
                 </div>
-                <p className="my-4 text-xl font-bold text-center">Link Sent</p>
+                <p className="my-4 text-xl font-bold text-center">Havola yuborildi</p>
                 <p className="mt-4 mb-8 font-semibold text-center">
-                  Check your email to reset password
+                  Agar bu email tizimda mavjud bo'lsa, parolni tiklash havolasi emailingizga yuborildi
                 </p>
                 <div className="text-center mt-4">
                   <Link to="/login">
                     <button className="btn btn-block btn-primary ">
-                      Login
+                      Kirish
                     </button>
                   </Link>
                 </div>
@@ -68,15 +77,16 @@ function ForgotPassword() {
             {!linkSent && (
               <>
                 <p className="my-8 font-semibold text-center">
-                  We will send password reset link on your email Id
+                  Emailingizga parolni tiklash havolasini yuboramiz
                 </p>
                 <form onSubmit={(e) => submitForm(e)}>
                   <div className="mb-4">
                     <InputText
-                      defaultValue={userObj.emailId}
-                      name="emailId"
+                      defaultValue={userObj.email}
+                      name="email"
+                      type="email"
                       containerStyle="mt-4"
-                      labelTitle="Email Id"
+                      labelTitle="Email"
                       updateFormValue={updateFormValue}
                     />
                   </div>
@@ -89,14 +99,14 @@ function ForgotPassword() {
                       (loading ? " loading" : "")
                     }
                   >
-                    Send Reset Link
+                    Havolani yuborish
                   </button>
 
                   <div className="text-center mt-4">
-                    Don't have an account yet?{" "}
+                    Hisobingiz yo'qmi?{" "}
                     <Link to="/register">
                       <button className="  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">
-                        Register
+                        Ro'yxatdan o'tish
                       </button>
                     </Link>
                   </div>

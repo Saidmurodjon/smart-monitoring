@@ -3,6 +3,10 @@ const passport = require("passport");
 const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
 const prisma = require("../../../config/prisma");
 const { signToken } = require("./Controller");
+const {
+  sendRegistrationReceivedEmail,
+  sendAdminNewUserNotification,
+} = require("../../../services/mail/notifications");
 
 const router = express.Router();
 
@@ -25,7 +29,11 @@ if (isConfigured) {
           if (!email) return done(new Error("Google profilida email topilmadi"));
 
           let user = await prisma.user.findUnique({ where: { email } });
+          let isNewUser = false;
           if (!user) {
+            isNewUser = true;
+            // SENDMAIL.md — Google orqali ro'yxatdan o'tganlar ham PENDING
+            // holatda yaratiladi, admin tasdiqlaguncha kirish berilmaydi.
             user = await prisma.user.create({
               data: {
                 email,
@@ -43,6 +51,12 @@ if (isConfigured) {
               data: { provider: "google", googleId: profile.id },
             });
           }
+
+          if (isNewUser) {
+            sendRegistrationReceivedEmail(user);
+            sendAdminNewUserNotification(user);
+          }
+
           return done(null, user);
         } catch (err) {
           return done(err);
@@ -70,6 +84,11 @@ router.get(
     return passport.authenticate("google", { session: false, failureRedirect: `${CLIENT_URL}/login` })(req, res, next);
   },
   (req, res) => {
+    // SENDMAIL.md — Google orqali ham status APPROVED bo'lmaguncha token berilmaydi.
+    if (req.user.status !== "APPROVED") {
+      const status = req.user.status === "REJECTED" ? "rejected" : "pending";
+      return res.redirect(`${CLIENT_URL}/auth/pending?status=${status}`);
+    }
     const token = signToken(req.user);
     res.redirect(`${CLIENT_URL}/auth/google/success?token=${encodeURIComponent(token)}`);
   },

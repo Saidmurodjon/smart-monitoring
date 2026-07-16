@@ -15,21 +15,43 @@ enum Role {
   VIEWER
 }
 
+// SENDMAIL.md — yangi ro'yxatdan o'tgan foydalanuvchi PENDING holatda
+// yaratiladi, admin tasdiqlagach APPROVED (login ochiladi), rad etsa REJECTED.
+enum AccountStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  fullName  String?
-  orgName   String?
-  phone     String?  @default("+998")
-  email     String   @unique
-  password  String? // Google orqali kirganlarda parol yo'q
-  role      Role     @default(VIEWER)
-  provider  String   @default("local") // "local" | "google"
-  googleId  String?  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  orders    Order[]  @relation("OrderAuthors")
+  id                  Int                  @id @default(autoincrement())
+  fullName            String?
+  orgName             String?
+  phone               String?              @default("+998")
+  email               String               @unique
+  password            String? // Google orqali kirganlarda parol yo'q
+  role                Role                 @default(VIEWER)
+  status              AccountStatus        @default(PENDING)
+  provider            String               @default("local") // "local" | "google"
+  googleId            String?              @unique
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  orders              Order[]              @relation("OrderAuthors")
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
+}
+
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@map("password_reset_tokens")
 }
 
 model Ges {
